@@ -27,6 +27,37 @@
 		cout << i.x << "	" << i.y << endl;
 	}
 
+## vector拷贝
+
+```cpp
+vector<int> input({ 1,2,3,4,5 });
+cout<<input.size();
+int arr[5];
+std::copy(input.begin(), input.begin()+5, arr);
+for (int i = 0; i < 5; i++) {
+	cout<<arr[i]<<endl;
+}
+
+vector<int> input({ 1,2,3,4,5 });
+vector<int> input2;
+input2 = { input.begin(), input.begin() + 5 };
+for (int i = 0; i < input2.size(); i++) {
+	cout << input2[i];
+}
+```
+
+## vector求和
+
+```
+int arr [] = {10,20,30,40,50}
+vector<int> va(&arr[0],&arr[5])
+int sum = accumulate(va.begin(),va.end(),0)
+```
+
+
+
+
+
 ## c_str()
 
 c_str()函数返回一个指向C字符串的指针常量，内容与string相同

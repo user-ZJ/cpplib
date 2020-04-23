@@ -175,7 +175,13 @@ CMAKE_C_FLAGS 设置C编译选项
 
 CMAKE_CXX_FLAGS 设置C++编译选项
 
+\#定义预编译宏：TEST
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DTEST" )
+
+set(CMAKE_Cxx_FLAGS "${CMAKE_Cxx_FLAGS} -DTEST" ) 
+
+add_compile_definitions(TEST HAVE_CUDA)
 
 ## 参考
 
