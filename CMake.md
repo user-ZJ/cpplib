@@ -36,10 +36,11 @@ ADD_EXECUTABLE(CRNode ${SRC_LIST})
 
 ADD_LIBRARY(libname [SHARED|STATIC|MODULE] [EXCLUDE_FROM_ALL] source1 source2 ... sourceN)
 libname：库文件名称；
-[SHARED|STATIC|MODULE]：生成库文件类型（共享库/静态库）
+[SHARED|STATIC|MODULE]：生成库文件类型（共享库/静态库）MODULE自适应，根据需要编译成动态库或静态库
 [EXCLUDE_FROM_ALL]：表示该库不会被默认构建
 source1, ..., sourceN：生成库所依赖的源文件
 ADD_LIBRARY(hello SHARED ${LIBHELLO_SRC})
+ADD_LIBRARY默认构建一个静态库
 
 EXECUTABLE_OUTPUT_PATH为生成可执行文件路径
 LIBRARY_OUTPUT_PATH为生成库文件路径
@@ -51,6 +52,7 @@ TARGET_LINK_LIBRARIES(target library1 <debug | optimized> library2 ..)
 target：目标文件；
 library1, ..., libraryN：链接外部库文件
 指定链接目标文件时需要链接的外部库
+target_link_libraries(zipapp archive)默认链接静态库
 
 MESSAGE([SEND_ERROR | STATUS | FATAL_ERROR] “message to display” …)
 SEND_ERROR：产生错误，生成过程被跳过；
@@ -183,6 +185,18 @@ set(CMAKE_Cxx_FLAGS "${CMAKE_Cxx_FLAGS} -DTEST" )
 
 add_compile_definitions(TEST HAVE_CUDA)
 
+## 示例
+
+```cmake
+add_library(archive archive.cpp zip.cpp lzma.cpp)
+add_executable(zipapp zipapp.cpp)
+target_link_libraries(zipapp archive)
+```
+
+
+
 ## 参考
 
 https://www.jianshu.com/p/9d246e4071d4
+
+https://www.cnblogs.com/lx17746071609/p/11436242.html

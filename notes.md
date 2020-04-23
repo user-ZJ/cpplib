@@ -70,3 +70,18 @@ string s="1234";
 strcpy(c,s.c_str());
 ```
 
+## split
+
+```cpp
+void split(std::string& s,std::string& deli,std::vector<std::string>& output){
+    size_t pos=0;
+    std::string token;
+    while((pos=s.find(deli)) != std::string:npos){
+        token = s.substr(0,pos);
+        output.push_back(token);
+        s.erase(0,pos+deli.length());
+    }
+    output.push_back(s);
+}
+```
+
