@@ -51,7 +51,7 @@ for (int i = 0; i < input2.size(); i++) {
 ```
 int arr [] = {10,20,30,40,50}
 vector<int> va(&arr[0],&arr[5])
-int sum = accumulate(va.begin(),va.end(),0)
+int sum = accumulate(va.begin(),va.end(),0 )
 ```
 
 
@@ -68,20 +68,5 @@ c_str()函数返回一个指向C字符串的指针常量，内容与string相同
 char c[20];
 string s="1234";
 strcpy(c,s.c_str());
-```
-
-## split
-
-```cpp
-void split(std::string& s,std::string& deli,std::vector<std::string>& output){
-    size_t pos=0;
-    std::string token;
-    while((pos=s.find(deli)) != std::string:npos){
-        token = s.substr(0,pos);
-        output.push_back(token);
-        s.erase(0,pos+deli.length());
-    }
-    output.push_back(s);
-}
 ```
 
