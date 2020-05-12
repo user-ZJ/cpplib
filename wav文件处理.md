@@ -3,7 +3,6 @@
 
 
 ```cpp
-#define NUM_THREADS 5
 #define KALDI_SWAP2(a){ \
   int t=(reinterpret_cast<char *>(&a))[0]; \
         (reinterpret_cast<char *>(&a))[0]=(reinterpret_cast<char *>(&a))[1]; \
