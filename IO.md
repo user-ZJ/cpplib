@@ -311,3 +311,33 @@ cout << number << endl;
 return 0;
 ```
 
+# 4 将char * 转换为istream
+
+```c++
+struct membuf :std::streambuf {
+	membuf(char* begin, char* end) {
+		this->setg(begin, begin, end);
+	}
+};
+
+int main()
+{
+	char buffer[] = "I'm a buffer with embedded nulls \0 and line\n feeds";
+	membuf sbuf(buffer, buffer + sizeof(buffer));
+	std::istream in(&sbuf);
+	string line;
+	while (getline(in, line)) {
+		cout << "line:" << line << "\n";
+	}
+	system("Pause");
+	return 0;
+}
+```
+
+```cpp
+std::istringstream ss(std::string(buf,len));
+//或
+std::istringstream ss;
+ss.rdbuf()->pubsetbuf(buf,len);
+```
+
