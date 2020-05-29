@@ -54,6 +54,48 @@ vector<int> va(&arr[0],&arr[5])
 int sum = accumulate(va.begin(),va.end(),0 )
 ```
 
+> 说明：
+>
+> T accumulate( InputIt first, InputIt last, T init );
+>
+> T accumulate( InputIt first, InputIt last, T init,BinaryOperation op );
+>
+> accumulate默认返回的是int类型，操作符默认是‘+’;当sum溢出时，将init类型改为long，则返回long类型
+
+```c++
+#include <iostream>
+#include <vector>
+#include <numeric>
+#include <string>
+#include <functional>
+ 
+int main()
+{
+    std::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int sum = std::accumulate(v.begin(), v.end(), 0);
+    int product = std::accumulate(v.begin(), v.end(), 1, std::multiplies<int>());
+    auto dash_fold = [](std::string a, int b) {
+                         return std::move(a) + '-' + std::to_string(b);
+                     };
+    std::string s = std::accumulate(std::next(v.begin()), v.end(),
+                                    std::to_string(v[0]), // 用首元素开始
+                                    dash_fold);
+    // 使用逆向迭代器右折叠
+    std::string rs = std::accumulate(std::next(v.rbegin()), v.rend(),
+                                     std::to_string(v.back()), // 用首元素开始
+                                     dash_fold);
+    std::cout << "sum: " << sum << '\n'
+              << "product: " << product << '\n'
+              << "dash-separated string: " << s << '\n'
+              << "dash-separated string (right-folded): " << rs << '\n';
+}
+
+sum: 55
+product: 3628800
+dash-separated string: 1-2-3-4-5-6-7-8-9-10
+dash-separated string (right-folded): 10-9-8-7-6-5-4-3-2-1
+```
+
 
 
 
