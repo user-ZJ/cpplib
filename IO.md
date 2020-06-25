@@ -253,6 +253,8 @@ cout<<cname;
 
 ## iomanip
 
+iomanip是I/O流控制头文件,就像C里面的格式化输出一样
+
 **涉及到格式化输出，不仅仅使用头文件，也将包含**
 
 > cout.fill(char ch)             // 将填充字符设置为 ch

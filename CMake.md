@@ -185,6 +185,42 @@ set(CMAKE_Cxx_FLAGS "${CMAKE_Cxx_FLAGS} -DTEST" )
 
 add_compile_definitions(TEST HAVE_CUDA)
 
+### RPATH
+
+默认情况下，CMake在编译时将库文件的搜索路径写入目标文件的DT_RPATH字段。但是在执行make install进行安装后，安装文件的DT_RPATH字段却消失了。
+
+CMAKE_SKIP_RPATH  布尔变量，TRUE表示在编译及安装阶段忽略RPATH。默认值为FALSE。
+
+CMAKE_SKIP_BUILD_RPATH  布尔变量，TRUE表示在编译阶段忽略RPATH。默认值为FALSE
+
+CMAKE_SKIP_INSTALL_RPATH  布尔变量，TRUE表示在安装阶段忽略RPATH。默认值为FALSE。
+
+CMAKE_INSTALL_RPATH  字符串变量，内容是一个以分号作为分隔符的路径列表。默认值为空。
+
+调用add_executable、add_library等指令创建目标文件时，CMake使用该变量的值初始化目标的INSTALL_TARGET属性，作为安装时的RPATH。因此要在调用add_xxxx指令前设置该变量，否则不起作用。
+
+该变量被用于初始化所有目标文件的INSTALL_RPATH属性；在写入安装文件的DT_RPATH字段时，路径列表中的分号会被替换成Linux系统惯用的冒号。
+
+INSTALL_RPATH  字符串类型的目标属性（target property），内容是一个以分号作为分隔符的路径列表，作为安装时的RPATH
+
+----------------------------------------------------------------------------------------------
+
+默认情况下，CMAKE_SKIP_RPATH、CMAKE_SKIP_BUILD_RPATH、CMAKE_SKIP_INSTALL_RPATH均为FALSE，因此无论是编译目录树（build tree）还是安装目录树（install tree）中的目标文件，CMake都会为之添加RPATH。但是由于CMAKE_INSTALL_RPATH默认值为空，CMAKE_INSTALL_RPATH_USE_LINK_PATH默认值为FALSE，因此最终结果就是编译目录树中的目标文件有RPATH，但是安装目录树中的目标文件没有RPATH。
+
+如果想保留安装文件的RPATH，有3种方法：
+
+1. 将变量CMAKE_INSTALL_RPATH_USE_LINK_PATH设为TRUE。
+
+从效果上看，该方法将保留目标文件在编译阶段添加的RPATH。
+
+2. 设置变量CMAKE_INSTALL_RPATH。
+
+3. 独立设置每个目标文件的INSTALL_RPATH属性：
+
+set_target_properties(目标文件 PROPERTIES INSTALL_RPATH 路径列表)
+
+方法1、2会影响所有目标文件，推荐使用方法3。
+
 ## 示例
 
 ```cmake
