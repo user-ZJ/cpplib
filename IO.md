@@ -208,6 +208,8 @@ stringstream是用于C++风格的字符串的输入输出的
 
 stringstream::stringstream(string str);
 
+通过str()函数获取stringtream中的字符串
+
 ```cpp
 #include <sstream>
 #include<iostream>
