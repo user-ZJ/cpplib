@@ -11,6 +11,7 @@ link_directories(
 
 set(UTILS_SOURCES 
 	path.cpp
+	text-utils.cpp
 	)
 
 
@@ -22,7 +23,10 @@ INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 
 set(TEST_SOURCES path_test.cpp)
 add_executable(path_test ${TEST_SOURCES})
-target_link_libraries(path_test
-	zack_utils
-		)
-#INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+target_link_libraries(path_test zack_utils)
+INSTALL(TARGETS path_test RUNTIME DESTINATION bin)
+
+set(TEXT_TEST_SOURCES text-utils-test.cpp)
+add_executable(text_test ${TEXT_TEST_SOURCES})
+target_link_libraries(text_test zack_utils)
+INSTALL(TARGETS text_test RUNTIME DESTINATION bin)
