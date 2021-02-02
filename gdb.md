@@ -47,6 +47,8 @@ gcc -g -o test test.c
 
 **使用gdb调试，编译需要-g选项编译**
 
+在Linux下，我们可以使用“strip”命令来去掉ELF文件中的调试信息：
+
 ## 启动gdb调试
 
 启动gdb调试有两种方式
@@ -497,6 +499,188 @@ thread apply all bt打开所有线程的堆栈信息
 threadapply thread ID bt 查看指定线程堆栈信息
 
 thread thread ID	进入指定线程栈空间
+
+# objdump
+
+-a, --archive-headers：显示archive头信息
+
+-f, --file-headers：显示elf文件头信息
+
+-p, --private-headers：显示对象格式的特定文件头内容
+
+**-h： 显示各个段的头信息**
+
+-x, --all-headers：显示所有头信息
+
+**-d, --disassemble：显示可执行段的汇编器内容**
+
+-D, --disassemble-all：显示所有段的汇编器内容
+
+-S, --source：混合源代码与反汇编
+
+**-s, --full-contents：显示所有段的内容**
+
+-g, --debugging：显示elf文件的调试信息
+
+-e, --debugging-tags：使用ctags风格显示调试信息
+
+-G, --stabs：显示STABS信息
+
+-W：显示DWARF信息
+
+**-t, --syms：显示符号表**
+
+-T, --dynamic-syms：显示动态符号表
+
+-r, --reloc：显示文件中的重定位条目
+
+-R, --dynamic-reloc：在文件中显示动态重定位条目
+
+-v, --version：显示objdump版本
+
+-i, --info：列出支持的对象格式和体系结构
+
+# readelf
+
+-a --all               Equivalent to: -h -l -S -s -r -d -V -A -I
+
+-h --file-header       显示elf文件头信息
+
+**-l --program-headers   显示 program headers**
+     --segments          --program-headers的别名
+
+-S --section-headers   显示sections' header
+     --sections          --section-headers的别名
+
+-g --section-groups    显示 section groups
+
+-t --section-details   显示 section details
+
+-e --headers           Equivalent to: -h -l -S
+
+**-s --syms              显示符号表**
+     --symbols           An alias for --syms
+
+--dyn-syms             显示动态符号表
+
+-n --notes             Display the core notes (if present)
+
+**-r --relocs            显示重定位信息(如果有)**
+
+-u --unwind            显示展开信息 (if present)
+
+-d --dynamic           显示动态段 (if present)
+
+-V --version-info      显示版本段 (if present)
+
+-A --arch-specific     显示特定于体系结构的信息（如果有）
+
+-c --archive-index     在档案中显示符号/文件索引
+
+**-D --use-dynamic       显示符号时使用动态部分信息**
+
+-x --hex-dump=<number|name>    将<number | name>节的内容作为字节转储
+
+-p --string-dump=<number|name>    将<number | name>节的内容作为字符串转储
+
+-R --relocated-dump=<number|name>    转储<number | name>节的内容作为重定位字节
+
+-z --decompress        转储节之前解压缩节
+
+--dwarf-depth=N        不要显示深度N或更大的DIE
+
+--dwarf-start=N        以相同深度或更深显示以N开头的DIE
+
+-I --histogram         显示存储段列表长度的直方图
+
+-W --wide              允许输出宽度超过80个字符
+
+
+
+readelf -h xxx.o  查看elf文件头
+
+
+
+nm
+
+c++filt 的工具可以用来解析C++被修饰过的名称
+
+
+
+兼容C语言和C++语言定义两套头文件
+
+```cpp
+#ifdef __cplusplus
+extern "C" {
+#endif
+	void *memset (void *, int, size_t);
+#ifdef __cplusplus
+}
+#endif
+```
+
+
+
+gcc -E hello.c -o hello.i  //预编译
+
+gcc -S hello.c -o hello.s  //编译
+
+gcc -c hello.c -o hello.o //汇编
+
+符号修饰标准、变量内存布局、函数调用方式等这些跟可执行代码二进制兼容性相关的内容称为ABI（Application Binary Interface）
+
+**-fPIC**：GCC产生地址无关代码，Position-independent Code
+
+-fPIE：地址无关方式编译的可执行文件，Position-Independent Executable
+
+
+
+
+
+# 其他
+
+动态链接器会按照下列顺序依次装载或查找共享对象（目标文件）：
+
+由环境变量LD_LIBRARY_PATH指定的路径。
+
+由路径缓存文件/etc/ld.so.cache指定的路径。
+
+默认共享库目录，先/usr/lib，然后/lib。
+
+LD_LIBRARY_PATH也会影响GCC编译时查找库的路径，它里面包含的目录相当于链接时GCC的“-L”参数
+
+“**-rpath**”选项（或者GCC的-Wl,-rpath），这种方法可以指定链接产生的目标程序的共享库查找路径。
+
+LD_PRELOAD，这个文件中我们可以指定预先装载的一些共享库甚或是目标文件。在LD_PRELOAD里面指定的文件会在动态链接器按照固定规则搜索共享库之前装载，它比LD_LIBRARY_PATH里面所指定的目录中的共享库还要优先。无论程序是否依赖于它们，LD_PRELOAD里面指定的共享库或目标文件都会被装载。
+
+系统配置文件中有一个文件是/etc/ld.so.preload，它的作用与LD_PRELOAD一样。这个文件里面记录的共享库或目标文件的效果跟
+LD_PRELOAD里面指定的一样，也会被提前装载
+
+**-export-dynamic**
+
+有一种情况是，当程序使用dlopen()动态加载某个共享模块，而该共享模块须反向引用主模块的符号时，有可能主模块的某些符号因为在链接时没有被其他共享模块引用而没有被放到动态符号表里面，导致了反向引用失败。ld链接器提供了一个 “-export-dynamic ”的参数，这个参数表示链接器在生产可执行文件时，将所有全局符号导出到动态符号表，以防止出现上述问题。我们也可以在GCC中使用 “-Wl,-export-dynamic ”将该参数传递给链接器。
+
+
+
+“strip”的工具清除掉共享库或可执行文件的所有符号和调试信息。除了使用“**strip**”工具，我们还可以使用ld的“**-s**”和“-S”参数，使得链接器生成输出文件时就不产生符号信息。“-s”和“-S”的区别是：“-S”消除调试符号信息，而“-s”消除所有符号信息。我们也可以在gcc中通过“-Wl,-s”和“-Wl,-S”给ld传递这两个参数
+
+ldconfig –n shared_library_directory：建立相应的SO-NAME软链接
+
+GCC提供了两个参数**“-L”和“-l”**，分别用于指定共享库搜索目录和共享库的路径。当然也可以使用前面提到过的“-rpath”参数
+
+
+
+很多时候你希望共享库在被装载时能够进行一些初始化工作，比如打开文件、网络连接等，使得共享库里面的函数接口能够正常工作。GCC提供了一种共享库的构造函数，只要在函数声明时加上“__attribute__((constructor)) ”的属性，即指定该函数为共享库构造函数，拥有这种属性的函数会在共享库加载时被执行，即在程序的main函数之前执行。如果我们使用 dlopen() 打开共享库，共享库构造函数会在 dlopen() 返回之前被执行。
+
+与共享库构造函数相对应的是析构函数，我们可以使用在函数声明时加上“__ attribute__((destructor))” 的属性，这种函数会在 main() 函数执行完毕之后执行（或者是程序调用 exit() 时执行）。如果共享库是运行时加载的，那么我们使用 dlclose() 来卸载共享库时，析构函数将会在 dlclose() 返回之前执行。
+
+void __attribute__((constructor)) init_function(void);
+
+void __attribute__((destructor)) fini_function (void);
+
+
+
+
 
 # 参考
 
