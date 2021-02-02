@@ -315,6 +315,20 @@ cout << number << endl;
 return 0;
 ```
 
+## stringsteam清空方法
+
+stringstream不能用clear()方法清空，清空方法为
+
+```cpp
+stringstream ss;
+ss <<"fajflkdjf";
+ss.str("");
+```
+
+
+
+
+
 # 4 将char * 转换为istream
 
 ```c++
