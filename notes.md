@@ -191,3 +191,12 @@ static void WriteUint16(std::ostream &os, int16 i) {
 }
 ```
 
+## 时间统计
+
+```cpp
+#include<chrono>
+auto begin_t = std::chrono::steady_clock::now();
+auto finish_t = std::chrono::steady_clock::now();
+double timecost = std::chrono::duration<double, std::milli>(finish_t - begin_t).count();
+```
+
