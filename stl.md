@@ -13,6 +13,7 @@ vector<int> vInts;  //创建空vector
 vector<int> vInts(100);  //创建容量为100的vector
 vector<int> vInts(100，1); //创建容量为100的vector，并全部初始化为1
 vector<int> vInts(vInts1);  //拷贝一个vector内容来创建一个vector
+vector<int> vInts{1,2,3,4,5}; //  
 ```
 
 ## 1.2 增加/插入数据
@@ -89,6 +90,21 @@ int main(){
     }else{
         cout<<"find "<<*res<<endl;
     }   
+}
+```
+
+## 1.8 排序
+
+```cpp
+#include<iostream>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int main(){
+    vector<int> vInts{1,3,2,5,4};
+    vInts.insert(vInts.begin()+3,6);
+    sort(vInts.begin(),vInts.end());  //从小到大
+    sort(vInts.rbegin(),vInts.rend());  //从大到小
 }
 ```
 
