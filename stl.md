@@ -492,5 +492,63 @@ map中的元素是按照二叉搜索树存储（用红黑树实现），进行�
 
 unordered_map编译时gxx需要添加编译选项：--std=c++11
 
+# 5. queue
+
+## 5.1 创建
+
+```cpp
+queue<int> mqueue;
+queue<int> mqueue1{mqueue};
+```
+
+
+
+## 5.2 增加/插入数据
+
+```cpp
+queue<int> mqueue;
+mqueue.push(1);
+mqueue.emplace(2);  //可以避免对象的拷贝，重复调用构造函数
+```
+
+
+
+## 5.3 获取/修改容器大小
+
+```cpp
+queue<int> mqueue;
+mqueue.push(1);
+mqueue.emplace(2);
+mqueue.size();
+mqueue.empty();  //判断是否为空
+```
+
+
+
+## 5.4 访问元素
+
+```cpp
+mqueue.front();  //返回 queue 中第一个元素的引用
+mqueue.back();  //返回 queue 中最后一个元素的引用
+```
+
+
+
+## 5.5 删除元素
+
+```cpp
+mqueue.pop();
+```
+
+
+
+## 5.6 遍历
+
+和 stack 一样，queue 也没有迭代器。访问元素的唯一方式是遍历容器内容，并移除访问过的每一个元素
+
+## 5.7 查找
+
+
+
 
 
