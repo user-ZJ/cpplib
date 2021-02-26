@@ -552,3 +552,166 @@ mqueue.pop();
 
 
 
+# 6. deque
+
+deque两端都能够快速插入和删除元素
+
+Deque的操作函数和vector操作函数基本一模一样,duque的各项操作只有以下几点和vector不同:
+
+1. deque不提供容量操作( capacity()、reserve() )
+2. deque提供push_front()、pop_front()函数直接操作头部
+
+deque元素是分布在一段段连续空间上，因此deque具有如下特点：
+
+1、支持随机访问，即支持[]以及at()，但是性能没有vector好。
+
+2、可以在内部进行插入和删除操作，但性能不及list。
+
+ 由于deque在性能上并不是最高效的，有时候对deque元素进行排序，更高效的做法是，将deque的元素移到到vector再进行排序，然后在移到回来。
+
+## 6.1 创建
+
+```cpp
+deque<int> mqueue;
+deque<int>  d(10);  //创建容量为10的deque
+deque<int>  d2(6,8); //容量为6，所有元素初始化为8
+int ar[5]={1,2,3,4,5};   //使用数组的一个区间初始化
+deque<int>  d(ar,ar+5);
+vector<double> vd{0.1,0.2,.05,.07,0.9};  //使用vector的一个区间初始化
+deque<double>  d2(vd.begin()+1,vd.end());
+deque<int> mqueue1{mqueue};  //使用另一个deque初始化
+deque<int>  d2({1,2,3,4,5,6,7});  //初始化列表进行初始化
+
+```
+
+
+
+## 6.2 增加/插入数据
+
+```cpp
+deque<int> mqueue;
+mqueue.push(1);
+mqueue.emplace_front(2);  //可以避免对象的拷贝，重复调用构造函数
+mqueue.emplace_back(2);  //可以避免对象的拷贝，重复调用构造函数
+```
+
+
+
+## 6.3 获取/修改容器大小
+
+```cpp
+deque<int> mqueue;
+mqueue.push(1);
+mqueue.emplace_front(2);
+mqueue.size();
+mqueue.empty();  //判断是否为空
+```
+
+
+
+## 6.4 访问元素
+
+```cpp
+mqueue.front();  //返回 queue 中第一个元素的引用
+mqueue.back();  //返回 queue 中最后一个元素的引用
+```
+
+
+
+## 6.5 删除元素
+
+```cpp
+mqueue.pop_front();
+mqueue.pop_end();
+```
+
+
+
+## 6.6 遍历
+
+```cpp
+for (std::deque<int>::iterator it = dq.begin(); it!=dq.end(); ++it)
+    std::cout << ' ' << *it;
+```
+
+
+
+## 6.7 查找
+
+# 7. stack
+
+## 7.1  创建
+
+```cpp
+//stack<int> s1 = {1,2,3,4,5};   //error    stack不可以用一组数直接初始化
+//stack<int> s2(10);             //error    stack不可以预先分配空间
+stack<int> s3;
+
+vector<int> v1 = {1,2,3,4,5};       // 1,2,3,4,5依此入栈
+stack<int, vector<int>> s4(v1);
+
+list<int> l1 = {1,2,3,4,5};
+stack<int, list<int>> s5(l1);
+
+deque<int> d1 = {1,2,3,4,5};
+stack<int, deque<int>> s6(d1);
+stack<int> s7(d1);                  //用deque 为 stack  初始化时 deque可省  因为stack是基于deque, 默认以deque方式构造
+```
+
+
+
+## 7.2 增加/插入数据
+
+```cpp
+mstack.push(333);
+mstach.emplace(333);
+```
+
+
+
+## 7.3 获取/修改容器大小
+
+```cpp
+mstack.size();
+mstack.empty();
+```
+
+
+
+## 7.4 访问元素
+
+```cpp
+mstack.top();
+```
+
+
+
+## 7.5 删除元素
+
+```cpp
+mstack.pop();
+```
+
+
+
+## 7.6 遍历
+
+stack 遍历需要将所有元素出栈
+
+```cpp
+#include<iostream>
+#include<stack>
+#include<deque>
+using namespace std;
+int main(){
+    deque<int> q1{1,2,3,4,5};
+    stack<int> s(q1);
+    while(!s.empty()){
+        cout<<s.top()<<" ";
+        s.pop();
+    }
+    cout<<endl;
+    return 0;
+}
+```
+
