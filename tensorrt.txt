@@ -1,0 +1,10 @@
+1. 多线程
+Hi, Here is a sample to run GPU and DLAs at the same time. 
+1. Please prepare TensorRT engine of GPU and DLA with trtexec first. For example, 
+$ /usr/src/tensorrt/bin/trtexec --onnx=/usr/src/tensorrt/data/mnist/mnist.onnx --saveEngine=gpu.engine 
+$ /usr/src/tensorrt/bin/trtexec --onnx=/usr/src/tensorrt/data/mnist/mnist.onnx --useDLACore=0 --allowGPUFallback --saveEngine=dla.engine 
+2. Compile TensorRT_sample.zip (3.5 KB) 
+$ unzip TensorRT_sample.zip 
+$ cd TensorRT_sample 
+$ make 
+3. Test Please…
