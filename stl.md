@@ -54,6 +54,7 @@ vInts[2];    //不推荐使用，主要是为了与C语言进行兼容。它可�
 using std::vector;
 vector<int> vInts(10,9);
 vInts.erase(3);  //删除pos位置的数据
+vInts.erase(vInts.begin(),vInts.end());  //删除pos位置的数据
 vInts.pop_back();  //删除最后一个数据。
 vInts.clear()();  //删除所有数据。
 ```
