@@ -14,6 +14,8 @@ vector<int> vInts(100);  //创建容量为100的vector
 vector<int> vInts(100，1); //创建容量为100的vector，并全部初始化为1
 vector<int> vInts(vInts1);  //拷贝一个vector内容来创建一个vector
 vector<int> vInts{1,2,3,4,5}; //  
+//子序列
+vector<int> sub_vec {int_vec.begin(), int_vec.begin()+5};
 ```
 
 ## 1.2 增加/插入数据
@@ -716,3 +718,141 @@ int main(){
 }
 ```
 
+# 8. priority_queue（堆）
+
+和`queue`不同的就在于我们可以自定义其中数据的优先级, 让优先级高的排在队列前面,优先出队
+
+优先队列具有队列的所有特性，包括基本操作，只是在这基础上添加了内部的一个排序，它本质是一个**堆**实现的
+
+## 8.1 创建
+
+```cpp
+// 定义 priority_queue<Type, Container, Functional>
+// Type 就是数据类型，Container 就是容器类型（Container必须是用数组实现的容器，比如vector,deque等等，但不能用 list。STL里面默认用的是vector），
+// Functional 就是比较的方式，当需要用自定义的数据类型时才需要传入这三个参数，使用基本数据类型时，只需要传入数据类型，
+// 默认是大顶堆
+
+//升序队列;小顶堆
+priority_queue <int,vector<int>,greater<int> > q;
+//降序队列；大顶堆
+priority_queue <int,vector<int>,less<int> >q;
+```
+
+```cpp
+//pari的比较，先比较第一个元素，第一个相等比较第二个
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+int main() 
+{
+    priority_queue<pair<int, int> > a;
+    pair<int, int> b(1, 2);
+    pair<int, int> c(1, 3);
+    pair<int, int> d(2, 5);
+    a.push(d);
+    a.push(c);
+    a.push(b);
+    while (!a.empty()) 
+    {
+        cout << a.top().first << ' ' << a.top().second << '\n';
+        a.pop();
+    }
+}
+```
+
+```cpp
+//自定义类型
+#include <iostream>
+#include <queue>
+using namespace std;
+
+//方法1
+struct tmp1 //运算符重载<
+{
+    int x;
+    tmp1(int a) {x = a;}
+    bool operator<(const tmp1& a) const
+    {
+        return x < a.x; //大顶堆
+    }
+};
+
+//方法2
+struct tmp2 //重写仿函数
+{
+    bool operator() (tmp1 a, tmp1 b) 
+    {
+        return a.x < b.x; //大顶堆
+    }
+};
+
+int main() 
+{
+    tmp1 a(1);
+    tmp1 b(2);
+    tmp1 c(3);
+    priority_queue<tmp1> d;
+    d.push(b);
+    d.push(c);
+    d.push(a);
+    while (!d.empty()) 
+    {
+        cout << d.top().x << '\n';
+        d.pop();
+    }
+    cout << endl;
+
+    priority_queue<tmp1, vector<tmp1>, tmp2> f;
+    f.push(c);
+    f.push(b);
+    f.push(a);
+    while (!f.empty()) 
+    {
+        cout << f.top().x << '\n';
+        f.pop();
+    }
+}
+```
+
+## 8.2 增加/插入数据
+
+```cpp
+priority_queue<int> mqueue;
+mqueue.push(1);
+mqueue.emplace(2);  //可以避免对象的拷贝，重复调用构造函数
+```
+
+
+
+## 8.3 获取/修改容器大小
+
+```cpp
+priority_queue<int> mqueue;
+mqueue.push(1);
+mqueue.emplace(2);
+mqueue.size();
+mqueue.empty();  //判断是否为空
+```
+
+
+
+## 8.4 访问元素
+
+```cpp
+mqueue.top();  //返回 queue中第一个元素，即最大/最小的元素
+```
+
+
+
+## 8.5 删除元素
+
+```cpp
+mqueue.pop();
+```
+
+
+
+## 8.6 遍历
+
+和 stack 一样，queue 也没有迭代器。访问元素的唯一方式是遍历容器内容，并移除访问过的每一个元素
