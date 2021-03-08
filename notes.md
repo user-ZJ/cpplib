@@ -200,3 +200,12 @@ auto finish_t = std::chrono::steady_clock::now();
 double timecost = std::chrono::duration<double, std::milli>(finish_t - begin_t).count();
 ```
 
+# stringstream转换为vector
+
+```cpp
+string line = "hello hello";
+stringstream ss(line);
+std::vector<char> mvec((istreambuf_iterator<char>(ss)),std::istreambuf_iterator<char>());
+cout << mvec.size() << endl;
+```
+
