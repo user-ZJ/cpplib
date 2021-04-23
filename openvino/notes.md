@@ -36,7 +36,16 @@ cd /opt/intel/openvino_2021/deployment_tools/model_optimizer/install_prerequisit
 ./install_prerequisites_onnx.sh #配置onnx环境，支持{caffe|tf|tf2|mxnet|kaldi|onnx}
 ```
 
+```cpp
+//sample路径
+/opt/intel/openvino_2021/deployment_tools/inference_engine/samples
+```
 
+
+
+## 支持的设备
+
+CPU，intel集成显卡，intel算力棒，intel VPUs视觉加速器，Intel GNA(一种低功耗神经网络协处理器，可在进行连续边缘推理)
 
 ## 模型转换
 
@@ -125,6 +134,44 @@ python mo.py -h
 python mo_onnx.py --input_model D:\project\python\pytorchl\mnist.onnx
 # 在当前目录下输出mnist.xml和mnist.bin
 ```
+
+## 基本概念
+
+### Blobs
+
+`InferenceEngine::Blob`是用于处理内存的主要类。使用此类，您可以读写内存，获取有关内存结构的信息等。
+
+```cpp
+//创建特定布局的blob
+InferenceEngige :: TensorDesc tdesc（FP32，{1，3，227，227}，InferenceEngine :: Layout :: NCHW）;
+InferenceEngine :: Blob :: Ptr blob = InferenceEngine :: make_shared_blob <float>（tdesc）;
+//使用指定数据创建Blob
+float *data = new float[1*3*227*227];
+InferenceEngine :: Blob :: Ptr blob = InferenceEngine :: make_shared_blob <float>（tdesc,data）;
+```
+
+### Layouts
+
+`InferenceEngine::TensorDesc` 是提供布局格式描述的特殊类，允许使用标准格式（ `InferenceEngine::Layout::NCDHW`, `InferenceEngine::Layout::NCHW`, `InferenceEngine::Layout::NC`, `InferenceEngine::Layout::C` 等）
+
+创建一个复杂的布局，应该使用InferenceEngine :: BlockingDesc，它允许使用偏移量和步幅来定义内存块。
+
+## 获取设备信息
+
+https://docs.openvinotoolkit.org/latest/openvino_docs_IE_DG_InferenceEngine_QueryAPI.html
+
+```cpp
+//获取支持设备列表
+InferenceEngine::Core core;
+std::vector<std::string> availableDevices = core.GetAvailableDevices();
+for(auto dev:availableDevices)
+    cout<<dev<<endl;  //CPU,GNA
+//获取设备名
+std::string cpuDeviceName = core.GetMetric("CPU", METRIC_KEY(FULL_DEVICE_NAME)).as<std::string>();
+cout<<cpuDeviceName<<endl;  //Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz
+```
+
+
 
 ## 推理过程
 
@@ -228,7 +275,7 @@ https://docs.openvinotoolkit.org/latest/openvino_docs_IE_DG_Integrate_with_custo
    }
    ```
 
-   ## sample编译
+## sample编译
 
    ```shell
    # 配置环境
@@ -238,8 +285,117 @@ https://docs.openvinotoolkit.org/latest/openvino_docs_IE_DG_Integrate_with_custo
    cd build
    cmake -DCMAKE_BUILD_TYPE=Release ..
    make
-   # 编译后安装在intel64/Release目录下
+# 编译后安装在intel64/Release目录下
    ```
 
-   
+## 示例代码
+
+```cpp
+#include <inference_engine.hpp>
+#include<iostream>
+using namespace std;
+using namespace InferenceEngine;
+
+int main(){
+    //**创建推理引擎核心**以管理可用设备并读取网络对象
+    InferenceEngine::Core core;
+    InferenceEngine::CNNNetwork network;
+    InferenceEngine::ExecutableNetwork executable_network;
+    cout<<"get device"<<endl;
+    //获取当前设备信息
+    std::vector<std::string> availableDevices = core.GetAvailableDevices();
+    for(auto dev:availableDevices)
+            cout<<dev<<endl;
+    std::string cpuDeviceName = core.GetMetric("CPU", METRIC_KEY(FULL_DEVICE_NAME)).as<std::string>();
+    cout<<"device name:"<<cpuDeviceName<<endl;
+    cout<<"load model"<<endl;
+    // 加载模型
+    network = core.ReadNetwork("/opt/intel/openvino_2021/deployment_tools/model_optimizer/xvector.xml");
+    InferenceEngine::InputsDataMap input_info = network.getInputsInfo();
+    InferenceEngine::OutputsDataMap output_info = network.getOutputsInfo();
+    for (auto &item : input_info) {
+        cout<<item.first<<endl;
+        auto input_data = item.second;
+        input_data->setPrecision(InferenceEngine::Precision::FP32);
+        input_data->getPreProcess().setResizeAlgorithm(InferenceEngine::RESIZE_BILINEAR);
+        auto dim = item.second->getTensorDesc().getDims();
+        cout<<"dim size:"<<dim.size()<<endl;
+        cout<<dim[0]<<" "<<dim[1]<<" "<<dim[2]<<endl;
+    }
+    for (auto &item : output_info) {
+        cout<<item.first<<endl;
+        auto output_data = item.second;
+        output_data->setPrecision(InferenceEngine::Precision::FP32);
+        auto dim = item.second->getTensorDesc().getDims();
+        cout<<"dim size:"<<dim.size()<<endl;
+        cout<<dim[0]<<" "<<dim[1]<<endl;
+    }
+    // 3D数据不能设置batchsize，需要使用reshape设置
+    //network.setBatchSize(5);
+    //int batchSize = network.getBatchSize();
+    //cout<<"batch size:"<<batchSize<<endl;
+    auto input_shapes = network.getInputShapes();
+    SizeVector input_shape{1,515,20};
+    input_shapes["input"] = input_shape;
+    cout<<"reshape input"<<endl;
+    //根据输入重新调整input大小
+    network.reshape(input_shapes);
+    const std::map<std::string, std::string> dyn_config =
+    { { InferenceEngine::PluginConfigParams::KEY_DYN_BATCH_ENABLED, InferenceEngine::PluginConfigParams::YES } };
+    std::map<std::string, std::string> config =
+    {{ InferenceEngine::PluginConfigParams::KEY_PERF_COUNT, InferenceEngine::PluginConfigParams::YES }};
+    //创建推理图
+    executable_network = core.LoadNetwork(network, "CPU",dyn_config);
+
+    cout<<"create infer"<<endl;
+    auto infer_request = executable_network.CreateInferRequest();
+    for (auto & item : input_info) {
+        auto input_name = item.first;
+        auto input_data = item.second;
+        auto input = infer_request.GetBlob(input_name);
+        SizeVector dims = input->getTensorDesc().getDims();
+        cout<<"dim size:"<<dims[0]<<" "<<dims[1]<<" "<<dims[2]<<endl;
+        //申请输入内存
+        MemoryBlob::Ptr minput = as<MemoryBlob>(input);
+        auto minputHolder = minput->wmap();
+        auto data = minputHolder.as<PrecisionTrait<Precision::U8>::value_type *>();
+    }
+    cout<<"infer"<<endl;
+    //float *mydata = new float[1*515*20];
+    //InferenceEngine::TensorDesc  tDesc(InferenceEngine::Precision::FP32, {1, 515, 20},InferenceEngine::TensorDesc::getLayoutByDims({1, 515, 20}));
+    //cout<<"make_shared_blob"<<endl;
+    //auto myBlob = InferenceEngine::make_shared_blob<float>(tDesc, mydata);
+    //cout<<"set blob"<<endl;
+    //infer_request.SetBlob("input", myBlob);
+    infer_request.StartAsync();
+    infer_request.Wait(InferenceEngine::IInferRequest::WaitMode::RESULT_READY);
+    cout<<"get output"<<endl;
+    for (auto &item : output_info) {
+        auto output_name = item.first;
+        auto output = infer_request.GetBlob(output_name);
+        {
+            auto const memLocker = output->cbuffer(); // use const memory locker
+            // output_buffer is valid as long as the lifetime of memLocker
+            const float *output_buffer = memLocker.as<const float *>();
+            for(int i=0;i<20;i++)
+                cout<<output_buffer[i]<<" ";
+            /** output_buffer[] - accessing output blob data **/
+        }
+    }
+    cout<<endl;
+    return 0;
+}
+```
+
+```cmake
+cmake_minimum_required(VERSION 3.0.0)
+project("mysample")
+find_package(ngraph REQUIRED)
+find_package(InferenceEngine REQUIRED)
+find_package(OpenCV REQUIRED)
+add_executable(${PROJECT_NAME} src/main.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${InferenceEngine_LIBRARIES} ${OpenCV_LIBS} ${NGRAPH_LIBRARIES})
+```
+
+
 

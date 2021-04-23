@@ -13,6 +13,7 @@
 ```shell
 # 动态维度，在转onnx的时候需要将对应维度通过dynamic_axes设置为动态维度
 trtexec --explicitBatch --onnx=pse_sim.onnx \
+  --fp16  \
   --minShapes=input:1x3x100x100 \
   --optShapes=input:1x3x896x1312 \
   --maxShapes=input:1x3x2000x3000 \
