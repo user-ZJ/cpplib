@@ -73,7 +73,7 @@ python mo.py -h
 		将输入通道顺序从RGB切换到BGR（反之亦然）。 当且仅当通道数等于3时，才应用于模型的原始输入。在应用--mean_values和--scale_values选项后应用，因此--mean_values和--scale_values中的数字按 原始模型。
 --log_level {CRITICAL,ERROR,WARN,WARNING,INFO,DEBUG,NOTSET}
 --input INPUT
-		用逗号分隔的输入节点名称（带形状，数据类型和冻结值）的带引号的列表。 形状和值指定为以空格分隔的列表。 输入节点的数据类型以大括号指定，并且可以具有以下值之一：f64（float64），f32（float32），f16（float16），i64（int64），i32（int32），u8（uint8），布尔值。 例如，使用以下格式将形状为[3 4]的节点`node_name1'的输入端口0设置为输入节点，并冻结节点int32的值[20 15]的节点`node_name2`的输出端口1。 类型和形状[2]：“ 0：node_name1 [3 4]，node_name2：1 [2] {i32}-> [20 15]”。
+		用逗号分隔的输入节点名称（带形状，数据类型和冻结值）的带引号的列表。 形状和值指定为以空格分隔的列表。 输入节点的数据类型以大括号指定，并且可以具有以下值之一：f64（float64），f32（float32），f16（float16），i64（int64），i32（int32），u8（uint8），布尔值。 例如，“ 0：node_name1 [3 4]，node_name2：1 [2] {i32}-> [20 15]”,输入端口0的形状为[3 4]的节点`node_name1`，并冻结输入端口1为节点`node_name2`(类型为int32置为[20 15]形状为[2]) ：。
 --output OUTPUT
 		模型的输出操作的名称。 对于TensorFlow *，请勿在该名称上添加:0。
 --mean_values MEAN_VALUES, -ms MEAN_VALUES
@@ -133,6 +133,7 @@ python mo.py -h
 ```shell
 python mo_onnx.py --input_model D:\project\python\pytorchl\mnist.onnx
 # 在当前目录下输出mnist.xml和mnist.bin
+python3 mo_onnx.py --input_model /root/xvector.onnx --input_shape [1,512,20]
 ```
 
 ## 基本概念
@@ -344,9 +345,9 @@ int main(){
     { { InferenceEngine::PluginConfigParams::KEY_DYN_BATCH_ENABLED, InferenceEngine::PluginConfigParams::YES } };
     std::map<std::string, std::string> config =
     {{ InferenceEngine::PluginConfigParams::KEY_PERF_COUNT, InferenceEngine::PluginConfigParams::YES }};
+    
     //创建推理图
     executable_network = core.LoadNetwork(network, "CPU",dyn_config);
-
     cout<<"create infer"<<endl;
     auto infer_request = executable_network.CreateInferRequest();
     for (auto & item : input_info) {
@@ -355,10 +356,9 @@ int main(){
         auto input = infer_request.GetBlob(input_name);
         SizeVector dims = input->getTensorDesc().getDims();
         cout<<"dim size:"<<dims[0]<<" "<<dims[1]<<" "<<dims[2]<<endl;
-        //申请输入内存
         MemoryBlob::Ptr minput = as<MemoryBlob>(input);
         auto minputHolder = minput->wmap();
-        auto data = minputHolder.as<PrecisionTrait<Precision::U8>::value_type *>();
+        auto data = minputHolder.as<PrecisionTrait<Precision::FP32>::value_type *>();
     }
     cout<<"infer"<<endl;
     //float *mydata = new float[1*515*20];
@@ -397,5 +397,83 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${InferenceEngine_LIBRARIES} ${OpenCV_LIBS} ${NGRAPH_LIBRARIES})
 ```
 
+## 量化
 
+https://docs.openvinotoolkit.org/latest/pot_configs_examples_README.html
+
+https://docs.openvinotoolkit.org/latest/openvino_docs_IE_DG_Int8Inference.html
+
+https://docs.openvinotoolkit.org/2021.1/omz_tools_downloader_README.html
+
+```shell
+cd /opt/intel/openvino_2021/deployment_tools/open_model_zoo/tools/downloader
+pip3 install -r requirements-pytorch.in
+python3 downloader.py --name mobilenet-v2-pytorch
+python3 converter.py --name mobilenet-v2-pytorch
+python3 /opt/intel/openvino_2021/deployment_tools/tools/post_training_optimization_toolkit/main.py --config mobilenet_v2_pytorch_int8.json
+ls results/mobilenet-v2-pytorch_DefaultQuantization/2021-04-25_14-25-55/optimized/
+```
+
+```json
+// mobilenet_v2_pytorch_int8.json
+{
+    "model": {
+        "model_name": "mobilenet-v2-pytorch",
+        "model": "./public/mobilenet-v2-pytorch/FP32/mobilenet-v2-pytorch.xml",
+        "weights": "./public/mobilenet-v2-pytorch/FP32/mobilenet-v2-pytorch.bin"
+    },
+    "engine": {
+        "config": "./mobilenet_v2_pytorch.yaml"
+    },
+    "compression": {
+        "algorithms": [
+            {
+                "name": "DefaultQuantization",
+                "params": {
+                    "preset": "mixed",
+                    "stat_subset_size": 300
+                }
+            }
+        ]
+    }
+}
+```
+
+```yaml
+# mobilenet_v2_pytorch.yaml
+models:
+  - name: mobilenet-v2-pytorch
+
+    launchers:
+      - framework: dlsdk
+        device: CPU
+        adapter: classification
+
+    datasets:
+      - name: classification_dataset
+        data_source: ./test
+        annotation_conversion:
+          converter: imagenet
+          annotation_file: ./test/val.txt
+        reader: pillow_imread
+
+        preprocessing:
+          - type: resize
+            size: 256
+            aspect_ratio_scale: greater
+            use_pillow: True
+          - type: crop
+            size: 224
+            use_pillow: True
+          - type: bgr_to_rgb
+
+        metrics:
+          - name: accuracy@top1
+            type: accuracy
+            top_k: 1
+
+          - name: accuracy@top5
+            type: accuracy
+            top_k: 5
+```
 
