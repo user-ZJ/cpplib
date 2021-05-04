@@ -1,5 +1,25 @@
 # tensorrt使用总结
 
+## tensorrt安装
+
+https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html
+
+下载：https://developer.nvidia.com/nvidia-tensorrt-7x-download
+
+```shell
+version="7.x.x.x"
+os="<os>"
+arch=$(uname -m)
+cuda="cuda-x.x"
+cudnn="cudnn8.x"
+tar xzvf TensorRT-${version}.${os}.${arch}-gnu.${cuda}.${cudnn}.tar.gz
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<TensorRT-${version}/lib>
+cd <TensorRT-${version}/samples
+make
+```
+
+
+
 ## pytorch转tensorrt
 
 ![](images/pytorch-tensorrt.png)
