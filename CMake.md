@@ -1,3 +1,15 @@
+## cmake 源码安装
+
+```shell
+wget https://cmake.org/files/v3.18/cmake-3.18.4.tar.gz
+tar xf cmake-3.18.4.tar.gz cmake-3.18.4/
+cd cmake-3.18.4
+./bootstrap
+#在CMakeLists.txt里添加set(CMAKE_USE_OPENSSL OFF)
+make
+make install
+```
+
 
 
 ```cmake
