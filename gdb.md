@@ -20,6 +20,68 @@ GDB以名为TUI(Terminal User Interface,终端用户界面)的模式提供了基
 
 
 
+**调试死循环问题**
+
+1. gdb启动调试程序
+2. run开始执行程序
+3. 使用ctrl+c挂起，gdb会显示停止的位置
+4. continue命令继续运行
+5. 使用ctrl+c挂起，gdb会显示停止的位置
+6. 重复4，5步，即可确定死循环代码的区间
+
+## tips
+
+gdb调试过程中不需要退出gdb，重新编译代码后，回到gdb窗口再次运行run，gdb后重新加载新编译的程序；这样有几点好处：
+
+1. 不需要重新输入命令行参数
+2. gdb保留了设置的断点，不需要再次设置
+
+### run(r)
+
+运行调试程序
+
+run xxx  xxx为命令行参数
+
+run    如果调试程序已经在运行，再次使用run命令重新运行调试，如果重用老的命令行参数，则不需要在加命令行参数，gdb会询问是否重新运行。
+
+### break(b)
+
+设置断点
+
+break line  在文件的第xxx行设置断点
+
+break insert()   在insert函数的第一行设置断点
+
+break 30 if num_y==1  break和condition的组合命令，在第30行设置断点，只有当num_y==1时断点才生效
+
+### condition（cond）
+
+conditon 1 num_y==1  使得1号断点只有在num_y==1才会暂停程序执行；使用info break查询断点编号
+
+
+
+###  clear
+
+清除断点
+
+clear 30 清除第30行的断点
+
+
+
+### next(n)
+
+### step(s)
+
+### continue(c)
+
+### print(p)
+
+### backtrace(bt)
+
+### info(i)
+
+
+
 
 
 # gdb调试C++程序
@@ -711,3 +773,4 @@ void __attribute__((destructor)) fini_function (void);
 https://blog.csdn.net/zdy0_2004/article/details/80102076    
 
 https://blog.csdn.net/qq_39759656/article/details/82858101
+
