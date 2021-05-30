@@ -49,18 +49,69 @@ run    如果调试程序已经在运行，再次使用run命令重新运行调�
 设置断点
 
 * break line_number  在文件的第xxx行设置断点
-
 * break filename:line_number  再文件filename的line_number处设置断点，例如break source/bed.c:35
-
 * break function,如break main  在main()函数的第一行设置断点
-
 * break filename:function  在文件filename中的函数function()的入口处设置断点
-
 * break 30 if num_y==1  break和condition的组合命令，在第30行设置断点，只有当num_y==1时断点才生效
+* break +offset或break -offset，在当前选中栈帧中正在执行的源代码前面或后面设置断点偏移行数
+* break *address  在虚拟内存地址处设置断点，这对于程序没有调试信息的部分是必需的
 
 #### tbreak 临时断点
 
 临时断点是首次到达后就会被自动删除的断点，使用tbreak设置，用法和break用法一致
+
+#### 条件断点
+
+break break-args if(condition)
+
+条件中断适用于对于索引变量特定值处处理问题的**循环结构**
+
+break main if argc>1   如果用户想程序中键入了一些命令行参数，则在main处中断
+
+break if  (i==70000)    当循环中i==70000时中断
+
+使用cond命令使普通断点转变为条件断点
+
+cond 3 i==3   给断点3加上i==3的条件
+
+删除条件但保持该断点：
+
+cond 3
+
+#### 断点命令列表
+
+让GDB每次到达某个断点时自动执行一组命令，从而达到自动查看某些变量的目的
+
+```shell
+commands breakpoint-number
+...
+commands
+...
+end
+```
+
+breakpoint-number是要将命令添加到其上的断点的标识符。
+
+commands是用新行分割的任何有效GDB命令列表
+
+```shell
+commands 1
+silent
+printf "fibonacci was passed %d.\n",n
+continue
+end
+```
+
+可以动态的修改给定断点的命令集，或者简单的通过重新定义一个空集来取消该命令集合
+
+```shell
+commands 1
+end
+```
+
+
+
+
 
 ### condition（cond）
 
@@ -68,31 +119,168 @@ conditon 1 num_y==1  使得1号断点只有在num_y==1才会暂停程序执行�
 
 
 
+### watch
+
+监视点，一种特殊类型的断点，当某个表达式的值改变了，就暂停执行
+
+```shell
+watch i
+watch (i|j>12) && i>24 && strlen(name)>6
+```
+
+一旦监视点的变量不存在与当前**作用域，**GDB就会自动删除监视点
+
+
+
 ###  clear
 
-清除断点
+删除断点
 
-clear 30 清除第30行的断点
+* clear 30 删除第30行的断点
+* clear function
+* clear filename:function
+* clear linenumber
+* clear filename:linenumber
 
 
 
 ### delete
 
-delete 1 3 4 删除断点、监视点、捕获点 1,3,4
+根据断点编号删除断点
+
+* delete 1 3 4 删除断点、监视点、捕获点 1,3,4
+
+* delete 删除所有断点
+
+### disable/enable
+
+禁用/启用断点：保留断点以便以后使用，暂时又不希望gdb停止执行，可以禁用他们。
+
+* disable breakpoint-list
+* enable breakpoint-list
+* disable 禁用所有断点
+* enable 启用所有断点
+* enable once breakpoint-list 在断点下次引起GDB暂停执行后被禁用。与tbreak类似，但tbreak是删除断点。
 
 ### next(n)
 
+单步调试，遇到函数进入
+
 ### step(s)
+
+单步调试，遇到函数进入
 
 ### continue(c)
 
+* continue 恢复运行，知道遇到下一个断点。
+* continue 3 恢复运行，并忽略接下来3个断点
+
+### finish(fin)
+
+恢复执行，直到恰好在当前栈帧完成之后为止，也就是说，这意味着如果不是在main()函数中，finish命令会导致GDB恢复执行，直到恰好在函数返回之后为止。
+
+对于递归函数，finish只会将你带到递归的上一层。
+
+### until（u）
+
+* until 执行循环（while/for）的其余部分，让GDB在循环后面的第一行代码处暂停
+* until 17 执行到17行
+* until swap 执行到swap()函数入后暂停
+* until swapflaw.c:17 执行到swap.cc文件的17行
+* until swapflaw.c:swap 执行到swap.cc文件的swap()函数的入后处。
+
 ### print(p)
+
+* 查看对应变量
+
+  print i
+
+* 查看动态数字解决方案,print *pointer@number_of_elements
+
+```cpp
+int *x;
+int main(){
+    x = (int *)malloc(25*sizeof(int));
+    x[3] = 12;
+    return 0;
+}
+```
+
+```shell
+break main
+n
+n
+p *x@25
+```
+
+* 以不同数据格式显示
+
+  p/x y 以十六进制显示变量
+
+  p/c  y 以字符显示
+
+  p/s  y 以字符串显示
+
+  p/f  y  以浮点显示
+
+### display(disp)
+
+用法和print类似，只不过GDB在执行每次有暂停（断点，next，step等命令）时输出指定条目
+
+* dis disp 1 禁用某个显示项
+* enable disp 1  启用某个显示项
+* undisp 1 删除显示项
+* info disp  显示显示项
+
+### call
+
+调用程序中的函数
+
+```shell
+commands 2
+printf "************current tree**********\n"
+call printtree(root)
+end
+```
+
+### ptype
+
+快速浏览类或结构体的结构
 
 ### backtrace(bt)
 
 ### info(i)
 
-info breakpoints 查询断点编号
+* info breakpoints 查询断点编号，获取断点的清单以及它们的属性。
+
+属性有：
+
+1. 标识符（Num）：断点的唯一标识符
+
+2. 类型（Type）：这个字段指出该断点是断点、监视点还是捕获点
+
+3. 部署（Disp）：
+
+   保持（keep），下次到达断点后不改变断点
+
+   删除（del），下次到达断点后删除该断点，tbreak创建的断点
+
+   禁用（dis），下次到达断点后禁用该断点，enable once设置的断点
+
+4. 启用状态（Enb）：这个字段说明断点当前是启用还是禁用
+
+5. 地址（Address）：断点在内存中的位置
+
+6. 位置（What）：断点位于源代码中的行。
+
+* info locals 查看当前栈帧中所有局部变量的值列表
+* info disp 查看display的id
+
+### list
+
+list查看源代码，同时还会切换GDB的焦点
+
+list function 查看function的源代码
 
 
 
