@@ -17,7 +17,6 @@
 
 #include <chrono>
 
-namespace wenet {
 
 class Timer {
  public:
@@ -34,6 +33,6 @@ class Timer {
  private:
   std::chrono::time_point<std::chrono::steady_clock> time_start_;
 };
-}  // namespace wenet
+
 
 #endif  // UTILS_TIMER_H_
