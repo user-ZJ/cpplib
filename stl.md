@@ -141,6 +141,19 @@ Resultant vector is:
 1 2 3 4 5
 ```
 
+## 1.10 求和
+
+```cpp
+#include <numeric>
+#include <vector>
+using namespace std;
+int main() {
+   vector<int> v1 = { 1, 2, 3 };
+   int suum=accumulate(v1.begin(),v1.end(),0);
+   return 0;
+}
+```
+
 
 
 # 2. List
