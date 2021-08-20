@@ -1,5 +1,15 @@
 # tensorrt使用总结
 
+## cudnn安装
+
+```shell
+sudo cp cuda/include/cudnn*.h /usr/local/cuda/include  
+sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64  
+sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn* 
+```
+
+
+
 ## tensorrt安装
 
 https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html
@@ -31,6 +41,7 @@ make
 ## trtexec工具
 
 ```shell
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/dmai/TensorRT-7.2.3.4/lib:/usr/local/cuda/lib64
 # 动态维度，在转onnx的时候需要将对应维度通过dynamic_axes设置为动态维度
 trtexec --explicitBatch --onnx=pse_sim.onnx \
   --fp16  \
@@ -62,7 +73,13 @@ $ nvcc -std=c++11 main.cpp -I/root/TensorRT-7.2.2.3/include/  -L/root/TensorRT-7
 
 
 
+## FAQ
 
+1. **[F] [TRT] Assertion failed: cublasStatus == CUBLAS_STATUS_SUCCESS**
+
+   解决方法：添加--tacticSources=-cublasLt,+cublas选项
+
+   参考：https://github.com/NVIDIA/TensorRT/issues/866
 
 
 
@@ -71,3 +88,7 @@ $ nvcc -std=c++11 main.cpp -I/root/TensorRT-7.2.2.3/include/  -L/root/TensorRT-7
 https://developer.nvidia.com/blog/speeding-up-deep-learning-inference-using-tensorrt/
 
 https://forums.developer.nvidia.com/t/how-to-use-tensorrt-by-the-multi-threading-package-of-python/123085
+
+https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html
+
+https://docs.nvidia.com/deeplearning/tensorrt/sample-support-guide/index.html#introductory_parser_samples
