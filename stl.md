@@ -61,7 +61,7 @@ vector<int> vInts(10,9);
 vInts.erase(3);  //删除pos位置的数据
 vInts.erase(vInts.begin(),vInts.end());  //删除pos位置的数据
 vInts.pop_back();  //删除最后一个数据。
-vInts.clear()();  //删除所有数据。
+vInts.clear()();  //删除所有数据。   size为0，capacity不变，内存不会释放
 ```
 
 ## 1.6 遍历
