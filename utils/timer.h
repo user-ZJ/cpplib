@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef UTILS_TIMER_H_
-#define UTILS_TIMER_H_
+#pragma once
 
 #include <chrono>
 
@@ -35,4 +34,3 @@ class Timer {
 };
 
 
-#endif  // UTILS_TIMER_H_

@@ -17,8 +17,7 @@
 // See the Apache 2 License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef UTIL_TEXT_UTILS_H_
-#define UTIL_TEXT_UTILS_H_
+#pragma once
 
 #include <errno.h>
 #include <string>
@@ -276,4 +275,4 @@ void ParseConfigLines(const std::vector<std::string> &lines,
 /// '-', '_', '.', A-Z, a-z, or 0-9.
 bool IsValidName(const std::string &name);
 
-#endif  // UTIL_TEXT_UTILS_H_
+
