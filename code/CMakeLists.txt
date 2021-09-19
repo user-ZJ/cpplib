@@ -38,6 +38,7 @@ FetchContent_Declare(googletest
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(GTEST_HAS_PTHREAD 1)
 FetchContent_MakeAvailable(googletest) #后续链接gtest_main即可
+enable_testing()
 add_subdirectory(test)
 endif()
 
