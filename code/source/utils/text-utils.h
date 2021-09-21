@@ -30,47 +30,154 @@
 #include <sstream>
 #include <iostream>
 #include "base-type.h"
-#include "math-utils.h"
 
 
-/// Split a string using any of the single character delimiters.
-/// If omit_empty_strings == true, the output will contain any
-/// nonempty strings after splitting on any of the
-/// characters in the delimiter.  If omit_empty_strings == false,
-/// the output will contain n+1 strings if there are n characters
-/// in the set "delim" within the input string.  In this case
-/// the empty string is split to a single empty string.
+namespace BASE_NAMESPACE{
+
+template <class T>
+class NumberIstream{
+ public:
+  explicit NumberIstream(std::istream &i) : in_(i) {}
+
+  NumberIstream & operator >> (T &x) {
+    if (!in_.good()) return *this;
+    in_ >> x;
+    if (!in_.fail() && RemainderIsOnlySpaces()) return *this;
+    return ParseOnFail(&x);
+  }
+
+ private:
+  std::istream &in_;
+
+  bool RemainderIsOnlySpaces() {
+    if (in_.tellg() != std::istream::pos_type(-1)) {
+      std::string rem;
+      in_ >> rem;
+
+      if (rem.find_first_not_of(' ') != std::string::npos) {
+        // there is not only spaces
+        return false;
+      }   
+    }   
+
+    in_.clear();
+    return true;
+  }
+
+  NumberIstream & ParseOnFail(T *x) {
+    std::string str;
+    in_.clear();
+    in_.seekg(0);
+    // If the stream is broken even before trying
+    // to read from it or if there are many tokens,
+    // it's pointless to try.
+    if (!(in_ >> str) || !RemainderIsOnlySpaces()) {
+      in_.setstate(std::ios_base::failbit);
+      return *this;
+    }
+
+    std::map<std::string, T> inf_nan_map;
+    // we'll keep just uppercase values.
+    inf_nan_map["INF"] = std::numeric_limits<T>::infinity();
+    inf_nan_map["+INF"] = std::numeric_limits<T>::infinity();
+    inf_nan_map["-INF"] = - std::numeric_limits<T>::infinity();
+    inf_nan_map["INFINITY"] = std::numeric_limits<T>::infinity();
+    inf_nan_map["+INFINITY"] = std::numeric_limits<T>::infinity();
+    inf_nan_map["-INFINITY"] = - std::numeric_limits<T>::infinity();
+    inf_nan_map["NAN"] = std::numeric_limits<T>::quiet_NaN();
+    inf_nan_map["+NAN"] = std::numeric_limits<T>::quiet_NaN();
+    inf_nan_map["-NAN"] = - std::numeric_limits<T>::quiet_NaN();
+    // MSVC
+    inf_nan_map["1.#INF"] = std::numeric_limits<T>::infinity();
+    inf_nan_map["-1.#INF"] = - std::numeric_limits<T>::infinity();
+    inf_nan_map["1.#QNAN"] = std::numeric_limits<T>::quiet_NaN();
+    inf_nan_map["-1.#QNAN"] = - std::numeric_limits<T>::quiet_NaN();
+
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+
+    if (inf_nan_map.find(str) != inf_nan_map.end()) {
+      *x = inf_nan_map[str];
+    } else {
+      in_.setstate(std::ios_base::failbit);
+    }
+
+    return *this;
+  }
+};
+
+/// 将字符串转化为float 或 double
+/// 如果字符串不能转换，则返回false
+/// 注意，此函数可以正确转化inf和Nan.
+template <typename T>
+bool ConvertStringToReal(const std::string &str,
+                         T *out){
+  std::istringstream iss(str);
+
+  NumberIstream<T> i(iss);
+
+  i >> *out;
+
+  if (iss.fail()) {
+    // Number conversion failed.
+    return false;
+  }
+
+  return true;
+}
+
+template
+bool ConvertStringToReal(const std::string &str,
+                         float *out);
+template
+bool ConvertStringToReal(const std::string &str,
+                         double *out);
+
+/// 使用delim将字符串分割成子字符串并保存在vector中
+/// omit_empty_strings ：是否忽略空字符串
+/// SplitStringToVector(std::string("aqwaioazx"),"a",out)
+/// 结果为{"qw","io","zx"}
 void SplitStringToVector(const std::string &full, const char *delim,
-                         bool omit_empty_strings,
-                         std::vector<std::string> *out);
+                         std::vector<std::string> *out,bool omit_empty_strings=true){
+  size_t start = 0, found = 0, end = full.size();
+  out->clear();
+  while (found != std::string::npos) {
+    found = full.find_first_of(delim, start);
+    // start != end condition is for when the delimiter is at the end
+    if (!omit_empty_strings || (found != start && start != end))
+      out->push_back(full.substr(start, found - start));
+    start = found + 1;
+  }
+}
 
-/// Joins the elements of a vector of strings into a single string using
-/// "delim" as the delimiter. If omit_empty_strings == true, any empty strings
-/// in the vector are skipped. A vector of empty strings results in an empty
-/// string on the output.
+/// 使用delim串将vec_in中字符串连接起来
+/// omit_empty_strings :是否忽略空白字符串
+/// vec_in = {"qa","ws","ed"}  delim="_"
+/// result: qa_ws_ed
 void JoinVectorToString(const std::vector<std::string> &vec_in,
-                        const char *delim, bool omit_empty_strings,
-                        std::string *str_out);
+                        const char *delim,std::string *str_out,bool omit_empty_strings=true){
+  std::string tmp_str;
+  for (size_t i = 0; i < vec_in.size(); i++) {
+    if (!omit_empty_strings || !vec_in[i].empty()) {
+      tmp_str.append(vec_in[i]);
+      if (i < vec_in.size() - 1)
+        if (!omit_empty_strings || !vec_in[i+1].empty())
+          tmp_str.append(delim);
+    }
+  }
+  str_out->swap(tmp_str);
+}
 
 /**
-  \brief Split a string (e.g. 1:2:3) into a vector of integers.
+  \brief 将字符串分割成int数组 (e.g. 1:2:3) 
 
-  \param [in]  delim  String containing a list of characters, any of which
-                      is allowed as a delimiter.
-  \param [in] omit_empty_strings If true, empty strings between delimiters are
-                      allowed and will not produce an output integer; if false,
-                      instances of characters in 'delim' that are consecutive or
-                      at the start or end of the string would be an error.
-                      You'll normally want this to be true if 'delim' consists
-                      of spaces, and false otherwise.
+  \param [in]  delim  分隔符，可以是任何字符串
+  \param [in] omit_empty_strings 如果delim为空格字符串，设置为true，其他时候为false
   \param [out] out   The output list of integers.
 */
 template<class I>
 bool SplitStringToIntegers(const std::string &full,
                            const char *delim,
-                           bool omit_empty_strings,  // typically false [but
-                                                     // should probably be true
-                                                     // if "delim" is spaces].
+                           bool omit_empty_strings,  
                            std::vector<I> *out) {
   assert(out != NULL);
   if (*(full.c_str()) == '\0') {
@@ -78,7 +185,7 @@ bool SplitStringToIntegers(const std::string &full,
     return true;
   }
   std::vector<std::string> split;
-  SplitStringToVector(full, delim, omit_empty_strings, &split);
+  SplitStringToVector(full, delim, &split, omit_empty_strings);
   out->resize(split.size());
   for (size_t i = 0; i < split.size(); i++) {
     const char *this_str = split[i].c_str();
@@ -106,14 +213,38 @@ template<class F>
 bool SplitStringToFloats(const std::string &full,
                          const char *delim,
                          bool omit_empty_strings,  // typically false
-                         std::vector<F> *out);
+                         std::vector<F> *out){
+  assert(out != NULL);
+  if (*(full.c_str()) == '\0') {
+    out->clear();
+    return true;
+  }
+  std::vector<std::string> split;
+  SplitStringToVector(full, delim, &split,omit_empty_strings);
+  out->resize(split.size());
+  for (size_t i = 0; i < split.size(); i++) {
+    F f = 0;
+    if (!ConvertStringToReal(split[i], &f))
+      return false;
+    (*out)[i] = f;
+  }
+  return true;
+}
+
+// Instantiate the template above for float and double.
+template
+bool SplitStringToFloats(const std::string &full,
+                         const char *delim,
+                         bool omit_empty_strings,
+                         std::vector<float> *out);
+template
+bool SplitStringToFloats(const std::string &full,
+                         const char *delim,
+                         bool omit_empty_strings,
+                         std::vector<double> *out);
 
 
-/// Converts a string into an integer via strtoll and returns false if there was
-/// any kind of problem (i.e. the string was not an integer or contained extra
-/// non-whitespace junk, or the integer was too large to fit into the type it is
-/// being converted into).  Only sets *out if everything was OK and it returns
-/// true.
+/// 将字符串转换为int，如果转换错误返回false.
 template<class Int>
 bool ConvertStringToInteger(const std::string &str,
                             Int *out) {
@@ -135,144 +266,31 @@ bool ConvertStringToInteger(const std::string &str,
 }
 
 
-/// ConvertStringToReal converts a string into either float or double
-/// and returns false if there was any kind of problem (i.e. the string
-/// was not a floating point number or contained extra non-whitespace junk).
-/// Be careful- this function will successfully read inf's or nan's.
-template <typename T>
-bool ConvertStringToReal(const std::string &str,
-                         T *out);
+/// 从字符串中删除开头和结尾的空格
+void Trim(std::string *str){
+  const char *white_chars = " \t\n\r\f\v";
 
-/// Removes the beginning and trailing whitespaces from a string
-void Trim(std::string *str);
+  std::string::size_type pos = str->find_last_not_of(white_chars);
+  if (pos != std::string::npos)  {
+    str->erase(pos + 1);
+    pos = str->find_first_not_of(white_chars);
+    if (pos != std::string::npos) str->erase(0, pos);
+  } else {
+    str->erase(str->begin(), str->end());
+  }
+}
 
-
-/// Removes leading and trailing white space from the string, then splits on the
-/// first section of whitespace found (if present), putting the part before the
-/// whitespace in "first" and the rest in "rest".  If there is no such space,
-/// everything that remains after removing leading and trailing whitespace goes
-/// in "first".
-void SplitStringOnFirstSpace(const std::string &line,
-                             std::string *first,
-                             std::string *rest);
-
-
-/// Returns true if "token" is nonempty, and all characters are
-/// printable and whitespace-free.
-bool IsToken(const std::string &token);
-
-
-/// Returns true if "line" is free of \n characters and unprintable
-/// characters, and does not contain leading or trailing whitespace.
-bool IsLine(const std::string &line);
-
-
-
-/**
-   This function returns true when two text strings are approximately equal, and
-   false when they are not.  The definition of 'equal' is normal string
-   equality, except that two substrings like "0.31134" and "0.311341" would be
-   considered equal.  'decimal_places_tolerance' controls how many digits after
-   the '.' have to match up.
-   E.g. StringsApproxEqual("hello 0.23 there", "hello 0.24 there", 2) would
-   return false because there is a difference in the 2nd decimal, but with
-   an argument of 1 it would return true.
- */
-bool StringsApproxEqual(const std::string &a,
-                        const std::string &b,
-                        int32 decimal_places_check = 2);
-
-/**
-   This class is responsible for parsing input like
-    hi-there xx=yyy a=b c empty= f-oo=Append(bar, sss) ba_z=123 bing='a b c' baz="a b c d='a b' e"
-   and giving you access to the fields, in this case
-
-   FirstToken() == "hi-there", and key->value pairs:
-
-   xx->yyy, a->"b c", empty->"", f-oo->"Append(bar, sss)", ba_z->"123",
-   bing->"a b c", baz->"a b c d='a b' e"
-
-   The first token is optional, if the line started with a key-value pair then
-   FirstValue() will be empty.
-
-   Note: it can parse value fields with space inside them only if they are free of the '='
-   character.  If values are going to contain the '=' character, you need to quote them
-   with either single or double quotes.
-
-   Key values may contain -_a-zA-Z0-9, but must begin with a-zA-Z_.
- */
-class ConfigLine {
- public:
-  // Tries to parse the line as a config-file line.  Returns false
-  // if it could not for some reason, e.g. parsing failure.  In most cases
-  // prints no warnings; the user should do this.  Does not expect comments.
-  bool ParseLine(const std::string &line);
-
-  // the GetValue functions are overloaded for various types.  They return true
-  // if the key exists with value that can be converted to that type, and false
-  // otherwise.  They also mark the key-value pair as having been read.  It is
-  // not an error to read values twice.
-  bool GetValue(const std::string &key, std::string *value);
-  bool GetValue(const std::string &key, float *value);
-  bool GetValue(const std::string &key, int32 *value);
-  // Values may be separated by ":" or by ",".
-  bool GetValue(const std::string &key, std::vector<int32> *value);
-  bool GetValue(const std::string &key, bool *value);
-
-  bool HasUnusedValues() const;
-  /// returns e.g. foo=bar xxx=yyy if foo and xxx were not consumed by one
-  /// of the GetValue() functions.
-  std::string UnusedValues() const;
-
-  const std::string &FirstToken() const { return first_token_; }
-
-  const std::string WholeLine() { return whole_line_; }
-  // use default assignment operator and copy constructor.
- private:
-  std::string whole_line_;
-  // the first token of the line, e.g. if line is
-  // foo-bar baz=bing
-  // then first_token_ would be "foo-bar".
-  std::string first_token_;
-
-  // data_ maps from key to (value, is-this-value-consumed?).
-  std::map<std::string, std::pair<std::string, bool> > data_;
+/// Returns true if 'name'  is a nonempty string beginning with A-Za-z_, and containing only
+/// '-', '_', '.', A-Z, a-z, or 0-9.
+bool IsValidName(const std::string &name){
+  if (name.size() == 0) return false;
+  for (size_t i = 0; i < name.size(); i++) {
+    if (i == 0 && !isalpha(name[i]) && name[i] != '_')
+      return false;
+    if (!isalnum(name[i]) && name[i] != '_' && name[i] != '-' && name[i] != '.')
+      return false;
+  }
+  return true;
+}
 
 };
-
-/// This function is like ExpectToken but for two tokens, and it will either
-/// accept token1 and then token2, or just token2.  This is useful in Read
-/// functions where the first token may already have been consumed.
-void ExpectOneOrTwoTokens(std::istream &is, bool binary,
-                          const std::string &token1,
-                          const std::string &token2);
-
-
-/**
-   This function reads in a config file and *appends* its contents to a vector of
-   lines; it is responsible for removing comments (anything after '#') and
-   stripping out any lines that contain only whitespace after comment removal.
- */
-void ReadConfigLines(std::istream &is,
-                     std::vector<std::string> *lines);
-
-
-/**
-   This function converts config-lines from a simple sequence of strings
-   as output by ReadConfigLines(), into a sequence of first-tokens and
-   name-value pairs.  The general format is:
-      "command-type bar=baz xx=yyy"
-   etc., although there are subtleties as to what exactly is allowed, see
-   documentation for class ConfigLine for details.
-   This function will die if there was a parsing failure.
- */
-void ParseConfigLines(const std::vector<std::string> &lines,
-                      std::vector<ConfigLine> *config_lines);
-
-
-/// Returns true if 'name' would be a valid name for a component or node in a
-/// nnet3Nnet.  This is a nonempty string beginning with A-Za-z_, and containing only
-/// '-', '_', '.', A-Z, a-z, or 0-9.
-bool IsValidName(const std::string &name);
-
-

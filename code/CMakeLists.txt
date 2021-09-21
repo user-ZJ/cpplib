@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
 project(mbase)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -fPIC")
+set(BASE_NAMESPACE zack)
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -fPIC")
+else()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -s -fPIC")
+endif()
 
 set(CMAKE_CXX_STANDARD 11)
 

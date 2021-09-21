@@ -16,6 +16,8 @@
 
 #include <chrono>
 
+namespace BASE_NAMESPACE
+{
 
 class Timer {
  public:
@@ -33,4 +35,4 @@ class Timer {
   std::chrono::time_point<std::chrono::steady_clock> time_start_;
 };
 
-
+}; // namespace BASE_NAMESPACE

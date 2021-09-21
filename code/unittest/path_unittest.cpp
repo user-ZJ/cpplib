@@ -3,6 +3,8 @@
 #include "path.h"
 #include "gtest/gtest.h"
 
+using namespace BASE_NAMESPACE;
+
 TEST(PathTest, BasenameTest1){
   std::string path = "C:\\Users\\Administrator\\Desktop\\text\\data.22.txt";
   EXPECT_EQ("data.22",basename(path,false));

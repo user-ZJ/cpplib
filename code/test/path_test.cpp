@@ -4,7 +4,7 @@
 #include "utils/logging.h"
 
 
-using namespace zack;
+using namespace BASE_NAMESPACE;
 
 int main(int argc, char **argv) {
   google::InitGoogleLogging(argv[0]); 
