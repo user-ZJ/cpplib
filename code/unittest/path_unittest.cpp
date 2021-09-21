@@ -5,12 +5,12 @@
 
 TEST(PathTest, BasenameTest1){
   std::string path = "C:\\Users\\Administrator\\Desktop\\text\\data.22.txt";
-  EXPECT_EQ("data.22.txt",basename(path,false));
+  EXPECT_EQ("data.22",basename(path,false));
 }
 
 TEST(PathTest, BasenameTest2){
   std::string path = "C:\\Users\\Administrator\\Desktop\\text\\data.22.txt";
-  EXPECT_EQ("data.22",basename(path,true));
+  EXPECT_EQ("data.22.txt",basename(path,true));
 }
 
 

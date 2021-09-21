@@ -23,15 +23,20 @@ FetchContent_Declare(googletest
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 set(GTEST_HAS_PTHREAD 1)
 FetchContent_MakeAvailable(googletest) #后续链接gtest_main即可
+enable_testing()
 
-dd_executable(example example.cpp)
+add_executable(example example.cpp)
 target_link_libraries(example gtest_main)
-add_test(NAME example_test COMMAND example)
+
+include(GoogleTest)
+gtest_discover_tests(hello_test)
 ```
 
 执行：
 
 ```shell
 $ ./example
+# 或者运行./ctest执行所有用例
+$ ctest
 ```
 
