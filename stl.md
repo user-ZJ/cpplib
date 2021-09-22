@@ -154,6 +154,36 @@ int main() {
 }
 ```
 
+## 1.11 最大、最小值
+
+```cpp
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+static bool abs_compare(int a, int b)
+{
+    return (std::abs(a) < std::abs(b));
+}
+
+int main() {
+    const auto v = { 3, 9, 1, 4, 2, 5, 9 };
+    const auto [min, max] = std::minmax_element(begin(v), end(v));
+ 
+    std::cout << "min = " << *min << ", max = " << *max << '\n';
+    
+    std::vector<int>::iterator result = std::min_element(v.begin(), v.end());
+    std::cout << "min element at: " << std::distance(v.begin(), result);
+    
+    result = std::max_element(v.begin(), v.end());
+    std::cout << "max element at: " << std::distance(v.begin(), result) << '\n';
+ 
+    result = std::max_element(v.begin(), v.end(), abs_compare);
+    std::cout << "max element (absolute) at: " << std::distance(v.begin(), result) << '\n';
+}
+```
+
 
 
 # 2. List
