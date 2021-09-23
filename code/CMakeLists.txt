@@ -1,16 +1,28 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 project(mbase)
 
 set(BASE_NAMESPACE zack)
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -fPIC")
-else()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -s -fPIC")
-endif()
-
 set(CMAKE_CXX_STANDARD 11)
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-DDEBUG)
+    if(MSVC)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DEBUG")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEBUG")
+    else()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+    endif()
+else()
+    if (MSVC)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /O2")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2")
+    else()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    endif()
+endif()
 
 
 include(FetchContent)
@@ -23,8 +35,8 @@ FetchContent_Declare(glog
   URL      https://github.com/google/glog/archive/refs/tags/v0.5.0.zip
   URL_HASH SHA256=21bc744fb7f2fa701ee8db339ded7dce4f975d0d55837a97be7d46e8382dea5a
 )
-set(WITH_CUSTOM_PREFIX ON)
-set(BUILD_TESTING OFF)
+set(WITH_CUSTOM_PREFIX ON CACHE BOOL "Always with custom prefix" FORCE)
+set(BUILD_TESTING OFF CACHE BOOL "disable test" FORCE)
 FetchContent_MakeAvailable(glog)
 include_directories(${glog_SOURCE_DIR}/src ${glog_BINARY_DIR})
 
