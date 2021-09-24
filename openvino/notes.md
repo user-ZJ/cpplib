@@ -41,7 +41,17 @@ cd /opt/intel/openvino_2021/deployment_tools/model_optimizer/install_prerequisit
 /opt/intel/openvino_2021/deployment_tools/inference_engine/samples
 ```
 
+```txt
+安装问题1：
+lspci: command not found
+解决方案：
+apt install pciutils
 
+安装问题2：
+'cpio' tool could not be found
+解决方案：
+apt install cpio
+```
 
 ## 支持的设备
 

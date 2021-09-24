@@ -184,6 +184,14 @@ int main() {
 }
 ```
 
+## 1.12 翻转
+
+```cpp
+# include<algorithm>
+const auto v = { 3, 9, 1, 4, 2, 5, 9 };
+std::reverse(v.begin(),v.end());
+```
+
 
 
 # 2. List
