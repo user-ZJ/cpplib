@@ -142,6 +142,7 @@ bool ConvertStringToReal(const std::string &str,
   return true;
 }
 
+//函数模板具体化，具体化会优先调用
 template
 bool ConvertStringToReal(const std::string &str,
                          float *out);
