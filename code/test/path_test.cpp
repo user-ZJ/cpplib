@@ -6,7 +6,7 @@
 
 using namespace BASE_NAMESPACE;
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]); 
   std::string path = "C:\\Users\\Administrator\\Desktop\\text\\data.22.txt";
   LOG(INFO)<<"basename:"<<basename(path,true)<<"\n";
