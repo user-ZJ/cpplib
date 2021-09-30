@@ -41,8 +41,8 @@ int writeToFile(std::vector<std::vector<T>> data, std::string filepath) {
 }
 
 
-// template <typename T>
-int readFromFile(std::string filepath,std::vector<float> *data) {
+template <typename T>
+int readFromFile(std::string filepath,std::vector<T> *data) {
   std::ifstream in(filepath.c_str());
   if (in.is_open()) {
     data->clear();
@@ -50,7 +50,7 @@ int readFromFile(std::string filepath,std::vector<float> *data) {
     float d;
     while(in>>tt) {
       d = stof(tt);
-      data->push_back(d);
+      data->push_back(static_cast<T>(d));
     }
     in.close();
     return 0;

@@ -13,6 +13,20 @@
 
 namespace DMAI {
 
+// 以流的方式打印vector
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {
+  os << "[";
+  for (int i = 0; i < v.size(); ++i) {
+    os << v[i];
+    if (i != v.size() - 1) {
+      os << ", ";
+    }
+  }
+  os << "]";
+  return os;
+}
+
 using convert_t = std::codecvt_utf8<wchar_t>;
 static std::wstring_convert<convert_t, wchar_t> strconverter;
 

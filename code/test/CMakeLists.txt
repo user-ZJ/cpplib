@@ -19,3 +19,6 @@ target_link_libraries(text_test mbase)
 add_executable(path_util_test path_test.cpp)
 target_link_libraries(path_util_test mbase)
 
+add_executable(ctensor_test ctensor_test.cpp)
+target_link_libraries(ctensor_test mbase)
+

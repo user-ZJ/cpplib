@@ -11,16 +11,16 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DEBUG")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEBUG")
     else()
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -Wfatal-errors")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors")
     endif()
 else()
     if (MSVC)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /O2")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2")
     else()
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors")
     endif()
 endif()
 
@@ -29,6 +29,14 @@ include(FetchContent)
 set(FETCHCONTENT_QUIET off)
 set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/thirdpart)
 
+
+# third_party: boost
+FetchContent_Declare(boost
+  URL      https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz
+  URL_HASH SHA256=aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a
+)
+FetchContent_MakeAvailable(boost)
+include_directories(${boost_SOURCE_DIR})
 
 # third_party: glog
 FetchContent_Declare(glog

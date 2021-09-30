@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <cstring>
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 // 用于传递给不同框架的数据结构
 // ctensor始终有数据的所有权,且数据始终是连续的
@@ -20,7 +20,7 @@ public:
     shapes_.clear();
     strides_.clear();
   }
-  explicit CTensor(std::vector<I> shapes) {
+  explicit CTensor(const std::vector<I> &shapes) {
     assert(shapes.size()>0);
     shapes_.resize(shapes.size());
     strides_.resize(shapes.size());
@@ -35,6 +35,21 @@ public:
         size_ *= shapes[i];
       }
     }
+    data_ = new T[size_];
+  }
+
+  explicit CTensor(const std::initializer_list<I> &shapes) {
+    assert(shapes.size()>0);
+    shapes_.reserve(shapes.size());
+    strides_.reserve(shapes.size());
+    size_ = 1;
+    for (auto s:shapes) {
+      assert(s>0);
+      shapes_.push_back(s);
+      strides_.push_back(size_);
+      size_ *= s;
+    }
+    std::reverse(strides_.begin(),strides_.end());
     data_ = new T[size_];
   }
 
