@@ -14,6 +14,7 @@ vector<int> vInts(100);  //创建容量为100的vector
 vector<int> vInts(100，1); //创建容量为100的vector，并全部初始化为1
 vector<int> vInts(vInts1);  //拷贝一个vector内容来创建一个vector
 vector<int> vInts{1,2,3,4,5}; //  
+vInts.reserve(100);  //新元素还没有构造,此时不能用[]访问元素
 //子序列
 vector<int> sub_vec(int_vec.begin(), int_vec.begin()+5);
 vector<int> sub_vec = {int_vec.begin(), int_vec.begin()+5};

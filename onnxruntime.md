@@ -16,3 +16,8 @@ source /opt/intel/openvino_2021/bin/setupvars.sh
 ./build.sh --config RelWithDebInfo --use_openvino CPU_FP32 --build_shared_lib --parallel #编译openvino后端版本，需要先安装好openvino
 ```
 
+
+
+openvino使用
+
+https://github.com/yas-sim/openvino-ep-enabled-onnxruntime
