@@ -58,6 +58,7 @@ link_directories(
 aux_source_directory(source/utils UTILS_SOURCES)
 
 
+
 add_library(${PROJECT_NAME} SHARED ${UTILS_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
@@ -65,7 +66,7 @@ target_link_libraries(${PROJECT_NAME}
 		)
 INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 
-
+add_subdirectory(source/web)
 add_subdirectory(test)
 
 option(BUILD_UNITTEST "build test with googletest" ON)

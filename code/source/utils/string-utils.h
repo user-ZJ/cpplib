@@ -1,3 +1,9 @@
+/*
+ * @Author: zack 
+ * @Date: 2021-10-05 10:28:12 
+ * @Last Modified by: zack
+ * @Last Modified time: 2021-10-05 10:30:43
+ */
 #pragma once
 
 #include <codecvt>
@@ -11,7 +17,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 // 以流的方式打印vector
 template <typename T>
@@ -86,4 +92,4 @@ inline std::wstring joinVectorToString(const std::vector<std::wstring> &vec, con
   return res;
 }
 
-};  // namespace DMAI
+}; 

@@ -1,5 +1,10 @@
-#ifndef BASE_TYPE_H_
-#define BASE_TYPE_H_
+/*
+ * @Author: zack 
+ * @Date: 2021-10-05 10:27:24 
+ * @Last Modified by: zack
+ * @Last Modified time: 2021-10-05 10:27:46
+ */
+#pragma once
 
 using int8 = int8_t;
 using int16 = int16_t;
@@ -14,4 +19,4 @@ using uint64 = uint64_t;
 typedef float   float32;
 typedef double double64;
 
-#endif
+

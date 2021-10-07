@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 template <typename T>
 int writeToFile(std::vector<T> data, int seg, std::string filepath) {
@@ -58,4 +58,4 @@ int readFromFile(std::string filepath,std::vector<T> *data) {
   return 1;
 }
 
-};  // namespace DMAI
+};  

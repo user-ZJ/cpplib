@@ -1,3 +1,9 @@
+/*
+ * @Author: zack 
+ * @Date: 2021-10-05 10:26:48 
+ * @Last Modified by: zack
+ * @Last Modified time: 2021-10-05 11:07:46
+ */
 #pragma once
 #include <algorithm>
 #include <fstream>
@@ -20,6 +26,7 @@ public:
     shapes_.clear();
     strides_.clear();
   }
+  // 支持vector初始化
   explicit CTensor(const std::vector<I> &shapes) {
     assert(shapes.size()>0);
     shapes_.resize(shapes.size());
@@ -37,7 +44,7 @@ public:
     }
     data_ = new T[size_];
   }
-
+  // 支持initializer_list初始化
   explicit CTensor(const std::initializer_list<I> &shapes) {
     assert(shapes.size()>0);
     shapes_.reserve(shapes.size());
@@ -52,8 +59,7 @@ public:
     std::reverse(strides_.begin(),strides_.end());
     data_ = new T[size_];
   }
-
-
+  // 拷贝构造函数
   CTensor(const CTensor &t) {
     shapes_ = t.shapes_;
     strides_ = t.strides_;
@@ -61,7 +67,7 @@ public:
     data_ = new T[size_];
     ::memcpy(data_,t.data_,size_*sizeof(T));
   }
-
+  // 复制构造函数
   CTensor &operator=(const CTensor &t) {
     if(this==&t)
       return *this;
@@ -79,8 +85,10 @@ public:
     if (data_ != nullptr)
       delete (T *)data_;
   }
-  
-  int resize(const std::vector<I> shapes) {
+  // 调整tensor大小，会重新分配内存，保证内存连续
+  void resize(const std::vector<I> shapes) {
+    if(shapes == shapes_)
+      return;
     CTensor newTensor(shapes);
     std::swap(size_, newTensor.size_);
     std::swap(shapes_, newTensor.shapes_);
@@ -89,7 +97,6 @@ public:
   }
 
   T *data() { return data_; }
-
   T *data() const { return data_; }
 
   std::vector<I> shapes() const { return shapes_; }
@@ -104,5 +111,8 @@ private:
   std::vector<I> strides_;
   long size_;
 };
+
+typedef CTensor<float,int64_t> CTensor64;
+typedef CTensor<float,int32_t> CTensor32;
 
 }; // namespace DMAI

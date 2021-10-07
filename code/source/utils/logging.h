@@ -1,36 +1,25 @@
 #pragma once
-#include<iostream>
-#include <sstream>
+#include "glog/logging.h"
 #include <cstring>
 #include <iomanip>
-#include "glog/logging.h"
-
+#include <iostream>
+#include <sstream>
 
 // using namespace google;
 
+namespace BASE_NAMESPACE {
 
-namespace zack{
+// google::InitGoogleLogging(argv[0]);
+// google::InitGoogleLogging(argv[0],&CustomPrefix);
 
-//google::InitGoogleLogging(argv[0]); 
-//google::InitGoogleLogging(argv[0],&CustomPrefix); 
-
-void CustomPrefix(std::ostream &s, const LogMessageInfo &l, void*) {
-   s << l.severity[0]
-   << std::setw(4) << 1900 + l.time.year()
-   << std::setw(2) << 1 + l.time.month()
-   << std::setw(2) << l.time.day()
-   << ' '
-   << std::setw(2) << l.time.hour() << ':'
-   << std::setw(2) << l.time.min()  << ':'
-   << std::setw(2) << l.time.sec() << "."
-   << std::setw(6) << l.time.usec()
-   << ' '
-   << std::setfill(' ') << std::setw(5)
-   << l.thread_id << std::setfill('0')
-   << ' '
-   << l.filename << ':' << l.line_number << "]";
+void CustomPrefix(std::ostream &s, const LogMessageInfo &l, void *) {
+  s << l.severity[0] << std::setw(4) << 1900 + l.time.year() << std::setw(2)
+    << 1 + l.time.month() << std::setw(2) << l.time.day() << ' ' << std::setw(2)
+    << l.time.hour() << ':' << std::setw(2) << l.time.min() << ':'
+    << std::setw(2) << l.time.sec() << "." << std::setw(6) << l.time.usec()
+    << ' ' << std::setfill(' ') << std::setw(5) << l.thread_id
+    << std::setfill('0') << ' ' << l.filename << ':' << l.line_number << "]";
 }
-
 
 // class LoggingWrapper {
 //  public:
@@ -70,12 +59,16 @@ void CustomPrefix(std::ostream &s, const LogMessageInfo &l, void*) {
 //   bool should_log_;
 // };
 
-// #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+// #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 :
+// __FILE__)
 // // #define LOG std::cout<<__FILENAME__<<":"<<__LINE__<<" "
-// //#define LOG std::cout<<__DATE__<<" "<<__TIME__<<" "<<__FILENAME__<<":"<<__LINE__<<" "
-// #define LOG(severity)  LoggingWrapper(LoggingWrapper::LogSeverity::severity).Stream()<<__FILENAME__<<":"<<__LINE__<<" "
+// //#define LOG std::cout<<__DATE__<<" "<<__TIME__<<"
+// "<<__FILENAME__<<":"<<__LINE__<<" " #define LOG(severity)
+// LoggingWrapper(LoggingWrapper::LogSeverity::severity).Stream()<<__FILENAME__<<":"<<__LINE__<<"
+// "
 
-// #define MAY_LOG(severity, should_log)  LoggingWrapper(LoggingWrapper::LogSeverity::severity, (should_log)).Stream()<<__FILENAME__<<":"<<__LINE__<<" "
+// #define MAY_LOG(severity, should_log)
+// LoggingWrapper(LoggingWrapper::LogSeverity::severity,
+// (should_log)).Stream()<<__FILENAME__<<":"<<__LINE__<<" "
 
-
-};
+}; // namespace BASE_NAMESPACE
