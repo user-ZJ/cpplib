@@ -31,34 +31,29 @@ public:
   // 支持vector初始化
   explicit CTensor(const std::vector<I> &shapes) {
     assert(shapes.size()>0);
-    shapes_.resize(shapes.size());
+    shapes_ = shapes;
     strides_.resize(shapes.size());
-    for (int i = 0; i < shapes.size(); i++) {
-      assert(shapes[i]>0);
-      shapes_[i] = shapes[i];
-      if (i == 0) {
-        size_ = shapes[i];
-        strides_[shapes.size() - i - 1] = 1;
-      } else {
-        strides_[shapes.size() - i - 1] = size_;
-        size_ *= shapes[i];
-      }
+    size_ = shapes_[0];
+    strides_[shapes.size()-1] = 1;
+    for (int i=shapes_.size()-1; i>0; i--) {
+      assert(shapes_[i]>0);
+      size_ *= shapes_[i];
+      strides_[i-1] = strides_[i]*shapes_[i];
     }
     data_ = new T[size_];
   }
   // 支持initializer_list初始化
   explicit CTensor(const std::initializer_list<I> &shapes) {
     assert(shapes.size()>0);
-    shapes_.reserve(shapes.size());
-    strides_.reserve(shapes.size());
-    size_ = 1;
-    for (auto s:shapes) {
-      assert(s>0);
-      shapes_.push_back(s);
-      strides_.push_back(size_);
-      size_ *= s;
+    shapes_ = shapes;
+    strides_.resize(shapes.size());
+    size_ = shapes_[0];
+    strides_[shapes.size()-1] = 1;
+    for (int i=shapes_.size()-1; i>0; i--) {
+      assert(shapes_[i]>0);
+      size_ *= shapes_[i];
+      strides_[i-1] = strides_[i]*shapes_[i];
     }
-    std::reverse(strides_.begin(),strides_.end());
     data_ = new T[size_];
   }
   // 拷贝构造函数
