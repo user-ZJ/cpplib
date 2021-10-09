@@ -12,6 +12,8 @@
 #include <vector>
 #include <assert.h>
 #include <cstring>
+#include <utility>
+#include <initializer_list>
 
 namespace BASE_NAMESPACE {
 
@@ -67,12 +69,22 @@ public:
     data_ = new T[size_];
     ::memcpy(data_,t.data_,size_*sizeof(T));
   }
-  // 复制构造函数
+
+  // 移动构造函数
+  CTensor(CTensor &&t) {
+    shapes_ = t.shapes_;
+    strides_ = t.strides_;
+    size_ = t.size_;
+    data_ = t.data_;
+    t.data_=nullptr;
+  }
+
+  // 赋值构造函数
   CTensor &operator=(const CTensor &t) {
     if(this==&t)
       return *this;
     if(data_!=nullptr)
-      delete data_;
+      delete [] data_;
     shapes_ = t.shapes_;
     strides_ = t.strides_;
     size_ = t.size_;
@@ -81,9 +93,24 @@ public:
     return *this;
   }
 
+  // 移动赋值构造函数
+  CTensor &operator=(CTensor &&t) {
+    if(this==&t)
+      return *this;
+    if(data_!=nullptr)
+      delete [] data_;
+    shapes_ = t.shapes_;
+    strides_ = t.strides_;
+    size_ = t.size_;
+    data_ = t.data_;
+    t.data_ = nullptr;
+    return *this;
+  }
+
   ~CTensor() {
     if (data_ != nullptr)
-      delete (T *)data_;
+      delete [] (T *)data_;
+    data_ = nullptr;
   }
   // 调整tensor大小，会重新分配内存，保证内存连续
   void resize(const std::vector<I> shapes) {
@@ -95,6 +122,27 @@ public:
     std::swap(strides_, newTensor.strides_);
     std::swap(data_, newTensor.data_);
   }
+  // 清除数据
+  void clear(){
+    if (data_ != nullptr){
+      delete [] (T *)data_;
+      data_ = nullptr;
+    }
+    shapes_.clear();
+    strides_.clear();
+    size_ = 0;
+  }
+
+  // 访问数据
+  T at(const std::initializer_list<I> &indexs) const{
+    assert(indexs.size()==shapes_.size());
+    T *ptr = data_;
+    int i = 0;
+    for(auto d:indexs){
+      ptr += d*strides_[i++];
+    }
+    return *ptr;
+  }
 
   T *data() { return data_; }
   T *data() const { return data_; }
@@ -103,7 +151,8 @@ public:
 
   std::vector<I> strides() const { return strides_; }
 
-  long size() const { return size_; }
+  uint64_t size() const { return size_; }
+  uint64_t byteSize() const { return size_*sizeof(T); }
 
 private:
   T *data_;
@@ -112,7 +161,9 @@ private:
   long size_;
 };
 
-typedef CTensor<float,int64_t> CTensor64;
-typedef CTensor<float,int32_t> CTensor32;
+typedef CTensor<float,int64_t> CTensorfl;
+typedef CTensor<float,int32_t> CTensorfi;
+typedef CTensor<int64_t,int64_t> CTensorll;
+typedef CTensor<int32_t,int32_t> CTensorii;
 
-}; // namespace DMAI
+};
