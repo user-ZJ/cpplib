@@ -5,20 +5,15 @@
 
 using namespace BASE_NAMESPACE;
 
-TEST(PathTest, BasenameTest1){
+TEST(PathTest, BasenameTest){
   std::string path = "C:\\Users\\Administrator\\Desktop\\text\\data.22.txt";
-  EXPECT_EQ("data.22",basename(path,false));
-}
-
-TEST(PathTest, BasenameTest2){
-  std::string path = "C:\\Users\\Administrator\\Desktop\\text\\data.22.txt";
-  EXPECT_EQ("data.22.txt",basename(path,true));
+  EXPECT_EQ("data.22.txt",path_get_filename(path));
 }
 
 
 TEST(PathTest, SuffixnameTest){
   std::string path = "C:\\Users\\Administrator\\Desktop\\text\\data.22.txt";
-  EXPECT_EQ("txt",suffixname(path));
+  EXPECT_EQ("txt",extension_name(path));
 }
 
 

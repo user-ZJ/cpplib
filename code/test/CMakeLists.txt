@@ -22,3 +22,10 @@ target_link_libraries(path_util_test mbase)
 add_executable(ctensor_test ctensor_test.cpp)
 target_link_libraries(ctensor_test mbase)
 
+
+add_executable(threadpool_test threadpool_test.cpp)
+target_link_libraries(threadpool_test mbase)
+
+
+# add_executable(minizip_test minizip_test.cpp)
+# target_link_libraries(minizip_test mbase minizip)
