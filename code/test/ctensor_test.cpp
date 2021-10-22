@@ -23,4 +23,5 @@ int main(int argc, char *argv[]) {
   std::cout<<"strides:"<<t2.strides()<<std::endl;
   std::cout<<"size:"<<t2.size()<<std::endl;
   std::cout<<"byte size:"<<t2.byteSize()<<std::endl;
+  std::cout<<"ctensor at:"<<t2.at({1,2,3,4})<<std::endl;
 }

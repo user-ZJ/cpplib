@@ -2,7 +2,7 @@
  * @Author: zack 
  * @Date: 2021-10-05 10:26:48 
  * @Last Modified by: zack
- * @Last Modified time: 2021-10-05 11:07:46
+ * @Last Modified time: 2021-10-21 16:51:30
  */
 #pragma once
 #include <algorithm>
@@ -14,6 +14,7 @@
 #include <cstring>
 #include <utility>
 #include <initializer_list>
+#include <memory>
 
 namespace BASE_NAMESPACE {
 
@@ -40,7 +41,7 @@ public:
       size_ *= shapes_[i];
       strides_[i-1] = strides_[i]*shapes_[i];
     }
-    data_ = new T[size_];
+    data_.reset(new T[size_]);
   }
   // 支持initializer_list初始化
   explicit CTensor(const std::initializer_list<I> &shapes) {
@@ -54,14 +55,14 @@ public:
       size_ *= shapes_[i];
       strides_[i-1] = strides_[i]*shapes_[i];
     }
-    data_ = new T[size_];
+    data_.reset(new T[size_]);
   }
   // 拷贝构造函数
   CTensor(const CTensor &t) {
     shapes_ = t.shapes_;
     strides_ = t.strides_;
     size_ = t.size_;
-    data_ = new T[size_];
+    data_.reset(new T[size_]);
     ::memcpy(data_,t.data_,size_*sizeof(T));
   }
 
@@ -78,12 +79,12 @@ public:
   CTensor &operator=(const CTensor &t) {
     if(this==&t)
       return *this;
-    if(data_!=nullptr)
-      delete [] data_;
+    // if(data_!=nullptr)
+    //   delete [] data_;
     shapes_ = t.shapes_;
     strides_ = t.strides_;
     size_ = t.size_;
-    data_ = new T[size_];
+    data_.reset(new T[size_]);
     ::memcpy(data_,t.data_,size_*sizeof(T));
     return *this;
   }
@@ -103,9 +104,9 @@ public:
   }
 
   ~CTensor() {
-    if (data_ != nullptr)
-      delete [] (T *)data_;
-    data_ = nullptr;
+    // if (data_ != nullptr)
+    //   delete [] (T *)data_;
+    // data_ = nullptr;
   }
   // 调整tensor大小，会重新分配内存，保证内存连续
   void resize(const std::vector<I> shapes) {
@@ -119,10 +120,10 @@ public:
   }
   // 清除数据
   void clear(){
-    if (data_ != nullptr){
-      delete [] (T *)data_;
-      data_ = nullptr;
-    }
+    // if (data_ != nullptr){
+    //   delete [] (T *)data_;
+    //   data_ = nullptr;
+    // }
     shapes_.clear();
     strides_.clear();
     size_ = 0;
@@ -131,7 +132,7 @@ public:
   // 访问数据
   T at(const std::initializer_list<I> &indexs) const{
     assert(indexs.size()==shapes_.size());
-    T *ptr = data_;
+    T *ptr = data_.get();
     int i = 0;
     for(auto d:indexs){
       ptr += d*strides_[i++];
@@ -149,8 +150,45 @@ public:
   uint64_t size() const { return size_; }
   uint64_t byteSize() const { return size_*sizeof(T); }
 
+#if DEBUG
+  // dump data to file,only for debug
+  void dump2File(const char *filename) {
+    std::ofstream out(filename);
+    if (out.is_open()) {
+      //shapes
+      out<<"[";
+      for(auto s:shapes_)
+        out<<s<<",";
+      out<<"]\n";
+      // data
+      if (shapes_.size() == 1) {
+        for (int64_t i = 0; i < shapes_[0];i++) {
+          out << std::to_string(*(data_+i)) << " ";
+        }
+      } else if (shapes_.size() == 2) {
+        for (int64_t i=0;i<shapes_[0];i++) {
+          for (int j=0;j<shapes_[1];j++)
+            out << std::to_string(*(data_+i*strides_[0]+j)) << " ";
+          out << "\n";
+        }
+      }else{
+        size_t row=shapes_[0],col=shapes_[shapes_.size()-1];
+        for(int i=1;i<shapes_.size()-1;i++)
+          row *= shapes_[i];
+        for (int64_t i=0;i<row;i++) {
+          for (int j=0;j<col;j++)
+            out << std::to_string(*(data_+i*col+j)) << " ";
+          out << "\n";
+        }
+      }
+      out << "\n";
+      out.close();
+    }
+  }
+#endif
+
 private:
-  T *data_;
+  std::shared_ptr<T> data_;
   std::vector<I> shapes_;
   std::vector<I> strides_;
   long size_;
