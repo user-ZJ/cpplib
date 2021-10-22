@@ -350,6 +350,8 @@ break  88  thread 3   给线程3在第88行设置断点
 
 break  88  thread 3 if x==y  给线程3在第88行设置条件断点
 
+thread apply all bt  打印所有线程的堆栈
+
 
 
 ## strace和ltrace
