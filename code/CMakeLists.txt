@@ -8,15 +8,21 @@ set(BASE_NAMESPACE zack)
 
 set(CMAKE_CXX_STANDARD 11)
 
+message(STATUS "opration system is ${CMAKE_SYSTEM_NAME}")
 #${CMAKE_SYSTEM_NAME} "Windows", "Linux","Android" or "Darwin"
-if(ANDROID)
+if(CMAKE_SYSTEM_NAME MATCHES "Android")
     set(TARGET_ARCH ${ANDROID_ABI})
-else()
+    if(CMAKE_ANDROID_ARCH_ABI MATCHES "armeabi-v7a")
+    elseif(CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
+    endif()
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     if(ARCH_32)
         set(TARGET_ARCH x86)
     else()
         set(TARGET_ARCH x64)
     endif()
+else()
+    message(FATAL_ERROR "not support system ${CMAKE_SYSTEM_NAME}")
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
