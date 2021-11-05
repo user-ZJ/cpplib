@@ -189,7 +189,9 @@ std::string path_get_filename(const std::string &path) {
   return path.substr(pos + 1);
 }
 
-std::string extension_name(const std::string &path);
+std::string extension_name(const std::string &path){
+  return path.substr(path.find_last_of('.')+1);
+}
 
 
 ///////////////////   directory  /////////////////////////////

@@ -118,6 +118,13 @@ public:
     std::swap(strides_, newTensor.strides_);
     std::swap(data_, newTensor.data_);
   }
+  void resize(const std::initializer_list<I> &shapes) {
+    CTensor newTensor(shapes);
+    std::swap(size_, newTensor.size_);
+    std::swap(shapes_, newTensor.shapes_);
+    std::swap(strides_, newTensor.strides_);
+    std::swap(data_, newTensor.data_);
+  }
   // 清除数据
   void clear(){
     // if (data_ != nullptr){

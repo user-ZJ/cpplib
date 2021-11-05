@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
+#include "logging.h"
 
 namespace BASE_NAMESPACE {
 
@@ -16,7 +17,7 @@ namespace BASE_NAMESPACE {
 inline std::vector<char> file_to_buff(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary | std::ios::ate);
   if (!in.good()) {
-    std::cout << "ERROR:file not exist\n";
+    LOG(ERROR)<<"file not exist,"<<std::string(path);
     return {};
   }
   long size = in.tellg();
@@ -31,7 +32,7 @@ inline std::stringstream file_to_ss(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary);
   std::stringstream buffer;
   if (!in.good()) {
-    std::cout << "ERROR:file not exist\n";
+    LOG(ERROR)<<"file not exist,"<<std::string(path);
     return buffer;
   }
   buffer << in.rdbuf();

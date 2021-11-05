@@ -20,7 +20,7 @@
 // limitations under the License.
 
 
-#include "text-utils.h"
+#include "text-util.h"
 #include <math.h>
 
 using namespace BASE_NAMESPACE;

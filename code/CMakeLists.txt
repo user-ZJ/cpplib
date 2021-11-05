@@ -95,11 +95,12 @@ link_directories(
 		)
 
 
+aux_source_directory(source/Tokenizer Tokenizer_SRC)
 aux_source_directory(source/utils UTILS_SOURCES)
 
 
 
-add_library(${PROJECT_NAME} SHARED ${UTILS_SOURCES})
+add_library(${PROJECT_NAME} SHARED ${Tokenizer_SRC} ${UTILS_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
 		glog

@@ -3,7 +3,7 @@
 #include<vector>
 #include "utils/ctensor.h"
 #include "utils/logging.h"
-#include "utils/string-utils.h"
+#include "utils/string-util.h"
 
 
 using namespace BASE_NAMESPACE;
