@@ -24,7 +24,7 @@ target_link_libraries(ctensor_test mbase)
 
 
 add_executable(threadpool_test threadpool_test.cpp)
-target_link_libraries(threadpool_test mbase)
+target_link_libraries(threadpool_test mbase pthread)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors -fpermissive")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors -fpermissive")

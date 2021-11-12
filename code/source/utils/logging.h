@@ -1,4 +1,7 @@
 #pragma once
+#ifndef GLOG_CUSTOM_PREFIX_SUPPORT
+#define GLOG_CUSTOM_PREFIX_SUPPORT
+#endif
 #include "glog/logging.h"
 #include <cstring>
 #include <iomanip>
@@ -12,6 +15,7 @@ namespace BASE_NAMESPACE {
 // google::InitGoogleLogging(argv[0]);
 // google::InitGoogleLogging(argv[0],&CustomPrefix);
 
+
 void CustomPrefix(std::ostream &s, const LogMessageInfo &l, void *) {
   s << l.severity[0] << std::setw(4) << 1900 + l.time.year() << std::setw(2)
     << 1 + l.time.month() << std::setw(2) << l.time.day() << ' ' << std::setw(2)
@@ -20,6 +24,7 @@ void CustomPrefix(std::ostream &s, const LogMessageInfo &l, void *) {
     << ' ' << std::setfill(' ') << std::setw(5) << l.thread_id
     << std::setfill('0') << ' ' << l.filename << ':' << l.line_number << "]";
 }
+
 
 // class LoggingWrapper {
 //  public:
