@@ -61,39 +61,24 @@ include_directories(${boost_SOURCE_DIR})
 
 
 # third_party: gflags
-set(gflags_BINARY_DIR ${FETCHCONTENT_BASE_DIR}/gflags-build)
-set(gflags_PREFIX ${FETCHCONTENT_BASE_DIR}/gflags-subbuild)
-set(gflags_SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/gflags-src)
-ExternalProject_Add(gflags_module
-    URL      https://github.com.cnpmjs.org/gflags/gflags/archive/v2.2.0.zip
-    URL_HASH SHA256=99f9e8b63ea53e4b23f0fd0f68a6f1e397d5512be36716c17cc75966a90f0d57
-    PREFIX ${gflags_PREFIX}
-    BINARY_DIR ${gflags_BINARY_DIR}
-    SOURCE_DIR ${gflags_SOURCE_DIR}
-    INSTALL_DIR ${gflags_PREFIX}
-    CMAKE_ARGS -DGFLAGS_BUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=${gflags_PREFIX}
-    BUILD_ALWAYS true
+FetchContent_Declare(gflags
+  URL      https://github.com.cnpmjs.org/gflags/gflags/archive/v2.2.0.zip
+  URL_HASH SHA256=99f9e8b63ea53e4b23f0fd0f68a6f1e397d5512be36716c17cc75966a90f0d57
 )
-include_directories(${gflags_PREFIX}/include)
-link_directories(${gflags_BINARY_DIR}/lib)
+FetchContent_MakeAvailable(gflags)
+include_directories(${gflags_BINARY_DIR}/include)
 
 # third_party: glog
-set(glog_BINARY_DIR ${FETCHCONTENT_BASE_DIR}/glog-build)
-set(glog_PREFIX ${FETCHCONTENT_BASE_DIR}/glog-subbuild)
-set(glog_SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/glog-src)
-ExternalProject_Add(glog_module
-    URL      https://github.com/google/glog/archive/refs/tags/v0.5.0.zip
-    URL_HASH SHA256=21bc744fb7f2fa701ee8db339ded7dce4f975d0d55837a97be7d46e8382dea5a
-    PREFIX ${glog_PREFIX}
-    SOURCE_DIR ${glog_SOURCE_DIR}
-    BINARY_DIR ${glog_BINARY_DIR}
-    CMAKE_ARGS -DWITH_CUSTOM_PREFIX=ON -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=OFF -Dgflags_DIR=${gflags_PREFIX}/lib -DCMAKE_INSTALL_PREFIX=${glog_PREFIX} -G "Unix Makefiles"
-    BUILD_ALWAYS true
-    DEPENDS gflags_module
-    #-Dgflags_DIR=${gflags_PREFIX}/lib/gflags
+FetchContent_Declare(glog
+  URL      https://github.com/google/glog/archive/refs/tags/v0.5.0.zip
+  URL_HASH SHA256=21bc744fb7f2fa701ee8db339ded7dce4f975d0d55837a97be7d46e8382dea5a
 )
-include_directories(${glog_PREFIX}/include)
-link_directories(${glog_PREFIX}/lib)
+set(WITH_CUSTOM_PREFIX ON CACHE BOOL "Always with custom prefix" FORCE)
+set(BUILD_TESTING OFF CACHE BOOL "disable test" FORCE)
+# FetchContent_MakeAvailable(glog)
+FetchContent_Populate(glog)
+add_subdirectory(${glog_SOURCE_DIR} ${glog_BINARY_DIR})
+include_directories(${glog_SOURCE_DIR}/src ${glog_BINARY_DIR})
 
 # third_party: minizip
 FetchContent_Declare(minizip
@@ -123,14 +108,11 @@ add_library(${PROJECT_NAME} SHARED ${Tokenizer_SRC} ${UTILS_SOURCES})
 #链接静态库，需要使用-Wl,-whole-archive,其他动态库不需要，在退出时需要使用-Wl,--no-whole-archive还原
 # 所以静态库链接形式为-Wl,-whole-archive static_libs -Wl,--no-whole-archive
 target_link_libraries(${PROJECT_NAME}
-        -Wl,-whole-archive
 		glog
-        gflags
-        -Wl,--no-whole-archive
         minizip
 		)
 INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
-add_dependencies(${PROJECT_NAME} gflags_module glog_module)
+# add_dependencies(${PROJECT_NAME} gflags_module glog_module)
 
 add_subdirectory(source/web)
 
