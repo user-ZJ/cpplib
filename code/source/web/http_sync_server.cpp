@@ -107,6 +107,7 @@ handle_request(
     http::request<Body, http::basic_fields<Allocator>>&& req,
     Send&& send)
 {
+    std::cout<<"handl_request"<<std::endl;
     // Returns a bad request response
     auto const bad_request =
     [&req](beast::string_view why)
@@ -159,8 +160,10 @@ handle_request(
 
     // Build the path to the requested file
     std::string path = path_cat(doc_root, req.target());
+    std::cout<<"path:"<<path<<std::endl;
     if(req.target().back() == '/')
         path.append("index.html");
+    std::cout<<"path:"<<path<<std::endl;
 
     // Attempt to open the file
     beast::error_code ec;

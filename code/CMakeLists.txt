@@ -59,6 +59,18 @@ FetchContent_Declare(boost
 FetchContent_MakeAvailable(boost)
 include_directories(${boost_SOURCE_DIR})
 
+# third_party: poco
+FetchContent_Declare(poco
+  URL      https://github.com/pocoproject/poco/archive/refs/tags/poco-1.11.1-release.tar.gz
+  URL_HASH SHA256=2412a5819a239ff2ee58f81033bcc39c40460d7a8b330013a687c8c0bd2b4ac0
+)
+FetchContent_MakeAvailable(poco)
+include_directories(
+    ${poco_SOURCE_DIR}/Net/include 
+    ${poco_SOURCE_DIR}/Foundation/include
+    ${poco_SOURCE_DIR}/Util/include
+    ${poco_SOURCE_DIR}/JSON/include)
+
 
 # third_party: gflags
 FetchContent_Declare(gflags
@@ -134,4 +146,7 @@ if(BUILD_UNITTEST)
     enable_testing()
     add_subdirectory(unittest)
 endif()
+
+
+
 
