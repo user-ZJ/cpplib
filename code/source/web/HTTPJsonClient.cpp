@@ -34,10 +34,17 @@ using Poco::Exception;
 
 int main(int argc, char **argv) {
   try {
-    std::string url = "http://localhost:9980/form";
-    std::string body = "username=user1@yourdomain.com&password=mypword";
-    // std::string body = "{\"password\":\"mypword\",\"username\":\"user1@yourdomain.com\"}";
-    
+    std::string url = "http://localhost:9980/json";
+    // std::string body = "username=user1@yourdomain.com&password=mypword";
+    std::string body = "{\"password\":\"mypword\",\"username\":\"user1@yourdomain.com\"}";
+    Poco::JSON::Object obj;
+    obj.set("username", "user1@yourdomain.com");
+    obj.set("password", "mypword");
+    std::stringstream sbody; 
+    obj.stringify(sbody);
+    std::cout<<"send body:"<<sbody.str()<<std::endl;
+
+
     std::map<std::string, std::string> headers;
     headers["Test-Header"] = "Test-Header";
     URI uri(url);
@@ -48,7 +55,8 @@ int main(int argc, char **argv) {
       path = "/";
 
     HTTPRequest req(HTTPRequest::HTTP_POST, path, HTTPMessage::HTTP_1_1);
-    req.setContentType("application/x-www-form-urlencoded");
+    // req.setContentType("application/x-www-form-urlencoded");
+    req.setContentType("application/json");
 
     // Set headers here
     for (std::map<std::string, std::string>::iterator it = headers.begin();
@@ -57,10 +65,11 @@ int main(int argc, char **argv) {
     }
 
     // Set the request body
-    req.setContentLength(body.size());
+    req.setContentLength(sbody.str().size());
     // sends request, returns open stream
     std::ostream &os = session.sendRequest(req);
-    os << body; // sends the body
+    // os << body; // sends the body
+    obj.stringify(os);
     req.write(std::cout); // print out request
 
     // get response

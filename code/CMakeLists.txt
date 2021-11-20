@@ -64,7 +64,8 @@ FetchContent_Declare(poco
   URL      https://github.com/pocoproject/poco/archive/refs/tags/poco-1.11.1-release.tar.gz
   URL_HASH SHA256=2412a5819a239ff2ee58f81033bcc39c40460d7a8b330013a687c8c0bd2b4ac0
 )
-FetchContent_MakeAvailable(poco)
+FetchContent_Populate(poco)
+# FetchContent_MakeAvailable(poco)
 include_directories(
     ${poco_SOURCE_DIR}/Net/include 
     ${poco_SOURCE_DIR}/Foundation/include
@@ -87,9 +88,9 @@ FetchContent_Declare(glog
 )
 set(WITH_CUSTOM_PREFIX ON CACHE BOOL "Always with custom prefix" FORCE)
 set(BUILD_TESTING OFF CACHE BOOL "disable test" FORCE)
-# FetchContent_MakeAvailable(glog)
-FetchContent_Populate(glog)
-add_subdirectory(${glog_SOURCE_DIR} ${glog_BINARY_DIR})
+FetchContent_MakeAvailable(glog)
+# FetchContent_Populate(glog)
+# add_subdirectory(${glog_SOURCE_DIR} ${glog_BINARY_DIR})
 include_directories(${glog_SOURCE_DIR}/src ${glog_BINARY_DIR})
 
 # third_party: minizip
@@ -120,7 +121,8 @@ add_library(${PROJECT_NAME} SHARED ${Tokenizer_SRC} ${UTILS_SOURCES})
 #链接静态库，需要使用-Wl,-whole-archive,其他动态库不需要，在退出时需要使用-Wl,--no-whole-archive还原
 # 所以静态库链接形式为-Wl,-whole-archive static_libs -Wl,--no-whole-archive
 target_link_libraries(${PROJECT_NAME}
-		glog
+        glog
+        gflags
         minizip
 		)
 INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
