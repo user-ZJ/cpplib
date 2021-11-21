@@ -61,8 +61,8 @@ include_directories(${boost_SOURCE_DIR})
 
 # third_party: poco
 FetchContent_Declare(poco
-  URL      https://github.com/pocoproject/poco/archive/refs/tags/poco-1.11.1-release.tar.gz
-  URL_HASH SHA256=2412a5819a239ff2ee58f81033bcc39c40460d7a8b330013a687c8c0bd2b4ac0
+  URL      https://pocoproject.org/releases/poco-1.11.1/poco-1.11.1-all.tar.gz
+  URL_HASH SHA256=31ccce6020047270003bfb5b0da7e2ad432884c23d3cd509c86f47cf3a5e5d2a
 )
 FetchContent_Populate(poco)
 # FetchContent_MakeAvailable(poco)
