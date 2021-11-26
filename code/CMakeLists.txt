@@ -6,7 +6,7 @@ option(BUILD_TEST "build test with googletest" ON)
 
 set(BASE_NAMESPACE zack)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 message(STATUS "opration system is ${CMAKE_SYSTEM_NAME}")
 #${CMAKE_SYSTEM_NAME} "Windows", "Linux","Android" or "Darwin"
@@ -32,7 +32,7 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEBUG")
     else()
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -Wfatal-errors")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors -Wall -Wextra -Werror -Wconversion -Wshadow")
     endif()
 else()
     if (MSVC)
@@ -129,6 +129,7 @@ INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 # add_dependencies(${PROJECT_NAME} gflags_module glog_module)
 
 add_subdirectory(source/web)
+
 
 if(BUILD_TEST)
     add_subdirectory(test)
