@@ -7,7 +7,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 include_directories(
 		 )
 link_directories(
-	/datafs/gitcode/cpplib/code/depends/poco-build/lib
 		)
 
 

@@ -64,13 +64,16 @@ FetchContent_Declare(poco
   URL      https://pocoproject.org/releases/poco-1.11.1/poco-1.11.1-all.tar.gz
   URL_HASH SHA256=31ccce6020047270003bfb5b0da7e2ad432884c23d3cd509c86f47cf3a5e5d2a
 )
-FetchContent_Populate(poco)
-# FetchContent_MakeAvailable(poco)
+# FetchContent_Populate(poco)
+FetchContent_MakeAvailable(poco)
+# add_subdirectory(${poco_SOURCE_DIR} ${poco_BINARY_DIR})
 include_directories(
     ${poco_SOURCE_DIR}/Net/include 
     ${poco_SOURCE_DIR}/Foundation/include
     ${poco_SOURCE_DIR}/Util/include
+    ${poco_SOURCE_DIR}/Redis/include
     ${poco_SOURCE_DIR}/JSON/include)
+link_directories(${CMAKE_BINARY_DIR}/lib)
 
 
 # third_party: gflags
@@ -129,7 +132,7 @@ INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 # add_dependencies(${PROJECT_NAME} gflags_module glog_module)
 
 add_subdirectory(source/web)
-
+add_subdirectory(source/db)
 
 if(BUILD_TEST)
     add_subdirectory(test)

@@ -23,6 +23,13 @@ add_executable(ctensor_test ctensor_test.cpp)
 target_link_libraries(ctensor_test mbase)
 
 
+add_executable(audio_test audio_test.cpp)
+target_link_libraries(audio_test sox)
+
+add_executable(redis_test redis_test.cpp)
+target_link_libraries(redis_test dbwrapper)
+
+
 add_executable(threadpool_test threadpool_test.cpp)
 target_link_libraries(threadpool_test mbase pthread)
 
