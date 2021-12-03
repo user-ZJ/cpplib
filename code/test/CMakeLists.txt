@@ -29,6 +29,9 @@ target_link_libraries(audio_test sox)
 add_executable(redis_test redis_test.cpp)
 target_link_libraries(redis_test dbwrapper)
 
+add_executable(mongodb_test mongodb_test.cpp)
+target_link_libraries(mongodb_test dbwrapper)
+
 
 add_executable(threadpool_test threadpool_test.cpp)
 target_link_libraries(threadpool_test mbase pthread)

@@ -174,4 +174,12 @@ inline std::string Rtrim(const std::string& str) {
 
 inline std::string Trim(const std::string& str) { return Rtrim(Ltrim(str)); }
 
+// 获取系统环境变量
+inline std::string getEnvVar( std::string const & key ){
+    if(key.empty())
+      return std::string("");
+    char * val = getenv( key.c_str() );
+    return val == NULL ? std::string("") : std::string(val);
+}
+
 }; 

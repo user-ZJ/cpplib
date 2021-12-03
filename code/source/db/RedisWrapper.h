@@ -4,7 +4,6 @@
 #include "Poco/Redis/Client.h"
 #include "Poco/Redis/Command.h"
 #include "Poco/Redis/Redis.h"
-#include <iostream>
 #include <string>
 
 namespace BASE_NAMESPACE {
@@ -20,6 +19,9 @@ public:
   int get(const std::string &key,std::string *value);
 
   bool exists(const std::string &key);
+
+  RedisWrapper(const RedisWrapper&) = delete;
+  RedisWrapper& operator=(const RedisWrapper&) = delete;
 
 private:
   std::string _host;

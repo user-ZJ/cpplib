@@ -64,14 +64,15 @@ FetchContent_Declare(poco
   URL      https://pocoproject.org/releases/poco-1.11.1/poco-1.11.1-all.tar.gz
   URL_HASH SHA256=31ccce6020047270003bfb5b0da7e2ad432884c23d3cd509c86f47cf3a5e5d2a
 )
-# FetchContent_Populate(poco)
-FetchContent_MakeAvailable(poco)
-# add_subdirectory(${poco_SOURCE_DIR} ${poco_BINARY_DIR})
+FetchContent_Populate(poco)
+# FetchContent_MakeAvailable(poco)
+add_subdirectory(${poco_SOURCE_DIR} ${poco_BINARY_DIR})
 include_directories(
     ${poco_SOURCE_DIR}/Net/include 
     ${poco_SOURCE_DIR}/Foundation/include
     ${poco_SOURCE_DIR}/Util/include
     ${poco_SOURCE_DIR}/Redis/include
+    ${poco_SOURCE_DIR}/MongoDB/include
     ${poco_SOURCE_DIR}/JSON/include)
 link_directories(${CMAKE_BINARY_DIR}/lib)
 
@@ -83,6 +84,7 @@ FetchContent_Declare(gflags
 )
 FetchContent_MakeAvailable(gflags)
 include_directories(${gflags_BINARY_DIR}/include)
+
 
 # third_party: glog
 FetchContent_Declare(glog
@@ -108,6 +110,7 @@ include_directories(${minizip_SOURCE_DIR})
 
 
 include_directories(
+    source
 	source/utils
 		 )
 link_directories(
