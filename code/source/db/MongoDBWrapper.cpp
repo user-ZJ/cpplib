@@ -1,3 +1,15 @@
+/*
+ * @Author: zack 
+ * @Date: 2021-12-07 15:13:14 
+ * @Last Modified by: zack
+ * @Last Modified time: 2021-12-07 15:47:22
+ */
+/*
+ * @Author: zack 
+ * @Date: 2021-12-06 09:56:04 
+ * @Last Modified by: zack
+ * @Last Modified time: 2021-12-07 15:13:14
+ */
 #include "MongoDBWrapper.h"
 #include "utils/logging.h"
 
@@ -31,7 +43,7 @@ void MongoDBWrapper::InsertRequest() {
 
     Poco::DateTime birthdate;
     birthdate.assign(1969, 3, 9);
-    Poco::DateTime now;
+    Poco::LocalDateTime now;
     insertPlayerRequest->addNewDocument()
         .add("lastname", "Valdes")
         .add("firstname", "Victor")
@@ -51,6 +63,20 @@ void MongoDBWrapper::InsertRequest() {
   } catch (Poco::Exception &e) {
     LOG(ERROR) << e.what();
   }
+}
+
+
+void MongoDBWrapper::UpdateRequest(){
+  Poco::MongoDB::Database db("team");
+	Poco::SharedPtr<Poco::MongoDB::UpdateRequest> request = db.createUpdateRequest("players");
+	request->selector().add("firstname", "Victor"); //WHERE firstname = 'Victor'
+
+	request->update().addNewDocument("$inc").add("start", 1);  //set start = start+1
+
+	connection.sendRequest(*request);
+
+	Poco::MongoDB::Document::Ptr lastError = db.getLastErrorDoc(connection);
+	LOG(INFO) << "LastError: " << lastError->toString(2);
 }
 
 void MongoDBWrapper::QueryRequest() {

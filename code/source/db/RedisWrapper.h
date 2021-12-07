@@ -1,3 +1,9 @@
+/*
+ * @Author: zack 
+ * @Date: 2021-12-06 09:56:14 
+ * @Last Modified by: zack
+ * @Last Modified time: 2021-12-07 16:17:04
+ */
 #pragma once
 
 #include "Poco/Exception.h"
@@ -15,6 +21,8 @@ public:
   ~RedisWrapper();
 
   int set(const std::string &key, const std::string &value,int timeout=0);
+
+  int append(const std::string &key, const std::string &value);
 
   int get(const std::string &key,std::string *value);
 

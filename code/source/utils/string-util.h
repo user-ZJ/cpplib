@@ -55,9 +55,13 @@ inline std::wstring to_wstring(std::string str) {
 
 //float转换为string并修正格式
 inline std::string toFormatStr(float number) {
-  std::ostringstream oss;
-  oss << std::setprecision(7) << number;
-  return oss.str();
+  // std::ostringstream oss;
+  // oss << std::setprecision(7) << number;
+  // return oss.str();
+  char buffer[64];
+  memset(buffer, 0, sizeof(buffer));
+  snprintf(buffer, sizeof(buffer), "%.2f", number);
+  return std::string(buffer);
 }
 
 inline std::vector<std::string> splitStringToVector(const std::string &full, const char *delim = " ") {

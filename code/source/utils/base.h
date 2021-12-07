@@ -19,4 +19,6 @@ using uint64 = uint64_t;
 typedef float   float32;
 typedef double double64;
 
-
+#define DISALLOW_COPY_AND_ASSIGN(Type) \
+    Type(const Type &) = delete;         \
+    Type &operator=(const Type &) = delete;

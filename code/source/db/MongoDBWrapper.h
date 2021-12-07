@@ -1,7 +1,13 @@
+/*
+ * @Author: zack 
+ * @Date: 2021-12-06 09:55:52 
+ * @Last Modified by: zack
+ * @Last Modified time: 2021-12-07 15:04:20
+ */
 #pragma once
 #include <string>
 #include <memory>
-#include "Poco/DateTime.h"
+#include "Poco/LocalDateTime.h"
 #include "Poco/ObjectPool.h"
 #include "Poco/MongoDB/InsertRequest.h"
 #include "Poco/MongoDB/QueryRequest.h"
@@ -22,8 +28,12 @@ public:
   MongoDBWrapper(const std::string &uri="mongodb://admin:admin@10.12.50.209:27017/admin");
   ~MongoDBWrapper();
   void InsertRequest();
+  void UpdateRequest();
   void QueryRequest();
   void DeleteRequest();
+
+  MongoDBWrapper(const MongoDBWrapper&) = delete;
+  MongoDBWrapper& operator=(const MongoDBWrapper&) = delete;
 
 private:
   std::string _uri;

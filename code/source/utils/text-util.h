@@ -29,7 +29,7 @@
 #include <assert.h>
 #include <sstream>
 #include <iostream>
-#include "base-type.h"
+#include "base.h"
 
 
 namespace BASE_NAMESPACE{
