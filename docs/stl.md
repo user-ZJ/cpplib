@@ -1,10 +1,12 @@
-# 1. vector
+# STL使用笔记
+
+## 1. vector
 
 *vector*是一个能够存放任意类型的动态数组，能够增加和压缩数据，增加的时候容量不够，则以2倍的存储增加容量
 
 https://blog.csdn.net/phoebin/article/details/3864590
 
-## 1.1 创建
+### 1.1 创建
 
 ```cpp
 #include <vector>
@@ -22,9 +24,9 @@ vector<int> sub_vec = {int_vec.begin(), int_vec.begin()+5};
 vector<vector<float>> result(10,vector<float>(20,0.0f));
 ```
 
-## 1.2 增加/插入数据
+### 1.2 增加/插入数据
 
-```  cpp
+```cpp
 #include <vector>
 using std::vector;
 vector<int> vInts;
@@ -32,7 +34,7 @@ vInts.push_back(9);  //在尾部增加数据
 vInts.insert(vInts.begin()+1,6); //插入数据
 ```
 
-## 1.3 获取容器大小
+### 1.3 获取容器大小
 
 ```cpp
 #include <vector>
@@ -43,7 +45,7 @@ vInts.size()；   //返回容器中实际数据的个数。
 vInts.capacity();    
 ```
 
-## 1.4 访问数据
+### 1.4 访问数据
 
 ```cpp
 #include <vector>
@@ -53,7 +55,7 @@ vInts.at(2);   //推荐使用，at()进行了边界检查，如果访问超过�
 vInts[2];    //不推荐使用，主要是为了与C语言进行兼容。它可以像C语言数组一样操作
 ```
 
-## 1.5 删除数据
+### 1.5 删除数据
 
 ```cpp
 #include <vector>
@@ -65,7 +67,7 @@ vInts.pop_back();  //删除最后一个数据。
 vInts.clear()();  //删除所有数据。   size为0，capacity不变，内存不会释放
 ```
 
-## 1.6 遍历
+### 1.6 遍历
 
 ```cpp
 #include <vector>
@@ -81,7 +83,7 @@ for (auto i : vInts)
 }
 ```
 
-## 1.7 查找
+### 1.7 查找
 
 ```cpp
 #include<iostream>
@@ -100,7 +102,7 @@ int main(){
 }
 ```
 
-## 1.8 排序
+### 1.8 排序
 
 ```cpp
 #include<iostream>
@@ -115,7 +117,7 @@ int main(){
 }
 ```
 
-## 1.9 拼接
+### 1.9 拼接
 
 ```cpp
 #include <iostream>
@@ -142,7 +144,7 @@ Resultant vector is:
 1 2 3 4 5
 ```
 
-## 1.10 求和
+### 1.10 求和
 
 ```cpp
 #include <numeric>
@@ -155,7 +157,7 @@ int main() {
 }
 ```
 
-## 1.11 最大、最小值
+### 1.11 最大、最小值
 
 ```cpp
 #include <algorithm>
@@ -185,7 +187,7 @@ int main() {
 }
 ```
 
-## 1.12 翻转
+### 1.12 翻转
 
 ```cpp
 # include<algorithm>
@@ -195,7 +197,7 @@ std::reverse(v.begin(),v.end());
 
 
 
-# 2. List
+## 2. List
 
 list容器就是一个双向链表,可以高效地进行插入删除元素
 
@@ -203,7 +205,7 @@ list容器就是一个双向链表,可以高效地进行插入删除元素
 
 https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
 
-## 2.1 创建
+### 2.1 创建
 
 ```cpp
 #include<iostream>
@@ -220,7 +222,7 @@ int main(){
 }
 ```
 
-## 2.2 增加/插入数据
+### 2.2 增加/插入数据
 
 ```cpp
 #include<iostream>
@@ -250,7 +252,7 @@ int main(){
 }
 ```
 
-## 2.3 获取/修改容器大小
+### 2.3 获取/修改容器大小
 
 ```cpp
 //c.empty(); // 判断链表是否为空。
@@ -270,7 +272,7 @@ int main(){
 
 
 
-## 2.4 访问元素
+### 2.4 访问元素
 
 ```cpp
 // c.front()      返回链表c的第一个元素。
@@ -288,7 +290,7 @@ int main(){
 }
 ```
 
-## 2.5 删除数据
+### 2.5 删除数据
 
 ```cpp
 //c.clear();      清除链表c中的所有元素。
@@ -316,7 +318,7 @@ int main(){
 }
 ```
 
-## 2.6 遍历
+### 2.6 遍历
 
 ```cpp
 #include<iostream>
@@ -341,7 +343,7 @@ int main(){
 
 ```
 
-## 2.7 查找
+### 2.7 查找
 
 ```cpp
 #include<iostream>
@@ -359,7 +361,7 @@ int main(){
 }
 ```
 
-## 2.8 翻转
+### 2.8 翻转
 
 ```cpp
 //reverse()       反转链表
@@ -367,7 +369,7 @@ list<int> a1{1,2,3,4,5};
 a1.reverse();
 ```
 
-## 2.9 排序
+### 2.9 排序
 
 ```cpp
 // c.sort()       将链表排序，默认升序
@@ -389,7 +391,7 @@ int main(){
 }
 ```
 
-## 2.10 去重
+### 2.10 去重
 
 ```cpp
 #include<iostream>
@@ -408,9 +410,9 @@ int main(){
 }
 ```
 
-# 3. map
+## 3. map
 
-## 3.1 创建
+### 3.1 创建
 
 ```cpp
 #include <map>
@@ -424,7 +426,7 @@ std::map<std::string, size_t> personnel {people};
 std::map<std::string, size_t> personnel {std::begin(people),std::end(people)};
 ```
 
-## 3.2 增加/插入数据
+### 3.2 增加/插入数据
 
 ```cpp
 //第一种：用insert函数插入pair数据 ,如果key存在，插入失败
@@ -453,7 +455,7 @@ int main(){
 
 
 
-## 3.3 获取/修改容器大小
+### 3.3 获取/修改容器大小
 
 ```cpp
 #include<iostream>
@@ -475,9 +477,9 @@ int main(){
 }
 ```
 
-## 3.4 访问元素
+### 3.4 访问元素
 
-## 3.5 删除元素
+### 3.5 删除元素
 
 ```cpp
 //iterator erase（iterator it);//通过一个条目对象删除
@@ -506,7 +508,7 @@ int main(){
 
 
 
-## 3.6 遍历
+### 3.6 遍历
 
 ```cpp
 //第一种：应用前向迭代器
@@ -532,7 +534,7 @@ int main(){
 
 
 
-## 3.7 查找
+### 3.7 查找
 
 ```cpp
 // 第一种：用count函数来判定关键字是否出现，其缺点是无法定位数据出现位置
@@ -559,13 +561,13 @@ int main(){
 }
 ```
 
-## 3.8 排序
+### 3.8 排序
 
 map中的元素是自动按Key升序排序，所以不能对map用sort函数
 
 STL中默认是采用小于号来排序的，以上代码在排序上是不存在任何问题的，因为上面的关键字是int 型，它本身支持小于号运算，在一些特殊情况，比如关键字是一个结构体，涉及到排序就会出现问题，因为它没有小于号操作，insert等函数在编译的时候过 不去；需要重载小于号
 
-# 4. unordered_map
+## 4. unordered_map
 
 https://www.cnblogs.com/langyao/p/8823092.html
 
@@ -577,9 +579,9 @@ map中的元素是按照二叉搜索树存储（用红黑树实现），进行�
 
 unordered_map编译时gxx需要添加编译选项：--std=c++11
 
-# 5. queue
+## 5. queue
 
-## 5.1 创建
+### 5.1 创建
 
 ```cpp
 queue<int> mqueue;
@@ -588,7 +590,7 @@ queue<int> mqueue1{mqueue};
 
 
 
-## 5.2 增加/插入数据
+### 5.2 增加/插入数据
 
 ```cpp
 queue<int> mqueue;
@@ -598,7 +600,7 @@ mqueue.emplace(2);  //可以避免对象的拷贝，重复调用构造函数
 
 
 
-## 5.3 获取/修改容器大小
+### 5.3 获取/修改容器大小
 
 ```cpp
 queue<int> mqueue;
@@ -610,7 +612,7 @@ mqueue.empty();  //判断是否为空
 
 
 
-## 5.4 访问元素
+### 5.4 访问元素
 
 ```cpp
 mqueue.front();  //返回 queue 中第一个元素的引用
@@ -619,7 +621,7 @@ mqueue.back();  //返回 queue 中最后一个元素的引用
 
 
 
-## 5.5 删除元素
+### 5.5 删除元素
 
 ```cpp
 mqueue.pop();
@@ -627,17 +629,17 @@ mqueue.pop();
 
 
 
-## 5.6 遍历
+### 5.6 遍历
 
 和 stack 一样，queue 也没有迭代器。访问元素的唯一方式是遍历容器内容，并移除访问过的每一个元素
 
-## 5.7 查找
+### 5.7 查找
 
 
 
 
 
-# 6. deque
+## 6. deque
 
 deque两端都能够快速插入和删除元素
 
@@ -654,7 +656,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
 
  由于deque在性能上并不是最高效的，有时候对deque元素进行排序，更高效的做法是，将deque的元素移到到vector再进行排序，然后在移到回来。
 
-## 6.1 创建
+### 6.1 创建
 
 ```cpp
 deque<int> mqueue;
@@ -671,7 +673,7 @@ deque<int>  d2({1,2,3,4,5,6,7});  //初始化列表进行初始化
 
 
 
-## 6.2 增加/插入数据
+### 6.2 增加/插入数据
 
 ```cpp
 deque<int> mqueue;
@@ -682,7 +684,7 @@ mqueue.emplace_back(2);  //可以避免对象的拷贝，重复调用构造函�
 
 
 
-## 6.3 获取/修改容器大小
+### 6.3 获取/修改容器大小
 
 ```cpp
 deque<int> mqueue;
@@ -694,7 +696,7 @@ mqueue.empty();  //判断是否为空
 
 
 
-## 6.4 访问元素
+### 6.4 访问元素
 
 ```cpp
 mqueue.front();  //返回 queue 中第一个元素的引用
@@ -703,7 +705,7 @@ mqueue.back();  //返回 queue 中最后一个元素的引用
 
 
 
-## 6.5 删除元素
+### 6.5 删除元素
 
 ```cpp
 mqueue.pop_front();
@@ -712,7 +714,7 @@ mqueue.pop_end();
 
 
 
-## 6.6 遍历
+### 6.6 遍历
 
 ```cpp
 for (std::deque<int>::iterator it = dq.begin(); it!=dq.end(); ++it)
@@ -721,11 +723,11 @@ for (std::deque<int>::iterator it = dq.begin(); it!=dq.end(); ++it)
 
 
 
-## 6.7 查找
+### 6.7 查找
 
-# 7. stack
+## 7. stack
 
-## 7.1  创建
+### 7.1  创建
 
 ```cpp
 //stack<int> s1 = {1,2,3,4,5};   //error    stack不可以用一组数直接初始化
@@ -745,7 +747,7 @@ stack<int> s7(d1);                  //用deque 为 stack  初始化时 deque可�
 
 
 
-## 7.2 增加/插入数据
+### 7.2 增加/插入数据
 
 ```cpp
 mstack.push(333);
@@ -754,7 +756,7 @@ mstach.emplace(333);
 
 
 
-## 7.3 获取/修改容器大小
+### 7.3 获取/修改容器大小
 
 ```cpp
 mstack.size();
@@ -763,7 +765,7 @@ mstack.empty();
 
 
 
-## 7.4 访问元素
+### 7.4 访问元素
 
 ```cpp
 mstack.top();
@@ -771,7 +773,7 @@ mstack.top();
 
 
 
-## 7.5 删除元素
+### 7.5 删除元素
 
 ```cpp
 mstack.pop();
@@ -779,7 +781,7 @@ mstack.pop();
 
 
 
-## 7.6 遍历
+### 7.6 遍历
 
 stack 遍历需要将所有元素出栈
 
@@ -800,13 +802,13 @@ int main(){
 }
 ```
 
-# 8. priority_queue（堆）
+## 8. priority_queue（堆）
 
 和`queue`不同的就在于我们可以自定义其中数据的优先级, 让优先级高的排在队列前面,优先出队
 
 优先队列具有队列的所有特性，包括基本操作，只是在这基础上添加了内部的一个排序，它本质是一个**堆**实现的
 
-## 8.1 创建
+### 8.1 创建
 
 ```cpp
 // 定义 priority_queue<Type, Container, Functional>
@@ -897,7 +899,7 @@ int main()
 }
 ```
 
-## 8.2 增加/插入数据
+### 8.2 增加/插入数据
 
 ```cpp
 priority_queue<int> mqueue;
@@ -907,7 +909,7 @@ mqueue.emplace(2);  //可以避免对象的拷贝，重复调用构造函数
 
 
 
-## 8.3 获取/修改容器大小
+### 8.3 获取/修改容器大小
 
 ```cpp
 priority_queue<int> mqueue;
@@ -919,7 +921,7 @@ mqueue.empty();  //判断是否为空
 
 
 
-## 8.4 访问元素
+### 8.4 访问元素
 
 ```cpp
 mqueue.top();  //返回 queue中第一个元素，即最大/最小的元素
@@ -927,7 +929,7 @@ mqueue.top();  //返回 queue中第一个元素，即最大/最小的元素
 
 
 
-## 8.5 删除元素
+### 8.5 删除元素
 
 ```cpp
 mqueue.pop();
@@ -935,6 +937,6 @@ mqueue.pop();
 
 
 
-## 8.6 遍历
+### 8.6 遍历
 
 和 stack 一样，queue 也没有迭代器。访问元素的唯一方式是遍历容器内容，并移除访问过的每一个元素

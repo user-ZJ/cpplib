@@ -1,3 +1,7 @@
+# log4cpp使用笔记
+
+
+
 日志类别（Category）、输出源（Appender）和布局（Layout）
 
 Priorty（优先 级）、NDC（嵌套的诊断上下）
@@ -16,7 +20,7 @@ Priorty（优先 级）、NDC（嵌套的诊断上下）
 
 
 
-# 参考
+## 参考
 
 https://blog.csdn.net/jigetage/article/details/80624692
 

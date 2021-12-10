@@ -12,7 +12,7 @@ IO类分为三类
 2. fstream类：  负责与文件输入输出打交道,ifstream和ofstream
 3. stringstream类：负责与string上的输入输出打交道,istringstream和ostringstream
 
-# 1. iostream
+## 1. iostream
 
 cin，cout，cerr是最基本的输入输出流 ,通过运算符"<<"和 “>>”操作
 
@@ -81,7 +81,7 @@ cin.gcount() //在使用get后可以使用 cin.gcount( )返回 已经读入的�
 
 
 
-# 2. fstream
+## 2. fstream
 
 ```cpp
 #include <iostream>
@@ -144,7 +144,7 @@ outfile.close();
 
 
 
-# 3. stringstream
+## 3. stringstream
 
 C++引入了ostringstream、istringstream、stringstream这三个类，要使用他们创建对象就必须包含sstream.h头文件
 
@@ -152,7 +152,7 @@ istringstream类用于执行C++风格的串流的输入操作。
 ostringstream类用于执行C++风格的串流的输出操作。 
 strstream类同时可以支持C++风格的串流的输入输出操作。
 
-## istringstream
+### istringstream
 
 istringstream是由一个string对象构造而来，istringstream类从一个string对象读取字符
 
@@ -178,7 +178,7 @@ int main()
 }  
 ```
 
-## ostringstream
+### ostringstream
 
 ostringstream同样是由一个string对象构造而来，ostringstream类向一个string插入字符
 
@@ -202,7 +202,7 @@ int main()
 }
 ```
 
-## stringstream
+### stringstream
 
 stringstream是用于C++风格的字符串的输入输出的
 
@@ -253,7 +253,7 @@ sstr>>cname;
 cout<<cname; 
 ```
 
-## iomanip
+### iomanip
 
 iomanip是I/O流控制头文件,就像C里面的格式化输出一样
 
@@ -315,7 +315,7 @@ cout << number << endl;
 return 0;
 ```
 
-## stringsteam清空方法
+### stringsteam清空方法
 
 stringstream不能用clear()方法清空，清空方法为
 
@@ -329,7 +329,7 @@ ss.str("");
 
 
 
-# 4 将char * 转换为istream
+## 4 将char * 转换为istream
 
 ```c++
 struct membuf :std::streambuf {

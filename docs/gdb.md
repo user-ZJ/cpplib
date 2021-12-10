@@ -1,4 +1,4 @@
-# 调试方法
+# gdb使用笔记
 
 调试工具gdb，DDD（gdb的GUI工具）
 
@@ -368,7 +368,7 @@ ltrace跟踪库调用
 
 
 
-# gdb调试C++程序
+## gdb调试C++程序
 
 参数列表
 
@@ -392,7 +392,7 @@ ltrace跟踪库调用
 | frame          | f        | 查看栈帧                                                     |
 | quit           | q        | 退出GDB环境                                                  |
 
-## gdb调试示例程序
+### gdb调试示例程序
 
 ```cpp
 #include <stdio.h>
@@ -419,7 +419,7 @@ gcc -g -o test test.c
 
 在Linux下，我们可以使用“strip”命令来去掉ELF文件中的调试信息：
 
-## 启动gdb调试
+### 启动gdb调试
 
 启动gdb调试有两种方式
 
@@ -434,9 +434,9 @@ gdb
 file test
 ```
 
-## 运行gdb调试程序
+### 运行gdb调试程序
 
-### run/r
+#### run/r
 
 使用run或者r命令开始程序的执行,也可以使用 run parameter将参数传递给该程序
 
@@ -451,7 +451,7 @@ now a=15
 now a=20
 ```
 
-### list
+#### list
 
 list命令显示多行源代码,从上次的位置开始显示,默认情况下,一次显示10行,第一次使用时,从代码其实位置显示
 
@@ -473,7 +473,7 @@ list functionname显示以functionname的函数为中心的10行代码
 10          for(i=0;i<10;i++){
 ```
 
-### break
+#### break
 
 break location:在location位置设置断点,改位置可以为某一行,某函数名或者其它结构的地址
 GDB会在执行该位置的代码之前停下来
@@ -486,13 +486,13 @@ delete breakpoints 断点号                        删除断点
 
 disable/enable n               表示使得编号为n的断点暂时失效或有效
 
-### info
+#### info
 
 查看信息
 
 info breakpoints   **查看断点相关的信息**
 
-### display
+#### display
 
 查看参数的值    
 
@@ -517,13 +517,13 @@ now a=5
 1: j = 5
 ```
 
-### step和next
+#### step和next
 
 step执行下一条语句,如果该语句为函数调用,则**进入函数**执行其中的第一条语句
 
 next执行下一条语句,如果该语句为函数调用,**不会进入函数内部执行**
 
-### watch
+#### watch
 
 watch可设置观察点(watchpoint)。使用观察点可以使得当某表达式的值发生变化时,程序暂停执行
 
@@ -557,7 +557,7 @@ main (argc=1, argv=0x7ffdcf012448) at test.c:12
 12              printf("now a=%d\n", j);
 ```
 
-### print
+#### print
 
 ```shell
 (gdb) b 12
@@ -584,13 +584,13 @@ $3 = 10
 $4 = 1
 ```
 
-### backtrace
+#### backtrace
 
 可使用frame 查看堆栈中某一帧的信息
 
 
 
-# gdb调试coredump文件
+## gdb调试coredump文件
 
 core文件会包含了程序运行时的内存，寄存器状态，堆栈指针，内存管理信息还有各种函数调用堆栈信息等，我们可以理解为是程序工作当前状态存储生成的一个文件，许多的程序出错的时候都会产生一个core文件，通过工具分析这个文件，我们可以定位到程序异常退出的时候对应的堆栈调用等信息，找出问题所在并进行及时解决
 
@@ -610,13 +610,13 @@ readelf -h core 可以看到ELF文件头的Type字段的类型是：CORE (Core f
 
 file core   也可以看到core file
 
-## 生成core文件
+### 生成core文件
 
 ulimit -c unlimited
 
 echo /data/coredump/core.%e.%p> /proc/sys/kernel/core_pattern 将使程序崩溃时生成的coredump文件位于/data/coredump/目录下
 
-## coredump产生的几种可能情况
+### coredump产生的几种可能情况
 
 1. 内存访问越界
 2. 多线程程序使用了线程不安全的函数
@@ -624,7 +624,7 @@ echo /data/coredump/core.%e.%p> /proc/sys/kernel/core_pattern 将使程序崩溃
 4. 非法指针
 5. 堆栈溢出
 
-## 利用gdb进行coredump的定位
+### 利用gdb进行coredump的定位
 
  gdb  程序名(包含路径)   core*(core文件名和路径）
 
@@ -638,7 +638,7 @@ disassemble打开该帧函数的反汇编代码。箭头位置表示coredump时�
 
 shell echo free@plt |c++filt 去掉函数的名词修饰
 
-## coredump示例1
+### coredump示例1
 
 ```c
 #include "stdio.h"
@@ -720,7 +720,7 @@ free@plt
 
 上面的free使用去掉名词修饰效果和之前还是一样的。但是我们可以推测到这里是在调用free函数
 
-## coredump示例2--寻找this指针和虚指针
+### coredump示例2--寻找this指针和虚指针
 
 ```c++
 #include "stdio.h"
@@ -819,7 +819,7 @@ shell echo_ZTV8dumpTest|c++filt 可以看到“vtable for dumpTest”的内容�
 
 如上，在实际问题中，C++程序的很多coredump问题都是和指针相关的，很多segmentfault都是由于指针被误删或者访问空指针、或者越界等造成的，而这些都一般意味着正在访问的对象的this指针可能已经被破坏了，此时，我们通过去寻找函数对应的对象的this指针、虚指针能验证我们的推测。之后再结合代码寻找问题所在。
 
-## coredump示例3--所有线程堆栈
+### coredump示例3--所有线程堆栈
 
 ```cpp
 #include <iostream>
@@ -870,7 +870,7 @@ threadapply thread ID bt 查看指定线程堆栈信息
 
 thread thread ID	进入指定线程栈空间
 
-# objdump
+## objdump
 
 -a, --archive-headers：显示archive头信息
 
@@ -910,7 +910,7 @@ thread thread ID	进入指定线程栈空间
 
 -i, --info：列出支持的对象格式和体系结构
 
-# readelf
+## readelf
 
 -a --all               Equivalent to: -h -l -S -s -r -d -V -A -I
 
@@ -1007,7 +1007,7 @@ gcc -c hello.c -o hello.o //汇编
 
 
 
-# 其他
+## 其他
 
 动态链接器会按照下列顺序依次装载或查找共享对象（目标文件）：
 
@@ -1052,7 +1052,7 @@ void __attribute__((destructor)) fini_function (void);
 
 
 
-# 参考
+## 参考
 
 https://blog.csdn.net/zdy0_2004/article/details/80102076    
 

@@ -1,4 +1,7 @@
-# 头文件
+# socket使用笔记
+
+## 头文件
+
 	#include <iostream>     // std::cout、std::endl
 	#include <sys/socket.h> // socket、bind、listen、accept
 	#include <netinet/in.h> // htonl、htons、sockaddr_in、INADDR_ANY
@@ -6,7 +9,7 @@
 	#include <string.h>     // bzero
 	#include <arpa/inet.h>  // inet_addr
 
-# 服务端
+## 服务端
 	#define PORT 7000  //端口号
 	#define QUEUE 100  //队列长度
 	
@@ -71,7 +74,7 @@
 	}
 	close(ss)
 
-# 客户端
+## 客户端
 	string query = "test"
 	int sock_cli = socket(AF_INET,SOCK_STREAM, 0);
 	struct sockaddr_in servaddr;
