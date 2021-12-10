@@ -16,5 +16,6 @@ int main(int argc, char *argv[]) {
   LOG(INFO)<<redis.get("k1",&value)<<" "<<value<<std::endl;
   LOG(INFO)<<redis.get("k2",&value)<<" "<<value<<std::endl;
   LOG(INFO)<<redis.exists("k2")<<std::endl;
+  
   return 0;
 }

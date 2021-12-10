@@ -2,7 +2,7 @@
  * @Author: zack 
  * @Date: 2021-12-06 09:56:19 
  * @Last Modified by: zack
- * @Last Modified time: 2021-12-07 16:22:48
+ * @Last Modified time: 2021-12-07 17:54:44
  */
 #include "RedisWrapper.h"
 #include "utils/logging.h"
@@ -56,13 +56,13 @@ int RedisWrapper::set(const std::string &key, const std::string &value,int timeo
 }
 
 int RedisWrapper::append(const std::string &key, const std::string &value){
-  Command appendCommand = Command::append(key, value);
+  Poco::Redis::Command appendCommand = Poco::Redis::Command::append(key, value);
 	try
 	{
 		Poco::Int64 result = _redis.execute<Poco::Int64>(appendCommand);
     return result;
 	}
-	catch (RedisException& e)
+	catch (Poco::Redis::RedisException& e)
 	{
 		LOG(ERROR) << e.message();
     return -1;

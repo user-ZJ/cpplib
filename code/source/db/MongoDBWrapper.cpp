@@ -2,7 +2,7 @@
  * @Author: zack 
  * @Date: 2021-12-07 15:13:14 
  * @Last Modified by: zack
- * @Last Modified time: 2021-12-07 15:47:22
+ * @Last Modified time: 2021-12-08 10:16:17
  */
 /*
  * @Author: zack 
@@ -73,9 +73,9 @@ void MongoDBWrapper::UpdateRequest(){
 
 	request->update().addNewDocument("$inc").add("start", 1);  //set start = start+1
 
-	connection.sendRequest(*request);
+	_connection.sendRequest(*request);
 
-	Poco::MongoDB::Document::Ptr lastError = db.getLastErrorDoc(connection);
+	Poco::MongoDB::Document::Ptr lastError = db.getLastErrorDoc(_connection);
 	LOG(INFO) << "LastError: " << lastError->toString(2);
 }
 

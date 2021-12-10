@@ -12,5 +12,6 @@ int main(int argc, char *argv[]) {
   mongo.InsertRequest();
   mongo.QueryRequest();
   mongo.DeleteRequest();
+  
   return 0;
 }
