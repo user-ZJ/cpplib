@@ -32,6 +32,8 @@ target_link_libraries(redis_test dbwrapper)
 add_executable(mongodb_test mongodb_test.cpp)
 target_link_libraries(mongodb_test dbwrapper)
 
+add_executable(rapidjson_test rapidjson_test.cpp)
+
 
 add_executable(threadpool_test threadpool_test.cpp)
 target_link_libraries(threadpool_test mbase pthread)

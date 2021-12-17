@@ -73,11 +73,16 @@ vInts.clear()();  //删除所有数据。   size为0，capacity不变，内存�
 #include <vector>
 using std::vector;
 vector<int> vInts(10,9);
+// 第一种方式
+for(int i=0;i<vInts.size();i++){
+    cout<<vInts[i]<<endl;
+}
+// 第二种方式，迭代器
 for(vector<int>::iterator iter = vInts.begin(); iter != vInts.end(); iter++){
     cout<<*iter<<endl;
 }
 // c++ 11
-for (auto i : vInts)
+for (auto &i : vInts)
 {
 	cout << i<< endl;
 }
@@ -146,15 +151,44 @@ Resultant vector is:
 
 ### 1.10 求和
 
+```text
+T accumulate( InputIt first, InputIt last, T init );
+T accumulate( InputIt first, InputIt last, T init,BinaryOperation op );
+accumulate默认返回的是int类型，操作符默认是‘+’;当sum溢出时，将init类型改为long，则返回long类型
+```
+
 ```cpp
-#include <numeric>
+#include <iostream>
 #include <vector>
-using namespace std;
-int main() {
-   vector<int> v1 = { 1, 2, 3 };
-   int suum=accumulate(v1.begin(),v1.end(),0);
-   return 0;
+#include <numeric>
+#include <string>
+#include <functional>
+ 
+int main()
+{
+    std::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int sum = std::accumulate(v.begin(), v.end(), 0);
+    int product = std::accumulate(v.begin(), v.end(), 1, std::multiplies<int>());
+    auto dash_fold = [](std::string a, int b) {
+                         return std::move(a) + '-' + std::to_string(b);
+                     };
+    std::string s = std::accumulate(std::next(v.begin()), v.end(),
+                                    std::to_string(v[0]), // 用首元素开始
+                                    dash_fold);
+    // 使用逆向迭代器右折叠
+    std::string rs = std::accumulate(std::next(v.rbegin()), v.rend(),
+                                     std::to_string(v.back()), // 用首元素开始
+                                     dash_fold);
+    std::cout << "sum: " << sum << '\n'
+              << "product: " << product << '\n'
+              << "dash-separated string: " << s << '\n'
+              << "dash-separated string (right-folded): " << rs << '\n';
 }
+
+sum: 55
+product: 3628800
+dash-separated string: 1-2-3-4-5-6-7-8-9-10
+dash-separated string (right-folded): 10-9-8-7-6-5-4-3-2-1
 ```
 
 ### 1.11 最大、最小值
@@ -940,3 +974,128 @@ mqueue.pop();
 ### 8.6 遍历
 
 和 stack 一样，queue 也没有迭代器。访问元素的唯一方式是遍历容器内容，并移除访问过的每一个元素
+
+## 9. 排列组合
+
+**next_permutation和prev_permutation区别：**
+
+next_permutation（start,end），和prev_permutation（start,end）。这两个函数作用是一样的，区别就在于前者求的是当前排列的下一个排列，后一个求的是当前排列的上一个排列。至于这里的“前一个”和“后一个”，我们可以把它理解为序列的字典序的前后，严格来讲，就是对于当前序列pn，他的下一个序列pn+1满足：不存在另外的序列pm，使pn<pm<pn+1.
+
+### 9.1 生成N个不同元素的全排列
+
+这是next_permutation()的基本用法，把元素从小到大放好（即字典序的最小的排列），然后反复调用next_permutation()就行了
+
+```cpp
+#include<iostream>
+#include <iterator>
+#include<string>
+#include <vector>
+#include <algorithm>
+
+int main(int argc, char *argv[]) {
+  std::vector<int> vec{1,2,3,4};
+  int count=0;
+  do{
+    std::cout<<++count<<":";
+    std::copy(vec.begin(),vec.end(),std::ostream_iterator<int>(std::cout,","));
+    std::cout<<std::endl;
+  }while(std::next_permutation(vec.begin(),vec.end()));
+}
+```
+
+带有重复字符的排列组合
+
+```cpp
+#include <algorithm>
+#include <string>
+#include <iostream>
+ 
+int main()
+{
+    std::string s = "aba";
+    std::sort(s.begin(), s.end());
+    do {
+        std::cout << s << '\n';
+    } while(std::next_permutation(s.begin(), s.end()));
+}
+```
+
+### 9.2 生成从N个元素中取出M个的所有组合
+
+**题目：**输出从7个不同元素中取出3个元素的所有组合
+
+思路：对序列{1,1,1,0,0,0,0}做全排列。对于每个排列，输出数字1对应的位置上的元素。
+
+```cpp
+#include<iostream>
+#include <iterator>
+#include<string>
+#include <vector>
+#include <algorithm>
+
+int main(int argc, char *argv[]) {
+  
+
+  std::vector<int> values{1,2,3,4,5,6,7};
+  std::vector<int> selectors{1,1,1,0,0,0,0};
+  int count=0;
+  do{
+    std::cout<<++count<<": ";
+    for(size_t i=0;i<selectors.size();i++){
+      if(selectors[i]){
+        std::cout<<values[i]<<", ";
+      }
+    }
+    std::cout<<std::endl;
+  }while(std::prev_permutation(selectors.begin(),selectors.end()));
+}
+```
+
+## 10. unique(去重)
+
+std::unique()的作用是去除相邻的重复元素，可以自定义判断元素重复的方法
+
+```cpp
+#include<iostream>
+#include <iterator>
+#include<string>
+#include <vector>
+#include <algorithm>
+
+bool bothSpaces(char x,char y){
+  return x==' ' && y== ' ';
+}
+
+int main(int argc, char *argv[]) {
+  std::string str = "abcc     aab            c";
+  std::string str1 = str;
+  std::string::iterator last = std::unique(str.begin(),str.end());
+  str.erase(last,str.end());  
+  std::cout<<str<<std::endl;  //abc ab c
+
+  std::string::iterator last1 = std::unique(str1.begin(),str1.end(),bothSpaces);
+  str1.erase(last1,str1.end());
+  std::cout<<str1<<std::endl;  //abcc aab c
+}
+```
+
+std::unique()通用适用于容器；
+
+**注意：**unique之后， 容器元素被修改了，但是个数没变，需要手动调整容器的大小，这个位置由unique的返回值来确定
+
+```cpp
+#include<iostream>
+#include <iterator>
+#include<string>
+#include <vector>
+#include <algorithm>
+
+int main(int argc, char *argv[]) {
+  std::vector<int> vi{1,2,2,3,2,1,1};
+  auto result = unique(vi.begin(), vi.end());
+  vi.resize(std::distance(vi.begin(), result));
+  std::copy(vi.begin(), vi.end(), std::ostream_iterator<int>(std::cout, ","));
+  return 0;
+}
+```
+

@@ -359,3 +359,12 @@ std::istringstream ss;
 ss.rdbuf()->pubsetbuf(buf,len);
 ```
 
+## 5. stringstream转换为vector
+
+```cpp
+string line = "hello hello";
+stringstream ss(line);
+std::vector<char> mvec((istreambuf_iterator<char>(ss)),std::istreambuf_iterator<char>());
+cout << mvec.size() << endl;
+```
+
