@@ -4,9 +4,10 @@
 #include <cassert>
 #include <vector>
 #include <limits>
+#include "vad/FVadWrapper.h"
 
 
-
+using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -32,13 +33,23 @@ int main(int argc, char *argv[]) {
   std::vector<sox_sample_t> audio_data(sample_num);
   std::vector<int16_t>  audio_int16(sample_num);
   assert(sox_read(in, audio_data.data(), sample_num)==sample_num);
-  for(int i=0;i<10;i++){
+  for(size_t i=0;i<audio_data.size();i++){
       //std::cout<<SOX_SAMPLE_TO_FLOAT_64BIT(audio_data[i],)<<" ";
       //std::cout<<SOX_SAMPLE_TO_SIGNED_32BIT(audio_data[i],)<<" ";
       int16_t d = SOX_SAMPLE_TO_FLOAT_64BIT(audio_data[i],)*(std::numeric_limits<int16_t>::max()+1.0);
-      std::cout<<d<<" ";
+      audio_int16[i] = d;
+      // std::cout<<d<<" ";
   }
   std::cout<<std::endl;
+
+  ////////////////////////////////////////////////
+  FVadWrapper vad;
+  vad.Init("");
+  auto vadres = vad.SplitAudio(audio_int16,sample_rate);
+  for(auto &p:vadres){
+    std::cout<<p.first/8000.0<<","<<p.second/8000.0<<"\n";
+  }
+  ////////////////////////////////////////////////
   sox_close(in);
   sox_quit();
   return 0;

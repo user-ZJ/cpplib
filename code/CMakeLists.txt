@@ -116,6 +116,13 @@ FetchContent_Declare(rapidjson
 FetchContent_Populate(rapidjson)
 include_directories(${rapidjson_SOURCE_DIR}/include)
 
+# third_party: fvad
+FetchContent_Declare(fvad
+  GIT_REPOSITORY    https://github.com/dpirch/libfvad.git
+  GIT_TAG   847a37297a8ca3fe80c4d878a2003f2c5106b0bf
+)
+FetchContent_MakeAvailable(fvad)
+include_directories(${fvad_SOURCE_DIR}/include)
 
 include_directories(
     source
@@ -144,6 +151,7 @@ INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 
 add_subdirectory(source/web)
 add_subdirectory(source/db)
+add_subdirectory(source/vad)
 
 if(BUILD_TEST)
     add_subdirectory(test)
