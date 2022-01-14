@@ -11,9 +11,13 @@ namespace BASE_NAMESPACE {
 使用该头文件需要安装libsox-dev. 如：apt install libsox-dev
 另外需要链接libsox.so 
 */
+
+static std::mutex sox_mutex;
+
 class SoxWavReader {
 public:
   explicit SoxWavReader(const std::string &filename) {
+    std::unique_lock<std::mutex> lock(sox_mutex);
     sox_format_t *in;
     assert(sox_init() == SOX_SUCCESS);
     assert(in = sox_open_read(filename.c_str(), NULL, NULL, NULL));

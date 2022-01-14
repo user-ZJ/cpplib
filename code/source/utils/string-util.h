@@ -186,4 +186,20 @@ inline std::string getEnvVar( std::string const & key ){
     return val == NULL ? std::string("") : std::string(val);
 }
 
+inline bool endswith(std::string const &fullString, std::string const &ending){
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
+inline bool startswith(std::string const &fullString, std::string const &starts){
+    if (fullString.length() >= starts.length()) {
+        return (0 == fullString.compare(0, starts.length(), starts));
+    } else {
+        return false;
+    }
+}
+
 }; 

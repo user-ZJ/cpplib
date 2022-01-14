@@ -1099,3 +1099,135 @@ int main(int argc, char *argv[]) {
 }
 ```
 
+## 11. set
+
+set是一种关联[容器](https://www.geeksforgeeks.org/containers-cpp-stl/)，其中每个元素都必须是唯一的，这些值按特定顺序存储。
+
+特性：
+
+1. set中存储的值是排序的（如果要用乱序的，使用unordered_set）
+2. set中的值是唯一的
+3. 加入到set中的值不可改变；要改变需要删除原有值，添加新值
+4. set底层是基于二叉搜索树实现的
+5. set集合中的值不可以通过下标索引
+
+### 11.1 创建
+
+```cpp
+set<int> val; //创建一个空的set
+set<int> val = {6, 10, 5, 1}; // 使用值初始化set
+set<int, greater<int> > s1;  // 创建一个空的set，自定义排序方法
+set<int> s2(s1.begin(), s1.end());  // 从其他set集合中拷贝
+```
+
+### 11.2 增加/插入数据
+
+```cpp
+// 返回插入元素所在位置的迭代器
+iterator set_name.insert(element)
+```
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+int main()
+{
+    set<int> s;
+    // Function to insert elements
+    // in the set container
+    s.insert(1);
+    s.insert(4);
+    s.insert(2);
+    s.insert(5);
+    s.insert(3);
+    cout << "The elements in set are: ";
+    for (auto it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+ 
+    return 0;
+}
+```
+
+### 11.3 获取/修改容器大小
+
+只能获取set的大小，不能直接修改set的大小
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+int main()
+{
+    set<int> s;
+    // Function to insert elements
+    // in the set container
+    s.insert(1);
+    s.insert(4);
+    s.insert(2);
+    s.insert(5);
+    s.insert(3);
+    cout << "The elements in set size: "<<s.size();
+    return 0;
+}
+```
+
+### 11.4 访问元素
+
+set只能通过迭代器访问
+
+### 11.5 删除元素
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+int main()
+{
+    set<int> s = {1,4,2,5,3};
+    cout << "The elements in set are: ";
+    for (auto it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    s.erase(s.begin(), s.find(3)); //删除小于3的所有元素
+    s.erase(5); // 删除指定元素
+    return 0;
+}
+```
+
+### 11.6 遍历
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+int main()
+{
+    set<int> s = {1,4,2,5,3};
+    cout << "The elements in set are: ";
+    for (auto it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    return 0;
+}
+```
+
+### 11.7 查找
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+int main()
+{
+    // Initialize set
+    set<int> s;
+    s.insert(1);
+    s.insert(4);
+    s.insert(2);
+    s.insert(5);
+    s.insert(3);
+    // iterator pointing to
+    // position where 3 is
+    auto pos = s.find(3);
+    // prints the set elements
+    cout << "The set elements after 3 are: ";
+    for (auto it = pos; it != s.end(); it++)
+        cout << *it << " ";
+    return 0;
+}
+```
+
