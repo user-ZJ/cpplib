@@ -38,6 +38,10 @@ add_executable(rapidjson_test rapidjson_test.cpp)
 add_executable(threadpool_test threadpool_test.cpp)
 target_link_libraries(threadpool_test mbase pthread)
 
+
+add_executable(crypto_test crypto_test.cpp)
+target_link_libraries(crypto_test cryptopp.a pthread)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors -fpermissive")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors -fpermissive")
 add_executable(minizip_test minizip_test.cpp)

@@ -124,6 +124,32 @@ FetchContent_Declare(fvad
 FetchContent_MakeAvailable(fvad)
 include_directories(${fvad_SOURCE_DIR}/include)
 
+# # third_party: cryptopp
+# FetchContent_Declare(cryptopp
+#   URL      https://cryptopp.com/cryptopp860.zip
+#   URL_HASH SHA256=20aa413957d9c8ae353ee2f7747bd7ac392f933c60a53e3fd1e41cadbc48d193
+# )
+# FetchContent_MakeAvailable(cryptopp)
+# include_directories(${cryptopp_BINARY_DIR}/include)
+
+set(cryptopp_SRC_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-src)
+set(cryptopp_BUILD_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-build)
+set(cryptopp_PREFIX_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-subbuild/cryptopp-populate-prefix)
+ExternalProject_Add(cryptopp
+    URL               https://cryptopp.com/cryptopp860.zip
+    URL_HASH          SHA256=20aa413957d9c8ae353ee2f7747bd7ac392f933c60a53e3fd1e41cadbc48d193
+    PREFIX            ${cryptopp_PREFIX_DIR}
+    # DOWNLOAD_DIR      ${cryptopp_PREFIX_DIR}
+    SOURCE_DIR        ${cryptopp_SRC_DIR}
+    BINARY_DIR        ${cryptopp_SRC_DIR}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND     make -j 4
+    INSTALL_COMMAND   make install PREFIX=${cryptopp_BUILD_DIR}
+)
+include_directories(${cryptopp_SRC_DIR})
+link_directories(${cryptopp_SRC_DIR})
+
+
 include_directories(
     source
 	source/utils
