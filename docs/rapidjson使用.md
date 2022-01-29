@@ -124,7 +124,7 @@ int main()
     char readBuffer[65536];
     FileReadStream is(fp, readBuffer, sizeof(readBuffer));
     Document d;
-    d.ParseStream(is);  // 如果已经是stream，使用d.Parse(char *)解析
+    d.ParseStream(is);  // 如果已经是string，使用d.Parse(char *)解析
     static const char* kTypeNames[] =  { "Null", "False", "True", "Object", "Array", "String", "Number" };
     //读取string的value;使用d["name"].IsString()判断是否是string
     cout<<d["name"].GetString()<<endl;
