@@ -1,15 +1,15 @@
 /*
- * @Author: zack 
- * @Date: 2021-10-13 10:04:28 
+ * @Author: zack
+ * @Date: 2021-10-13 10:04:28
  * @Last Modified by: zack
  * @Last Modified time: 2021-10-15 17:48:26
  */
 #pragma once
 
+#include "logging.h"
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
-#include "logging.h"
 
 namespace BASE_NAMESPACE {
 
@@ -17,7 +17,7 @@ namespace BASE_NAMESPACE {
 inline std::vector<char> file_to_buff(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary | std::ios::ate);
   if (!in.good()) {
-    LOG(ERROR)<<"file not exist,"<<std::string(path);
+    LOG(ERROR) << "file not exist," << std::string(path);
     return {};
   }
   long size = in.tellg();
@@ -32,7 +32,7 @@ inline std::stringstream file_to_ss(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary);
   std::stringstream buffer;
   if (!in.good()) {
-    LOG(ERROR)<<"file not exist,"<<std::string(path);
+    LOG(ERROR) << "file not exist," << std::string(path);
     return buffer;
   }
   buffer << in.rdbuf();
@@ -48,19 +48,26 @@ inline bool is_exist(const char *path) {
 
 //获取文件大小
 int64_t get_file_size(const char *path) {
-    struct stat path_stat;
+  struct stat path_stat;
 
-    memset(&path_stat, 0, sizeof(path_stat));
-    if (stat(path, &path_stat) == 0) {
-        /* Stat returns size taken up by directory entry, so return 0 */
-        if (S_ISDIR(path_stat.st_mode))
-            return 0;
+  memset(&path_stat, 0, sizeof(path_stat));
+  if (stat(path, &path_stat) == 0) {
+    /* Stat returns size taken up by directory entry, so return 0 */
+    if (S_ISDIR(path_stat.st_mode)) return 0;
 
-        return path_stat.st_size;
-    }   
-    return 0;                                                                                                                                                                                                                           
+    return path_stat.st_size;
+  }
+  return 0;
 }
 
+std::vector<std::string> get_file_lines(const char *path) {
+  std::vector<std::string> lines;
+  std::ifstream in(path);
+  std::string l;
+  while (getline(in, l)) {
+    lines.push_back(l);
+  }
+  return lines;
+}
 
-
-}; // namespace BASE_NAMESPACE
+};  // namespace BASE_NAMESPACE
