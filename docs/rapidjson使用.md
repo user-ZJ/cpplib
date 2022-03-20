@@ -112,6 +112,7 @@ int main(int argc,char *argv[]){
 ```cpp
 #include <iostream>
 #include "rapidjson/document.h"
+#include "rapidjson/error/en.h"
 #include "rapidjson/filereadstream.h"
 
 using namespace std;
@@ -124,7 +125,9 @@ int main()
     char readBuffer[65536];
     FileReadStream is(fp, readBuffer, sizeof(readBuffer));
     Document d;
-    d.ParseStream(is);  // 如果已经是string，使用d.Parse(char *)解析
+    ParseResult ok = d.ParseStream(is);  // 如果已经是string，使用d.Parse(char *)解析
+    if (!ok)
+  		cout<<"JSON parse error: "<<GetParseError_En(ok.Code())<<" ("<<ok.Offset()<<")\n";
     static const char* kTypeNames[] =  { "Null", "False", "True", "Object", "Array", "String", "Number" };
     //读取string的value;使用d["name"].IsString()判断是否是string
     cout<<d["name"].GetString()<<endl;

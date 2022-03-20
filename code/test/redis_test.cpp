@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "utils/logging.h"
+#include "utils/flags.h"
 
 using namespace BASE_NAMESPACE;
 
