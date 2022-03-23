@@ -137,7 +137,17 @@ public:
   }
 
   // 访问数据
-  T at(const std::initializer_list<I> &indexs) const{
+  T &at(const std::initializer_list<I> &indexs){
+    assert(indexs.size()==shapes_.size());
+    T *ptr = data_.get();
+    int i = 0;
+    for(auto d:indexs){
+      ptr += d*strides_[i++];
+    }
+    return *ptr;
+  }
+
+  const T &at(const std::initializer_list<I> &indexs) const{
     assert(indexs.size()==shapes_.size());
     T *ptr = data_.get();
     int i = 0;

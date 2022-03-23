@@ -17,6 +17,9 @@ int main(int argc, char *argv[]) {
   std::cout<<"strides:"<<t1.strides()<<std::endl;
   std::cout<<"size:"<<t1.size()<<std::endl;
   std::cout<<"byte size:"<<t1.byteSize()<<std::endl;
+  std::cout<<t1.at({0,0,0,1})<<std::endl;
+  t1.at({0,0,0,1}) += 1.0;
+  std::cout<<t1.at({0,0,0,1})<<std::endl;
 
   std::cout<<"####################"<<std::endl;
   std::vector<int> shape = {3,5,7,9};
