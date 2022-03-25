@@ -32,6 +32,7 @@ using std::vector;
 vector<int> vInts;
 vInts.push_back(9);  //在尾部增加数据
 vInts.insert(vInts.begin()+1,6); //插入数据
+a.insert(a.end(), b.begin(), b.end()); //将vector b append到vector a后面
 ```
 
 ### 1.3 获取容器大小
@@ -597,7 +598,10 @@ int main(){
 
 ### 3.8 排序
 
-map中的元素是自动按Key升序排序，所以不能对map用sort函数
+map中的元素是自动按Key升序排序，所以不能对map用sort函数,如果要是的key降序，使用：
+```cpp
+std::map<int, int, std::greater<int>> mi;
+```
 
 STL中默认是采用小于号来排序的，以上代码在排序上是不存在任何问题的，因为上面的关键字是int 型，它本身支持小于号运算，在一些特殊情况，比如关键字是一个结构体，涉及到排序就会出现问题，因为它没有小于号操作，insert等函数在编译的时候过 不去；需要重载小于号
 
@@ -1305,4 +1309,8 @@ int main()
         std::cout << std::quoted(s.first_name) << ' ' << std::quoted(s.last_name) << '\n';
 }
 ```
-
+## 其他使用
+### 获取最大最小值
+```cpp
+double min_dist = numeric_limits<double>::max();
+double max_dist = numeric_limits<double>::min();
