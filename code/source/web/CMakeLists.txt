@@ -23,14 +23,14 @@ add_executable(websocket_sync_server websocket_sync_server.cpp)
 target_link_libraries(websocket_sync_server pthread)
 
 add_executable(HTTPJsonServer HTTPJsonServer.cpp)
-target_link_libraries(HTTPJsonServer PocoNet PocoUtil PocoFoundation PocoXML PocoJSON)
+target_link_libraries(HTTPJsonServer PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread)
 
 add_executable(HTTPJsonClient HTTPJsonClient.cpp)
-target_link_libraries(HTTPJsonClient PocoNet PocoUtil PocoFoundation PocoXML PocoJSON)
+target_link_libraries(HTTPJsonClient PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread)
 
 add_executable(HTTPFormServer HTTPFormServer.cpp)
-target_link_libraries(HTTPFormServer PocoNet PocoUtil PocoFoundation PocoXML PocoJSON)
+target_link_libraries(HTTPFormServer PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread)
 
 add_executable(HTTPFormClient HTTPFormClient.cpp)
-target_link_libraries(HTTPFormClient PocoNet PocoUtil PocoFoundation PocoXML PocoJSON)
+target_link_libraries(HTTPFormClient PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread)
 

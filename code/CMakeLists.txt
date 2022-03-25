@@ -59,44 +59,19 @@ FetchContent_Declare(boost
 FetchContent_MakeAvailable(boost)
 include_directories(${boost_SOURCE_DIR})
 
-# third_party: poco
-FetchContent_Declare(poco
-  URL      https://pocoproject.org/releases/poco-1.11.1/poco-1.11.1-all.tar.gz
-  URL_HASH SHA256=31ccce6020047270003bfb5b0da7e2ad432884c23d3cd509c86f47cf3a5e5d2a
-)
-FetchContent_Populate(poco)
-# FetchContent_MakeAvailable(poco)
-add_subdirectory(${poco_SOURCE_DIR} ${poco_BINARY_DIR})
+
 include_directories(
-    ${poco_SOURCE_DIR}/Net/include 
-    ${poco_SOURCE_DIR}/Foundation/include
-    ${poco_SOURCE_DIR}/Util/include
-    ${poco_SOURCE_DIR}/Redis/include
-    ${poco_SOURCE_DIR}/MongoDB/include
-    ${poco_SOURCE_DIR}/JSON/include)
-link_directories(${CMAKE_BINARY_DIR}/lib)
-
-
-# third_party: gflags
-FetchContent_Declare(gflags
-  URL      https://github.com.cnpmjs.org/gflags/gflags/archive/v2.2.0.zip
-  URL_HASH SHA256=99f9e8b63ea53e4b23f0fd0f68a6f1e397d5512be36716c17cc75966a90f0d57
+    3rdparty/gflags/include
+    3rdparty/glog/include
+    3rdparty/poco/include 
+    3rdparty/fvad/include 
 )
-FetchContent_MakeAvailable(gflags)
-include_directories(${gflags_BINARY_DIR}/include)
-
-
-# third_party: glog
-FetchContent_Declare(glog
-  URL      https://github.com/google/glog/archive/refs/tags/v0.5.0.zip
-  URL_HASH SHA256=21bc744fb7f2fa701ee8db339ded7dce4f975d0d55837a97be7d46e8382dea5a
+link_directories(
+    3rdparty/gflags/lib/linux/x64
+    3rdparty/glog/lib/linux/x64
+    3rdparty/poco/lib/linux/x64
+    3rdparty/fvad/lib/linux/x64
 )
-set(WITH_CUSTOM_PREFIX ON CACHE BOOL "Always with custom prefix" FORCE)
-set(BUILD_TESTING OFF CACHE BOOL "disable test" FORCE)
-FetchContent_MakeAvailable(glog)
-# FetchContent_Populate(glog)
-# add_subdirectory(${glog_SOURCE_DIR} ${glog_BINARY_DIR})
-include_directories(${glog_SOURCE_DIR}/src ${glog_BINARY_DIR})
 
 # third_party: minizip
 FetchContent_Declare(minizip
@@ -116,13 +91,6 @@ FetchContent_Declare(rapidjson
 FetchContent_Populate(rapidjson)
 include_directories(${rapidjson_SOURCE_DIR}/include)
 
-# third_party: fvad
-FetchContent_Declare(fvad
-  GIT_REPOSITORY    https://github.com/dpirch/libfvad.git
-  GIT_TAG   847a37297a8ca3fe80c4d878a2003f2c5106b0bf
-)
-FetchContent_MakeAvailable(fvad)
-include_directories(${fvad_SOURCE_DIR}/include)
 
 # # third_party: cryptopp
 # FetchContent_Declare(cryptopp
@@ -163,14 +131,15 @@ aux_source_directory(source/utils UTILS_SOURCES)
 
 
 
-add_library(${PROJECT_NAME} SHARED ${Tokenizer_SRC} ${UTILS_SOURCES})
+add_library(${PROJECT_NAME} OBJECT ${Tokenizer_SRC} ${UTILS_SOURCES})
 
 #链接静态库，需要使用-Wl,-whole-archive,其他动态库不需要，在退出时需要使用-Wl,--no-whole-archive还原
 # 所以静态库链接形式为-Wl,-whole-archive static_libs -Wl,--no-whole-archive
 target_link_libraries(${PROJECT_NAME}
+        minizip
         glog
         gflags
-        minizip
+        pthread
 		)
 INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 # add_dependencies(${PROJECT_NAME} gflags_module glog_module)

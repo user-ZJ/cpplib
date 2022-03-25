@@ -42,6 +42,7 @@ public:
       strides_[i-1] = strides_[i]*shapes_[i];
     }
     data_.reset(new T[size_]);
+    memset(data_.get(),0,size_*sizeof(T));
   }
   // 支持initializer_list初始化
   explicit CTensor(const std::initializer_list<I> &shapes) {
@@ -56,6 +57,7 @@ public:
       strides_[i-1] = strides_[i]*shapes_[i];
     }
     data_.reset(new T[size_]);
+    memset(data_.get(),0,size_*sizeof(T));
   }
   // 拷贝构造函数
   CTensor(const CTensor &t) {
@@ -63,7 +65,7 @@ public:
     strides_ = t.strides_;
     size_ = t.size_;
     data_.reset(new T[size_]);
-    ::memcpy(data_,t.data_,size_*sizeof(T));
+    ::memcpy(data_.get(),t.data_.get(),size_*sizeof(T));
   }
 
   // 移动构造函数
@@ -85,7 +87,7 @@ public:
     strides_ = t.strides_;
     size_ = t.size_;
     data_.reset(new T[size_]);
-    ::memcpy(data_,t.data_,size_*sizeof(T));
+    ::memcpy(data_.get(),t.data_.get(),size_*sizeof(T));
     return *this;
   }
 
@@ -94,7 +96,7 @@ public:
     if(this==&t)
       return *this;
     if(data_!=nullptr)
-      delete [] data_;
+      data_.reset();
     shapes_ = t.shapes_;
     strides_ = t.strides_;
     size_ = t.size_;
@@ -157,8 +159,8 @@ public:
     return *ptr;
   }
 
-  T *data() { return data_; }
-  T *data() const { return data_; }
+  T *data() { return data_.get(); }
+  T *data() const { return data_.get(); }
 
   std::vector<I> shapes() const { return shapes_; }
 
@@ -180,12 +182,12 @@ public:
       // data
       if (shapes_.size() == 1) {
         for (int64_t i = 0; i < shapes_[0];i++) {
-          out << std::to_string(*(data_+i)) << " ";
+          out << std::to_string(*(data_.get()+i)) << " ";
         }
       } else if (shapes_.size() == 2) {
         for (int64_t i=0;i<shapes_[0];i++) {
           for (int j=0;j<shapes_[1];j++)
-            out << std::to_string(*(data_+i*strides_[0]+j)) << " ";
+            out << std::to_string(*(data_.get()+i*strides_[0]+j)) << " ";
           out << "\n";
         }
       }else{
@@ -194,7 +196,7 @@ public:
           row *= shapes_[i];
         for (int64_t i=0;i<row;i++) {
           for (int j=0;j<col;j++)
-            out << std::to_string(*(data_+i*col+j)) << " ";
+            out << std::to_string(*(data_.get()+i*col+j)) << " ";
           out << "\n";
         }
       }
