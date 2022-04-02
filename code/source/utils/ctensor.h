@@ -154,6 +154,7 @@ public:
     T *ptr = data_.get();
     int i = 0;
     for(auto d:indexs){
+      assert(d<shapes_[i]); // 检查是否越界，防止踩内存
       ptr += d*strides_[i++];
     }
     return *ptr;
@@ -168,6 +169,12 @@ public:
 
   uint64_t size() const { return size_; }
   uint64_t byteSize() const { return size_*sizeof(T); }
+
+  std::vector<T> vector(){
+    std::vector<T> out(size_);
+    memcpy(out.data(),data_.get(),size_*sizeof(T));
+    return out;
+  }
 
 #if DEBUG
   // dump data to file,only for debug
@@ -217,5 +224,6 @@ typedef CTensor<float,int64_t> CTensorfl;
 typedef CTensor<float,int32_t> CTensorfi;
 typedef CTensor<int64_t,int64_t> CTensorll;
 typedef CTensor<int32_t,int32_t> CTensorii;
+typedef CTensor<int32_t,int64_t> CTensoril;
 
 };

@@ -47,7 +47,7 @@ inline bool is_exist(const char *path) {
 }
 
 //获取文件大小
-int64_t get_file_size(const char *path) {
+inline int64_t get_file_size(const char *path) {
   struct stat path_stat;
 
   memset(&path_stat, 0, sizeof(path_stat));
@@ -60,7 +60,7 @@ int64_t get_file_size(const char *path) {
   return 0;
 }
 
-std::vector<std::string> get_file_lines(const char *path) {
+inline std::vector<std::string> get_file_lines(const char *path) {
   std::vector<std::string> lines;
   std::ifstream in(path);
   std::string l;

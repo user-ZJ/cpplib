@@ -9,10 +9,10 @@ include_directories(
 link_directories(
 		)
 
-set(TEST_SOURCES path_unittest.cpp)
-add_executable(path_test ${TEST_SOURCES})
-target_link_libraries(path_test mbase gtest_main)
-add_test(NAME path_test COMMAND path_test)
+aux_source_directory(. UNITTEST_SRC)
+add_executable(unit_test ${UNITTEST_SRC})
+target_link_libraries(unit_test mbase gtest_main)
+add_test(NAME unit_test COMMAND unit_test)
 
-include(GoogleTest)
-gtest_discover_tests(path_test)
+# include(GoogleTest)
+# gtest_discover_tests(path_test)
