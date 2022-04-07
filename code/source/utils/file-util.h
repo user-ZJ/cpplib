@@ -70,4 +70,12 @@ inline std::vector<std::string> get_file_lines(const char *path) {
   return lines;
 }
 
+inline int write_to_file(const char *path,const std::vector<char> &buff){
+  LOG(INFO)<<"write "<<path;
+  std::ofstream out (path, std::ios::out|std::ios::binary);
+  out.write(buff.data(),buff.size());
+  out.close();
+  return 0;
+}
+
 };  // namespace BASE_NAMESPACE

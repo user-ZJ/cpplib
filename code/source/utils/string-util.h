@@ -107,7 +107,7 @@ inline void SplitUTF8StringToChars(const std::string& str,
 
 inline std::string joinVectorToString(const std::vector<std::string> &vec, const char *delim = " ") {
   std::string res = "";
-  for (int i = 0; i < vec.size(); i++) {
+  for (size_t i = 0; i < vec.size(); i++) {
     if (i == vec.size() - 1) {
       res += vec[i];
     } else {
@@ -119,7 +119,7 @@ inline std::string joinVectorToString(const std::vector<std::string> &vec, const
 
 inline std::wstring joinVectorToString(const std::vector<std::wstring> &vec, const wchar_t *delim = L" ") {
   std::wstring res = L"";
-  for (int i = 0; i < vec.size(); i++) {
+  for (size_t i = 0; i < vec.size(); i++) {
     if (i == vec.size() - 1) {
       res += vec[i];
     } else {

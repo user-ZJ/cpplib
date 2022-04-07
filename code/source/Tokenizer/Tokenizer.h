@@ -48,7 +48,8 @@ class ZHTokenizer : public TokenizerBase {
   std::vector<std::wstring> decode(const std::vector<int> &preds) override;
   std::wstring decode(int pred) override;
   int getLabelLen() override {
-    return id_to_label.size();
+    int len = static_cast<int>(id_to_label.size());
+    return len;
   }
 
  private:
@@ -76,7 +77,7 @@ class ENTokenizer : public TokenizerBase {
   std::vector<std::wstring> decode(const std::vector<int> &preds) override;
   std::wstring decode(int pred) override;
   int getLabelLen() override {
-    return id_to_label.size();
+    return static_cast<int>(id_to_label.size());
   }
 
  private:
