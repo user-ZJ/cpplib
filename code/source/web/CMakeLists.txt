@@ -10,17 +10,11 @@ link_directories(
 		)
 
 
-add_executable(http_sync_client http_sync_client.cpp)
-target_link_libraries(http_sync_client pthread)
+add_executable(WebSocketServer WebSocketServer.cpp)
+target_link_libraries(WebSocketServer PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread)
 
-add_executable(http_sync_server http_sync_server.cpp)
-target_link_libraries(http_sync_server pthread)
-
-add_executable(websocket_sync_client websocket_sync_client.cpp)
-target_link_libraries(websocket_sync_client pthread)
-
-add_executable(websocket_sync_server websocket_sync_server.cpp)
-target_link_libraries(websocket_sync_server pthread)
+add_executable(WebSocketClient WebSocketClient.cpp)
+target_link_libraries(WebSocketClient PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread)
 
 add_executable(HTTPJsonServer HTTPJsonServer.cpp)
 target_link_libraries(HTTPJsonServer PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread)
