@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(test)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 
 include_directories(
@@ -41,6 +41,15 @@ target_link_libraries(threadpool_test mbase pthread)
 
 add_executable(crypto_test crypto_test.cpp)
 target_link_libraries(crypto_test cryptopp.a pthread)
+
+add_executable(string_util_test string_util_test.cpp)
+target_link_libraries(string_util_test mbase)
+
+add_executable(regex_util_test regex_util_test.cpp)
+target_link_libraries(regex_util_test mbase)
+
+add_executable(eigen_test eigen_test.cpp)
+target_link_libraries(eigen_test)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors -fpermissive")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors -fpermissive")

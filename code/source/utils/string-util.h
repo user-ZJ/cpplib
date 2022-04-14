@@ -202,4 +202,18 @@ inline bool startswith(std::string const &fullString, std::string const &starts)
     }
 }
 
+inline std::string toLowercase(const std::string &str){
+  std::string result = str;
+  for(auto &c:result)
+    c = std::tolower(c);
+  return result;
+}
+
+inline std::string toUppercase(const std::string &str){
+  std::string result = str;
+  for(auto &c:result)
+    c = std::toupper(c);
+  return result;
+}
+
 }; 
