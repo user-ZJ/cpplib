@@ -28,7 +28,9 @@ int main(int argc, char *argv[]) {
   // search
   text = "123<xml>value</xml>456<widget>center</widget>hahaha<vertical>window</vertical>the end";
   reg_text = R"(<(.*)>(.*)</(\1)>)";
+  std::vector<std::string> matchs;
   std::vector<std::vector<std::string>> searched;
+  ret = search(text,reg_text,&matchs);
   ret = searchAll(text,reg_text,&searched);
   for(auto &a:searched){
       for(auto &b:a)

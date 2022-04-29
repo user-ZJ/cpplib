@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
   try {
     std::string url = "http://localhost:9980/ws";
     // std::string body = "username=user1@yourdomain.com&password=mypword";
-    std::string body = "{\"password\":\"mypword\",\"username\":\"user1@yourdomain.com\"}";
+    std::string body = R"({"password":"mypword","username":"user1@yourdomain.com"})";
     Poco::JSON::Object obj;
     obj.set("username", "user1@yourdomain.com");
     obj.set("password", "mypword");

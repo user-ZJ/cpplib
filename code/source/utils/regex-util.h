@@ -21,6 +21,13 @@ namespace BASE_NAMESPACE { namespace REGEX {
 // static std::string PATT_MONTH = R"(12|11|10|0?[987654321])";
 // static std::string PATT_DAY = R"(31|30|[21]\d|0?[987654321])";
 
+//中文标点
+//。 ？ ！ ， 、 ； ： “ ” ‘ ' （ ） 《 》 〈 〉 【 】 『 』 「 」 ﹃ ﹄ 〔 〕 … — ～ ﹏ ￥
+//[\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5]
+static const std::wstring ZHPunct = LR"([\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5])";
+static const std::wstring ZHWord = LR"([\u4e00-\u9fa5])";
+
+
 inline xpressive::wsregex to_wregex(const std::wstring &patt) {
   static xpressive::wsregex_compiler wcompiler;
   static std::map<size_t, xpressive::wsregex> wreg_cache;
@@ -51,7 +58,7 @@ inline bool match(const std::string &s, const std::string &patt, std::vector<std
   xpressive::smatch m;
   bool ret = xpressive::regex_match(s, m, sre);
   if (ret && tuple != nullptr) {
-    for (auto i = 1; i < m.size(); ++i) { tuple->push_back(m[i].str()); }
+    for (auto i = 0; i < m.size(); ++i) { tuple->push_back(m[i].str()); }
   }
   return ret;
 }
@@ -68,7 +75,7 @@ inline bool match(const std::wstring &s, const std::wstring &patt, std::vector<s
   xpressive::wsmatch m;
   bool ret = xpressive::regex_match(s, m, sre);
   if (ret && tuple != nullptr) {
-    for (auto i = 1; i < m.size(); ++i) { tuple->push_back(m[i].str()); }
+    for (auto i = 0; i < m.size(); ++i) { tuple->push_back(m[i].str()); }
   }
   return ret;
 }
@@ -87,7 +94,7 @@ inline bool search(const std::string &s, const std::string &patt, std::vector<st
   bool ret = xpressive::regex_search(s, m, sre);
   if (ret) {
     if (tuple != nullptr) {
-      for (auto i = 1; i < m.size(); ++i) { tuple->push_back(m[i].str()); }
+      for (auto i = 0; i < m.size(); ++i) { tuple->push_back(m[i].str()); }
     }
     if (prefix != nullptr) (*prefix) = m.prefix().str();
     if (suffix != nullptr) (*suffix) = m.suffix().str();
@@ -109,7 +116,7 @@ inline bool search(const std::wstring &s, const std::wstring &patt, std::vector<
   bool ret = xpressive::regex_search(s, m, sre);
   if (ret) {
     if (tuple != nullptr) {
-      for (auto i = 1; i < m.size(); ++i) { tuple->push_back(m[i].str()); }
+      for (auto i = 0; i < m.size(); ++i) { tuple->push_back(m[i].str()); }
     }
     if (prefix != nullptr) (*prefix) = m.prefix().str();
     if (suffix != nullptr) (*suffix) = m.suffix().str();
@@ -134,7 +141,7 @@ inline bool searchAll(const std::string &s, const std::string &patt,
     const xpressive::smatch &m = *cur;
     if (tuple != nullptr) {
       std::vector<std::string> t;
-      for (auto i = 1; i < m.size(); i++) { t.push_back(m[i].str()); }
+      for (auto i = 0; i < m.size(); i++) { t.push_back(m[i].str()); }
       tuple->emplace_back(t);
     }
   }
@@ -158,7 +165,7 @@ inline bool searchAll(const std::wstring &s, const std::wstring &patt,
     const xpressive::wsmatch &m = *cur;
     if (tuple != nullptr) {
       std::vector<std::wstring> t;
-      for (auto i = 1; i < m.size(); i++) { t.push_back(m[i].str()); }
+      for (auto i = 0; i < m.size(); i++) { t.push_back(m[i].str()); }
       tuple->emplace_back(t);
     }
   }

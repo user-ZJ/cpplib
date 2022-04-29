@@ -93,6 +93,7 @@ int main(int argc,char *argv[]){
     // 把 DOM 转换（stringify）成 JSON。
     StringBuffer buffer;
     PrettyWriter<StringBuffer> writer(buffer);   // 为 JSON 加入缩进与换行,使得输出可读性更强
+    writer.SetMaxDecimalPlaces(3);   // 设置浮点数小数点后的位数
     d.Accept(writer);
     std::cout << buffer.GetString() << std::endl;
 
