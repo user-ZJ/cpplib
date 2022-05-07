@@ -25,7 +25,7 @@ int main()
 g++ -I /path/to/eigen/ my_program.cpp -o my_program 
 ```
 
-## 向量和矩阵
+## Matrix/Vector
 **Eigen数据存储默认为列优先方式。**           
 Eigen中矩阵和向量都是Matrix对象，vector是行或列为1的Matrix。  
 Eigen中矩阵和向量分为固定维度和动态维度；固定维度的维度在编译时确定，运行过程中不能修改维度，内存在初始化时分配（在栈上）；动态维度的维度在运行时确定，运行时可以修改维度，内存分配在堆上。
@@ -43,7 +43,7 @@ Matrix<typename Scalar,
 // Matrix<float, Dynamic, Dynamic, 0, 3, 4> a;  // 静态分配3x4大小的内存，根据Dynamic大小，使用部分数据
 ```
 
-**向量**           
+**vector**           
 Eigen中向量通常为列向量
 ```cpp
 typedef Matrix<float, 3, 1> Vector3f;  // 3行1列的列向量，固定维度
@@ -61,7 +61,7 @@ VectorXd a {{1.5, 2.5, 3.5}};             // A column-vector with 3 coefficients
 RowVectorXd b {{1.0, 2.0, 3.0, 4.0}};     // A row-vector with 4 coefficients
 ```
 
-**矩阵**           
+**Matrix**           
 Eigen中矩阵通常为列优先
 ```cpp
 typedef Matrix<float, 4, 4> Matrix4f;
@@ -106,12 +106,12 @@ int main()
 **赋值构造**
 赋值构造函数会先对左边的Matrix进行resize，再进行数据拷贝。
 
-**常用的typedef**
-MatrixNt for Matrix<type, N, N>. For example, MatrixXi for Matrix<int, Dynamic, Dynamic>.        
-MatrixXNt for Matrix<type, Dynamic, N>. For example, MatrixX3i for Matrix<int, Dynamic, 3>.              
-MatrixNXt for Matrix<type, N, Dynamic>. For example, Matrix4Xd for Matrix<d, 4, Dynamic>.           
-VectorNt for Matrix<type, N, 1>. For example, Vector2f for Matrix<float, 2, 1>.           
-RowVectorNt for Matrix<type, 1, N>. For example, RowVector3d for Matrix<double, 1, 3>.            
+**常用的typedef**   
+MatrixNt for Matrix<type, N, N>. For example, `MatrixXi` for Matrix<int, Dynamic, Dynamic>.      
+MatrixXNt for Matrix<type, Dynamic, N>. For example, `MatrixX3i` for Matrix<int, Dynamic, 3>.              
+MatrixNXt for Matrix<type, N, Dynamic>. For example, `Matrix4Xd` for Matrix<d, 4, Dynamic>.           
+VectorNt for Matrix<type, N, 1>. For example, `Vector2f` for Matrix<float, 2, 1>.           
+RowVectorNt for Matrix<type, 1, N>. For example, `RowVector3d` for Matrix<double, 1, 3>.            
 
 N can be any one of 2, 3, 4, or X (meaning Dynamic).         
 t can be any one of i (meaning int), f (meaning float), d (meaning double), cf (meaning complex<float>), or cd (meaning complex<double>).        
