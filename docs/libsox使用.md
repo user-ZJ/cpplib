@@ -1,7 +1,17 @@
 # libsox使用笔记
 
 ## 数据结构
+
+`sox_sample_t`
+
+```cpp
+typedef sox_int32_t sox_sample_t;
+```
+
 `sox_format_t`
+
+语音文件对应的数据结构
+
 ```cpp
 struct sox_format_t {
   char             * filename;      /**< File name */
@@ -28,7 +38,11 @@ struct sox_format_t {
   void             * priv;          /**< Format handler's private data area */
 };
 ```
+
 `sox_signalinfo_t`
+
+语音信号对应的信息
+
 ```cpp
 typedef struct sox_signalinfo_t {                                                                                                                                                  
   sox_rate_t       rate;         /**采样率, 0 if unknown */
@@ -40,6 +54,7 @@ typedef struct sox_signalinfo_t {
 ```
 
 `sox_encodinginfo_t`
+
 ```cpp
 typedef struct sox_encodinginfo_t {
   sox_encoding_t encoding; /**< format of sample numbers */
@@ -54,6 +69,9 @@ typedef struct sox_encodinginfo_t {
 ```
 
 `sox_effect_t`
+
+effect表示一次语音转换，其中handler表示语音处理函数的封装。
+
 ```cpp
 struct sox_effect_t { 
   sox_effects_globals_t    * global_info; /**< global effect parameters */
@@ -75,6 +93,9 @@ struct sox_effect_t {
 ```
 
 `sox_effects_chain_t`
+
+chain表示语音处理的一条链路，包含多个effect(效果转换)
+
 ```cpp
 typedef struct sox_effects_chain_t {                                                                                                                                               
   sox_effect_t **effects;                  /**< Table of effects to be applied to a stream */
@@ -88,8 +109,27 @@ typedef struct sox_effects_chain_t {
 } sox_effects_chain_t;
 ```
 
+`sox_effect_handler_t`
+
+```cpp
+struct sox_effect_handler_t {                                                                                                                                                      
+  char const * name;  /**< Effect name */
+  char const * usage; /**< Short explanation of parameters accepted by effect */
+  unsigned int flags; /**< Combination of SOX_EFF_* flags */
+  sox_effect_handler_getopts getopts; /**< Called to parse command-line arguments (called once per effect). */
+  sox_effect_handler_start start;     /**< Called to initialize effect (called once per flow). */
+  sox_effect_handler_flow flow;       /**< Called to process samples. */
+  sox_effect_handler_drain drain;     /**< Called to finish getting output after input is complete. */
+  sox_effect_handler_stop stop;       /**< Called to shut down effect (called once per flow). */
+  sox_effect_handler_kill kill;       /**< Called to shut down effect (called once per effect). */
+  size_t       priv_size;             /**< Size of private data SoX should pre-allocate for effect */
+};
+```
+
 ## 函数说明
+
 `sox_open_read`
+
 ```cpp
 sox_format_t *
 sox_open_read(                                                                                                                                                                
@@ -101,6 +141,7 @@ sox_open_read(
 ```
 
 `sox_open_mem_read`
+
 ```cpp
 sox_format_t *
 sox_open_mem_read(
@@ -113,6 +154,7 @@ sox_open_mem_read(
 ```
 
 `sox_read`
+
 ```cpp
 // 返回读取到的sample数，0表示读取到文件结尾
 size_t sox_read( 
@@ -123,6 +165,7 @@ size_t sox_read(
 ```
 
 `sox_open_write`
+
 ```cpp
 sox_format_t *
 sox_open_write(
@@ -136,7 +179,8 @@ sox_open_write(
 ```
 
 `sox_open_mem_write`
-```cpp 
+
+```cpp
 sox_format_t *
 sox_open_mem_write(
     LSX_PARAM_OUT_BYTECAP(buffer_size) void                     * buffer,      /**< Pointer to audio data buffer that receives data (required). */
@@ -149,6 +193,7 @@ sox_open_mem_write(
 ```
 
 `sox_open_memstream_write`
+
 ```cpp
 sox_format_t *
 sox_open_memstream_write(
@@ -162,6 +207,7 @@ sox_open_memstream_write(
 ```
 
 `sox_write`
+
 ```cpp
 size_t
 sox_write(
@@ -172,6 +218,7 @@ sox_write(
 ```
 
 `sox_create_effects_chain`
+
 ```cpp
 sox_effects_chain_t *
 LSX_API
@@ -182,9 +229,11 @@ sox_create_effects_chain(
 ```
 
 ## 使用示例
+
 `参考https://github.com/dmkrepo/libsox/blob/master/src/example6.c`
 
 ### 1. 读取音频文件
+
 ```cpp
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -215,6 +264,7 @@ int main(int argc, char *argv[]) {
 ```
 
 ### 2. 数组保存为wav
+
 ```cpp
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -256,12 +306,13 @@ int main(int argc, char *argv[]) {
   sox_close(out);
   sox_close(in);
   sox_quit();
-  
+
   return 0;
 }
 ```
 
 ### 3. 从buff中读取数据，修改采样率后写入文件
+
 ```cpp
 #define buffer_size 12345678
 static char buffer[buffer_size];
@@ -339,7 +390,7 @@ int main(int argc, char *argv[]) {
   sox_close(out);
   sox_close(in1);
   sox_quit();
-  
+
   return 0;
 }
 ```

@@ -62,7 +62,7 @@ vInts[2];    //不推荐使用，主要是为了与C语言进行兼容。它可�
 #include <vector>
 using std::vector;
 vector<int> vInts(10,9);
-vInts.erase(3);  //删除pos位置的数据
+vInts.erase(vInts.begin()+3);  //删除pos位置的数据
 vInts.erase(vInts.begin(),vInts.end());  //删除pos位置的数据
 vInts.pop_back();  //删除最后一个数据。
 vInts.clear()();  //删除所有数据。   size为0，capacity不变，内存不会释放
@@ -85,7 +85,7 @@ for(vector<int>::iterator iter = vInts.begin(); iter != vInts.end(); iter++){
 // c++ 11
 for (auto &i : vInts)
 {
-	cout << i<< endl;
+    cout << i<< endl;
 }
 ```
 
@@ -164,7 +164,7 @@ accumulate默认返回的是int类型，操作符默认是‘+’;当sum溢出�
 #include <numeric>
 #include <string>
 #include <functional>
- 
+
 int main()
 {
     std::vector<int> v{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -208,15 +208,15 @@ static bool abs_compare(int a, int b)
 int main() {
     const auto v = { 3, 9, 1, 4, 2, 5, 9 };
     const auto [min, max] = std::minmax_element(begin(v), end(v));
- 
+
     std::cout << "min = " << *min << ", max = " << *max << '\n';
-    
+
     std::vector<int>::iterator result = std::min_element(v.begin(), v.end());
     std::cout << "min element at: " << std::distance(v.begin(), result);
-    
+
     result = std::max_element(v.begin(), v.end());
     std::cout << "max element at: " << std::distance(v.begin(), result) << '\n';
- 
+
     result = std::max_element(v.begin(), v.end(), abs_compare);
     std::cout << "max element (absolute) at: " << std::distance(v.begin(), result) << '\n';
 }
@@ -229,8 +229,6 @@ int main() {
 const auto v = { 3, 9, 1, 4, 2, 5, 9 };
 std::reverse(v.begin(),v.end());
 ```
-
-
 
 ## 2. List
 
@@ -305,8 +303,6 @@ int main(){
 }
 ```
 
-
-
 ### 2.4 访问元素
 
 ```cpp
@@ -343,7 +339,7 @@ int main(){
     a1.erase(next(a1.begin(),3));
     a1.pop_front();
     a1.pop_back();
-    
+
     for(it = a1.begin();it!=a1.end();it++){
         cout << *it << "\t";
     }
@@ -375,7 +371,6 @@ int main(){
     cout<<endl;
     return 0;
 }
-
 ```
 
 ### 2.7 查找
@@ -488,8 +483,6 @@ int main(){
 }
 ```
 
-
-
 ### 3.3 获取/修改容器大小
 
 ```cpp
@@ -541,8 +534,6 @@ int main(){
 }
 ```
 
-
-
 ### 3.6 遍历
 
 ```cpp
@@ -566,8 +557,6 @@ int main(){
     return 0;
 }
 ```
-
-
 
 ### 3.7 查找
 
@@ -599,6 +588,7 @@ int main(){
 ### 3.8 排序
 
 map中的元素是自动按Key升序排序，所以不能对map用sort函数,如果要是的key降序，使用：
+
 ```cpp
 std::map<int, int, std::greater<int>> mi;
 ```
@@ -626,8 +616,6 @@ queue<int> mqueue;
 queue<int> mqueue1{mqueue};
 ```
 
-
-
 ### 5.2 增加/插入数据
 
 ```cpp
@@ -635,8 +623,6 @@ queue<int> mqueue;
 mqueue.push(1);
 mqueue.emplace(2);  //可以避免对象的拷贝，重复调用构造函数
 ```
-
-
 
 ### 5.3 获取/修改容器大小
 
@@ -648,8 +634,6 @@ mqueue.size();
 mqueue.empty();  //判断是否为空
 ```
 
-
-
 ### 5.4 访问元素
 
 ```cpp
@@ -657,25 +641,17 @@ mqueue.front();  //返回 queue 中第一个元素的引用
 mqueue.back();  //返回 queue 中最后一个元素的引用
 ```
 
-
-
 ### 5.5 删除元素
 
 ```cpp
 mqueue.pop();
 ```
 
-
-
 ### 5.6 遍历
 
 和 stack 一样，queue 也没有迭代器。访问元素的唯一方式是遍历容器内容，并移除访问过的每一个元素
 
 ### 5.7 查找
-
-
-
-
 
 ## 6. deque
 
@@ -706,10 +682,7 @@ vector<double> vd{0.1,0.2,.05,.07,0.9};  //使用vector的一个区间初始化
 deque<double>  d2(vd.begin()+1,vd.end());
 deque<int> mqueue1{mqueue};  //使用另一个deque初始化
 deque<int>  d2({1,2,3,4,5,6,7});  //初始化列表进行初始化
-
 ```
-
-
 
 ### 6.2 增加/插入数据
 
@@ -719,8 +692,6 @@ mqueue.push(1);
 mqueue.emplace_front(2);  //可以避免对象的拷贝，重复调用构造函数
 mqueue.emplace_back(2);  //可以避免对象的拷贝，重复调用构造函数
 ```
-
-
 
 ### 6.3 获取/修改容器大小
 
@@ -732,16 +703,12 @@ mqueue.size();
 mqueue.empty();  //判断是否为空
 ```
 
-
-
 ### 6.4 访问元素
 
 ```cpp
 mqueue.front();  //返回 queue 中第一个元素的引用
 mqueue.back();  //返回 queue 中最后一个元素的引用
 ```
-
-
 
 ### 6.5 删除元素
 
@@ -750,16 +717,12 @@ mqueue.pop_front();
 mqueue.pop_end();
 ```
 
-
-
 ### 6.6 遍历
 
 ```cpp
 for (std::deque<int>::iterator it = dq.begin(); it!=dq.end(); ++it)
     std::cout << ' ' << *it;
 ```
-
-
 
 ### 6.7 查找
 
@@ -783,16 +746,12 @@ stack<int, deque<int>> s6(d1);
 stack<int> s7(d1);                  //用deque 为 stack  初始化时 deque可省  因为stack是基于deque, 默认以deque方式构造
 ```
 
-
-
 ### 7.2 增加/插入数据
 
 ```cpp
 mstack.push(333);
 mstach.emplace(333);
 ```
-
-
 
 ### 7.3 获取/修改容器大小
 
@@ -801,23 +760,17 @@ mstack.size();
 mstack.empty();
 ```
 
-
-
 ### 7.4 访问元素
 
 ```cpp
 mstack.top();
 ```
 
-
-
 ### 7.5 删除元素
 
 ```cpp
 mstack.pop();
 ```
-
-
 
 ### 7.6 遍历
 
@@ -945,8 +898,6 @@ mqueue.push(1);
 mqueue.emplace(2);  //可以避免对象的拷贝，重复调用构造函数
 ```
 
-
-
 ### 8.3 获取/修改容器大小
 
 ```cpp
@@ -957,23 +908,17 @@ mqueue.size();
 mqueue.empty();  //判断是否为空
 ```
 
-
-
 ### 8.4 访问元素
 
 ```cpp
 mqueue.top();  //返回 queue中第一个元素，即最大/最小的元素
 ```
 
-
-
 ### 8.5 删除元素
 
 ```cpp
 mqueue.pop();
 ```
-
-
 
 ### 8.6 遍历
 
@@ -1013,7 +958,7 @@ int main(int argc, char *argv[]) {
 #include <algorithm>
 #include <string>
 #include <iostream>
- 
+
 int main()
 {
     std::string s = "aba";
@@ -1038,7 +983,7 @@ int main()
 #include <algorithm>
 
 int main(int argc, char *argv[]) {
-  
+
 
   std::vector<int> values{1,2,3,4,5,6,7};
   std::vector<int> selectors{1,1,1,0,0,0,0};
@@ -1147,7 +1092,7 @@ int main()
     cout << "The elements in set are: ";
     for (auto it = s.begin(); it != s.end(); it++)
         cout << *it << " ";
- 
+
     return 0;
 }
 ```
@@ -1251,7 +1196,7 @@ int main()
 #include <functional>
 #include <string>
 #include <unordered_set>
- 
+
 struct S {
     std::string first_name;
     std::string last_name;
@@ -1259,7 +1204,7 @@ struct S {
 bool operator==(const S& lhs, const S& rhs) {
     return lhs.first_name == rhs.first_name && lhs.last_name == rhs.last_name;
 }
- 
+
 // 自定义散列函数能是独立函数对象：
 struct MyHash
 {
@@ -1270,7 +1215,7 @@ struct MyHash
         return h1 ^ (h2 << 1); // 或使用 boost::hash_combine （见讨论）
     }
 };
- 
+
 // std::hash 的自定义特化能注入 namespace std
 namespace std
 {
@@ -1286,21 +1231,21 @@ namespace std
         }
     };
 }
- 
+
 int main()
 {
- 
+
     std::string str = "Meet the new boss...";
     std::size_t str_hash = std::hash<std::string>{}(str);
     std::cout << "hash(" << std::quoted(str) << ") = " << str_hash << '\n';
- 
+
     S obj = { "Hubert", "Farnsworth"};
     // 使用独立的函数对象
     std::cout << "hash(" << std::quoted(obj.first_name) << ',' 
                << std::quoted(obj.last_name) << ") = "
                << MyHash{}(obj) << " (using MyHash)\n                           or "
                << std::hash<S>{}(obj) << " (using std::hash) " << '\n';
- 
+
     // 自定义散列函数令在无序容器中使用自定义类型可行
     // 此示例将使用注入的 std::hash 特化，
     // 若要使用 MyHash 替代，则将其作为第二模板参数传递
@@ -1309,8 +1254,12 @@ int main()
         std::cout << std::quoted(s.first_name) << ' ' << std::quoted(s.last_name) << '\n';
 }
 ```
+
 ## 其他使用
+
 ### 获取最大最小值
+
 ```cpp
 double min_dist = numeric_limits<double>::max();
 double max_dist = numeric_limits<double>::min();
+```

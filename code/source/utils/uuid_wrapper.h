@@ -17,6 +17,7 @@ static std::string gen_uuid() {
   // 如果同一个时间使用 uuid_generate_time ,输出的基本是一致
   boost::uuids::uuid uuid = boost::uuids::random_generator()();
   uuid_result = boost::uuids::to_string(uuid);
+  std::remove( uuid_result.begin(), uuid_result.end(), '-');
   return uuid_result;
 }
 
