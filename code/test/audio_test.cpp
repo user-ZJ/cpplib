@@ -21,10 +21,10 @@ int main(int argc, char *argv[]) {
   std::vector<float> data;
   SoxUtil::instance().GetData(argv[1],&data);
   std::cout<<"size:"<<data.size()<<std::endl;
-  auto wav = SoxUtil::instance().ProcessWav(info,data,16000,/*volume*/1.0,/*speed*/1.2);
-  write_to_file("/home/dmai/cpplib/code/build/out.wav",wav);
+  auto wav = SoxUtil::instance().ProcessWav(info,data,24000,/*volume*/1.0,/*speed*/1.5);
+  write_to_file("out.wav",wav);
   auto mp3 = SoxUtil::instance().Wav2Mp3(wav);
-  write_to_file("/home/dmai/cpplib/code/build/out.mp3",mp3);
+  write_to_file("out.mp3",mp3);
   
   return 0;
 }

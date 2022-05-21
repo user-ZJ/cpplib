@@ -113,6 +113,10 @@ class SoxUtil {
       /* Add the effect to the end of the effects processing chain: */
       assert(sox_add_effect(chain, e, &interm_signal, &in->signal) == SOX_SUCCESS);
       free(e);
+      e = sox_create_effect(sox_find_effect("rate"));
+      assert(sox_effect_options(e, 0, NULL) == SOX_SUCCESS);
+      assert(sox_add_effect(chain, e, &interm_signal, &out->signal) == SOX_SUCCESS);
+      free(e);
     }
 
     if (in->signal.rate != out->signal.rate) {
