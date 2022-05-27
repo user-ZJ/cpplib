@@ -1,11 +1,13 @@
 #include "regex-util.h"
 #include "utils/flags.h"
 #include "utils/logging.h"
+#include "utils/string-util.h"
 #include <iostream>
 #include <regex>
 #include <string>
 
 using namespace BASE_NAMESPACE::REGEX;
+using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
   google::ParseCommandLineFlags(&argc, &argv, true);
@@ -35,6 +37,13 @@ int main(int argc, char *argv[]) {
   for(auto &a:searched){
       for(auto &b:a)
         LOG(INFO)<<b;
+  }
+  std::wstring wtext = L"您好";
+  std::vector<std::wstring> wmatchs;
+  ret = search(wtext,ZHWord,&wmatchs);
+  LOG(INFO)<<"find chinese word:"<<ret;
+  for(auto s:wmatchs){
+    LOG(INFO)<<to_string(s);
   }
 
   // tokenize
