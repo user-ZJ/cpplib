@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <vector>
 #include <cassert>
+#include <algorithm>
 
 namespace BASE_NAMESPACE {
 
@@ -203,17 +204,45 @@ inline bool startswith(std::string const &fullString, std::string const &starts)
 }
 
 inline std::string toLowercase(const std::string &str){
-  std::string result = str;
-  for(auto &c:result)
-    c = std::tolower(c);
-  return result;
+  std::string s = str;
+  std::transform(s.begin(), s.end(), s.begin(),[](unsigned char c){ return std::tolower(c); });
+  return s;
+}
+
+inline std::wstring toLowercase(const std::wstring &str){
+  std::wstring s = str;
+  std::transform(s.begin(), s.end(), s.begin(),[](unsigned char c){ return std::tolower(c); });
+  return s;
 }
 
 inline std::string toUppercase(const std::string &str){
-  std::string result = str;
-  for(auto &c:result)
-    c = std::toupper(c);
-  return result;
+  std::string s = str;
+  std::transform(s.begin(), s.end(), s.begin(),[](unsigned char c){ return std::toupper(c); });
+  return s;
+}
+
+inline std::wstring toUppercase(const std::wstring &str){
+  std::wstring s = str;
+  std::transform(s.begin(), s.end(), s.begin(),[](unsigned char c){ return std::toupper(c); });
+  return s;
+}
+
+
+inline bool haveAlpha(const std::string &str){
+  for(auto &c:str){
+    if(isalpha(c))
+      return true;
+  }
+  return false;
+}
+
+inline bool haveAlpha(const std::wstring &wstr){
+  std::string str = to_string(wstr);
+  for(auto &c:str){
+    if(isalpha(c))
+      return true;
+  }
+  return false;
 }
 
 }; 

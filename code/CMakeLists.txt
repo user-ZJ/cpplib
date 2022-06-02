@@ -135,7 +135,7 @@ link_directories(
 		)
 
 
-aux_source_directory(source/Tokenizer Tokenizer_SRC)
+aux_source_directory(source/tokenizer Tokenizer_SRC)
 aux_source_directory(source/utils UTILS_SOURCES)
 
 

@@ -9,6 +9,7 @@
 #include "string-util.h"
 #include <boost/xpressive/xpressive.hpp>
 #include <string>
+#include <unordered_map>
 
 namespace xpressive = boost::xpressive;
 
@@ -25,14 +26,14 @@ namespace BASE_NAMESPACE { namespace REGEX {
 //。 ？ ！ ， 、 ； ： “ ” ‘ ' （ ） 《 》 〈 〉 【 】 『 』 「 」 ﹃ ﹄ 〔 〕 … — ～ ﹏ ￥
 //[\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5]
 static const std::wstring ZHPunct = LR"([\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5])";
-static const std::wstring ENPunct = R"([\.\?!,;:'"\(\)\[\]\{\}<>/-$@`~#%^\*_\+=\|])";  // 英文标点
+static const std::wstring ENPunct = LR"([\.\?!,;:'"\(\)\[\]\{\}<>/\-\\$@`~#%^\*_\+=\|])";  // 英文标点.?!,;:'"(){}<>/-\$@`~#%^+=|
 static const std::wstring ZHWord = LR"([\u4e00-\u9fa5])";  // 中文汉字
-static const std::wstring ENWord = R"([a-zA-Z][A-Za-z_']*)";  // 英文单词
+static const std::wstring ENWord = LR"([a-zA-Z][A-Za-z_\-']*)";  // 英文单词
 
 
 inline xpressive::wsregex to_wregex(const std::wstring &patt) {
   static xpressive::wsregex_compiler wcompiler;
-  static std::map<size_t, xpressive::wsregex> wreg_cache;
+  static std::unordered_map<size_t, xpressive::wsregex> wreg_cache;
   static std::hash<std::string> wh;
   size_t key = wh(to_string(patt));
   if (wreg_cache.count(key) == 0) { wreg_cache[key] = wcompiler.compile(patt); }
@@ -41,7 +42,7 @@ inline xpressive::wsregex to_wregex(const std::wstring &patt) {
 
 inline xpressive::sregex to_regex(const std::string &patt) {
   static xpressive::sregex_compiler compiler;
-  static std::map<size_t, xpressive::sregex> reg_cache;
+  static std::unordered_map<size_t, xpressive::sregex> reg_cache;
   static std::hash<std::string> h;
   size_t key = h(patt);
   if (reg_cache.count(key) == 0) { reg_cache[key] = compiler.compile(patt); }
@@ -56,6 +57,7 @@ inline bool match(const std::string &s, const std::string &patt, std::vector<std
    *  tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    *  @return bool 是否完全匹配
    */
+  if(tuple != nullptr) tuple->clear();
   xpressive::sregex sre = to_regex(patt);
   xpressive::smatch m;
   bool ret = xpressive::regex_match(s, m, sre);
@@ -73,6 +75,7 @@ inline bool match(const std::wstring &s, const std::wstring &patt, std::vector<s
    *  tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    *  @return bool 是否完全匹配
    */
+  if(tuple != nullptr) tuple->clear();
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsmatch m;
   bool ret = xpressive::regex_match(s, m, sre);
@@ -91,6 +94,7 @@ inline bool search(const std::string &s, const std::string &patt, std::vector<st
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
+  if(tuple != nullptr) tuple->clear();
   xpressive::sregex sre = to_regex(patt);
   xpressive::smatch m;
   bool ret = xpressive::regex_search(s, m, sre);
@@ -113,6 +117,7 @@ inline bool search(const std::wstring &s, const std::wstring &patt, std::vector<
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
+  if(tuple != nullptr) tuple->clear();
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsmatch m;
   bool ret = xpressive::regex_search(s, m, sre);
@@ -135,6 +140,7 @@ inline bool searchAll(const std::string &s, const std::string &patt,
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
+  if(tuple != nullptr) tuple->clear();
   xpressive::sregex sre = to_regex(patt);
   xpressive::sregex_iterator cur(s.begin(), s.end(), sre), end;
   bool ret;
@@ -159,6 +165,7 @@ inline bool searchAll(const std::wstring &s, const std::wstring &patt,
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
+  if(tuple != nullptr) tuple->clear();
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsregex_iterator cur(s.begin(), s.end(), sre), end;
   bool ret;
@@ -284,7 +291,19 @@ inline std::string replaceByDic(const std::string &text, const std::map<std::str
   return result;
 }
 
+inline std::string replaceByDic(const std::string &text, const std::unordered_map<std::string, std::string> &dic) {
+  auto result = text;
+  for (const auto &elem : dic) { result = replaceAll(result, elem.first, elem.second); }
+  return result;
+}
+
 inline std::wstring replaceByDic(std::wstring &text, const std::map<std::wstring, std::wstring> &dic) {
+  auto result = text;
+  for (const auto &elem : dic) { result = replaceAll(result, elem.first, elem.second); }
+  return result;
+}
+
+inline std::wstring replaceByDic(std::wstring &text, const std::unordered_map<std::wstring, std::wstring> &dic) {
   auto result = text;
   for (const auto &elem : dic) { result = replaceAll(result, elem.first, elem.second); }
   return result;
@@ -314,6 +333,34 @@ inline std::vector<std::wstring> split(const std::wstring &s, const std::wstring
   std::vector<std::wstring> result;
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsregex_token_iterator begin(s.begin(), s.end(), sre,-1), end;
+  for (auto iter = begin; iter != end; iter++) { result.push_back(iter->str()); }
+  return result;
+}
+
+inline std::vector<std::string> token(const std::string &s, const std::string &patt = R"([a-zA-Z][A-Za-z_']*)") {
+  /**
+   * @brief 使用正则表达式匹配,提取满足条件的文本
+   * @param s 原始字符串
+   * @param patt 正则表达式的raw string
+   * @return 提取的字符串数组
+   */
+  std::vector<std::string> result;
+  xpressive::sregex sre = to_regex(patt);
+  xpressive::sregex_token_iterator begin(s.begin(), s.end(), sre), end;
+  for (auto iter = begin; iter != end; iter++) { result.push_back(iter->str()); }
+  return result;
+}
+
+inline std::vector<std::wstring> token(const std::wstring &s, const std::wstring &patt = LR"([\u4e00-\u9fa5]|[a-zA-Z][A-Za-z_']*)") {
+  /**
+   * @brief 使用正则表达式匹配,提取满足条件的文本
+   * @param s 原始字符串
+   * @param patt 正则表达式的raw string
+   * @return 提取的字符串数组
+   */
+  std::vector<std::wstring> result;
+  xpressive::wsregex sre = to_wregex(patt);
+  xpressive::wsregex_token_iterator begin(s.begin(), s.end(), sre), end;
   for (auto iter = begin; iter != end; iter++) { result.push_back(iter->str()); }
   return result;
 }
