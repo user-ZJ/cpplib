@@ -31,7 +31,7 @@ sudo ldconfig # refresh shared library cache.
 - `required`：必须提供该字段的值，否则该消息将被视为“未初始化”。如果`libprotobuf`在调试模式下编译，序列化未初始化的消息将导致断言失败。在优化的构建中，会跳过检查并且无论如何都会写入消息。但是，解析未初始化的消息总是会失败（通过`false`从 parse 方法返回）。除此之外，必填字段的行为与可选字段完全相同。
 
 ```protobuf
-syntax = "proto2";
+syntax = "proto3";
 
 // 包名，可防止命名冲突，在C++中会被编译成命名空间名
 package tutorial;
@@ -252,3 +252,109 @@ int main(int argc, char* argv[]) {
 遵循以上规则，旧代码可以直接使用新的proto信息，删除的可选字段将使用默认值，删除的可重复字段为空；
 
 但是新增的可选字段不会出现在旧的消息中，需要使用`has_`函数来判断是否存在，或者在`.proto`文件中提供默认值。
+
+## 4. 从其他文件中导入模块
+
+```protobuf
+import "myproject/other_protos.proto";
+```
+
+protobuf编译器会从`-I/--proto_path`指定的路劲中查找import的文件，如果没有指定，则默认在当前编译目录下查找
+
+## 5. oneof
+
+一个信息结构体中有多个字段，所有字段共享内存，每次最多只能设置一个字段，当一个字段被设置时，其他字段会被清除。
+
+使用方法为，在结构体命名后添加`_oneof`后缀。
+
+```cpp
+message SampleMessage {
+  oneof test_oneof {
+    string name = 4;
+    SubMessage sub_message = 9;
+  }
+}
+```
+
+oneof的字段中不能有map好repeat
+
+## 6. maps
+
+```protobuf
+map<key_type, value_type> map_field = N;
+```
+
+key_type是标量（整形，浮点型，字符串），但不可以是枚举类型
+
+value_type是处理map类型以外的所有类型
+
+map类型不能是repeated
+
+```protobuf
+map<string, Project> projects = 3;
+```
+
+## 7. 定义rpc服务
+
+定义一个请求参数为SearchRequest，返回参数为SearchResponse的服务
+
+```protobuf
+service SearchService {
+  rpc Search(SearchRequest) returns (SearchResponse);
+}
+```
+
+## 8. json支持
+
+protobuf支持json编码规范，可以更方便的在各个系统中传输数据。protobuf和json类型对应关系如下：
+
+如果 JSON 编码的数据中缺少某个值，或者它的值为 null，则在解析到协议缓冲区时，它将被解释为适当的默认值。 如果某个字段在协议缓冲区中具有默认值，则在 JSON 编码的数据中默认将其省略以节省空间。 实现可以提供选项以在 JSON 编码的输出中发出具有默认值的字段。
+
+| proto3                 | json          | json example                              | notes                                                        |
+| ---------------------- | ------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| message                | object        | {"fooBar": v, "g": null, …}               | 生成 JSON 对象。 消息字段名称映射到 lowerCamelCase 并成为 JSON 对象键。 如果指定了 json_name 字段选项，则指定的值将用作键。 解析器接受 lowerCamelCase 名称（或由 json_name 选项指定的名称）和原始 proto 字段名称。 null 是所有字段类型的可接受值，并被视为相应字段类型的默认值。 |
+| enum                   | string        | `"FOO_BAR"`                               | 使用 proto 中指定的枚举值的名称。 解析器接受枚举名称和整数值。 |
+| map<K,V>               | object        | `{"k": v, …}`                             | 所有的key都转换为字符类型                                    |
+| repeated V             | array         | `[v, …]`                                  | null被转换为空列表                                           |
+| bool                   | true, false   | `true, false`                             |                                                              |
+| string                 | string        | `"Hello World!"`                          |                                                              |
+| bytes                  | base64 string | `"YWJjMTIzIT8kKiYoKSctPUB+"`              | JSON 值将是使用带有填充的标准 base64 编码编码为字符串的数据。 接受带有/不带有填充的标准或 URL 安全的 base64 编码。 |
+| int32, fixed32, uint32 | number        | `1, -10, 0`                               | JSON 值将是一个十进制数。 接受数字或字符串。                 |
+| int64, fixed64, uint64 | string        | `"1", "-10"`                              | JSON 值将是一个十进制字符串。 接受数字或字符串。             |
+| float, double          | number        | `1.1, -10.0, 0, "NaN", "Infinity"`        | JSON 值将是一个数字或特殊字符串值“NaN”、“Infinity”和“-Infinity”之一。 接受数字或字符串。 也接受指数符号。 -0 被认为等同于 0。 |
+| Any                    | `object`      | `{"@type": "url", "f": v, … }`            | 如果 Any 包含一个具有特殊 JSON 映射的值，则将其转换为：{"@type": xxx, "value": yyy}。 否则，该值将被转换为 JSON 对象，并插入“@type”字段以指示实际数据类型。 |
+| Timestamp              | string        | `"1972-01-01T10:00:20.021Z"`              | 使用 RFC 3339，其中生成的输出将始终进行 Z 归一化，并使用 0、3、6 或 9 位小数。 也接受除“Z”之外的偏移量。 |
+| Duration               | string        | `"1.000340012s", "1s"`                    | 生成的输出始终包含 0、3、6 或 9 个小数位数，具体取决于所需的精度，后跟后缀“s”。 接受任何小数位（也可以没有），只要它们符合纳秒精度并且需要后缀“s”。 |
+| Struct                 | `object`      | `{ … }`                                   | Any JSON object. See `struct.proto`.                         |
+| Wrapper types          | various types | `2, "2", "foo", true, "true", null, 0, …` | 包装器在 JSON 中使用与包装的原始类型相同的表示形式，除了在数据转换和传输期间允许并保留“null”。 |
+| FieldMask              | string        | `"f.fooBar,h"`                            | See `field_mask.proto`.                                      |
+| ListValue              | array         | `[foo, bar, …]`                           |                                                              |
+| Value                  | value         |                                           | Any JSON value. Check [google.protobuf.Value](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#google.protobuf.Value) for details. |
+| NullValue              | null          |                                           | JSON null                                                    |
+| Empty                  | object        | `{}`                                      | An empty JSON object                                         |
+
+## 9. 生成代码选项
+
+`optimize_for`（文件选项）：可以设置为`SPEED`、`CODE_SIZE`或`LITE_RUNTIME`。这会通过以下方式影响 C++ 和 Java 代码生成器（可能还有第三方生成器）：
+
+- `SPEED`（默认）：protocol buffer 编译器将生成用于对消息类型进行序列化、解析和执行其他常见操作的代码。这段代码是高度优化的。
+- `CODE_SIZE`：协议缓冲区编译器将生成最少的类，并将依赖共享的、基于反射的代码来实现序列化、解析和各种其他操作。因此生成的代码将比 with 小得多`SPEED`，但操作会更慢。类仍将实现与模式中完全相同的公共 API `SPEED`。此模式在包含大量`.proto`文件且不需要所有文件都非常快的应用程序中最有用。
+- `LITE_RUNTIME`：protocol buffer 编译器将生成仅依赖于“lite”运行时库的类（`libprotobuf-lite`而不是`libprotobuf`）。lite 运行时比完整库小得多（大约小一个数量级），但省略了描述符和反射等某些功能。这对于在手机等受限平台上运行的应用程序特别有用。编译器仍将生成所有方法的快速实现，就像它在`SPEED`模式中所做的那样。生成的类只会实现`MessageLite`每种语言的接口，它只提供完整`Message`接口方法的子集。
+
+```protobuf
+option optimize_for = CODE_SIZE;
+```
+
+`cc_enable_arenas`（文件选项）：为 C++ 生成的代码启用[竞技场分配。](https://developers.google.com/protocol-buffers/docs/reference/arenas)
+
+`deprecated`（字段选项）：如果设置为`true`，则表示该字段已弃用，不应被新代码使用。在大多数语言中，这没有实际效果。在 Java 中，这成为`@Deprecated`注解。将来，其他特定于语言的代码生成器可能会在字段的访问器上生成弃用注释，这反过来会导致在编译尝试使用该字段的代码时发出警告。如果该字段未被任何人使用并且您希望阻止新用户使用它，请考虑将字段声明替换为[保留](https://developers.google.com/protocol-buffers/docs/proto3#reserved)语句。
+
+```protobuf
+int32 old_field = 6 [deprecated = true];
+```
+
+
+
+## 参考
+
+https://developers.google.com/protocol-buffers/docs/proto3
