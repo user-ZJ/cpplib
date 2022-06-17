@@ -132,7 +132,8 @@ inline bool search(const std::wstring &s, const std::wstring &patt, std::vector<
 }
 
 inline bool searchAll(const std::string &s, const std::string &patt,
-                      std::vector<std::vector<std::string>> *tuple = nullptr) {
+                      std::vector<std::vector<std::string>> *tuple = nullptr,
+                      std::vector<std::string> *prefix = nullptr, std::vector<std::string> *suffix = nullptr) {
   /**
    * @brief 查找所有匹配正则表达式的文本段
    * s 待匹配的字符串
@@ -140,7 +141,12 @@ inline bool searchAll(const std::string &s, const std::string &patt,
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
-  if(tuple != nullptr) tuple->clear();
+  if (tuple != nullptr)
+    tuple->clear();
+  if (prefix != nullptr)
+    prefix->clear();
+  if (suffix != nullptr)
+    suffix->clear();
   xpressive::sregex sre = to_regex(patt);
   xpressive::sregex_iterator cur(s.begin(), s.end(), sre), end;
   bool ret;
@@ -152,12 +158,19 @@ inline bool searchAll(const std::string &s, const std::string &patt,
       for (auto i = 0; i < m.size(); i++) { t.push_back(m[i].str()); }
       tuple->emplace_back(t);
     }
+    if (prefix != nullptr) {
+      prefix->push_back(m.prefix().str());
+    }
+    if (suffix != nullptr) {
+      suffix->push_back(m.suffix().str());
+    }
   }
   return ret;
 }
 
 inline bool searchAll(const std::wstring &s, const std::wstring &patt,
-                      std::vector<std::vector<std::wstring>> *tuple = nullptr) {
+                      std::vector<std::vector<std::wstring>> *tuple = nullptr,
+                      std::vector<std::wstring> *prefix = nullptr, std::vector<std::wstring> *suffix = nullptr) {
   /**
    * @brief 查找所有匹配正则表达式的文本段
    * s 待匹配的字符串
@@ -165,7 +178,12 @@ inline bool searchAll(const std::wstring &s, const std::wstring &patt,
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
-  if(tuple != nullptr) tuple->clear();
+  if (tuple != nullptr)
+    tuple->clear();
+  if (prefix != nullptr)
+    prefix->clear();
+  if (suffix != nullptr)
+    suffix->clear();
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsregex_iterator cur(s.begin(), s.end(), sre), end;
   bool ret;
@@ -176,6 +194,12 @@ inline bool searchAll(const std::wstring &s, const std::wstring &patt,
       std::vector<std::wstring> t;
       for (auto i = 0; i < m.size(); i++) { t.push_back(m[i].str()); }
       tuple->emplace_back(t);
+    }
+    if (prefix != nullptr) {
+      prefix->push_back(m.prefix().str());
+    }
+    if (suffix != nullptr) {
+      suffix->push_back(m.suffix().str());
     }
   }
   return ret;

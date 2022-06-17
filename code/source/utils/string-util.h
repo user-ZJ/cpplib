@@ -78,6 +78,19 @@ inline std::vector<std::string> splitStringToVector(const std::string &full, con
   return out;
 }
 
+inline std::vector<std::wstring> splitStringToVector(const std::wstring &full, const wchar_t *delim = L" ") {
+  size_t start = 0, found = 0, end = full.size();
+  std::vector<std::wstring> out;
+  while (found != std::wstring::npos) {
+    found = full.find_first_of(delim, start);
+    if (found != start && start != end) {
+      out.push_back(full.substr(start, found - start));
+    }
+    start = found + 1;
+  }
+  return out;
+}
+
 inline void SplitUTF8StringToChars(const std::string& str,
                             std::vector<std::string>* chars) {
   chars->clear();
@@ -179,6 +192,19 @@ inline std::string Rtrim(const std::string& str) {
 
 inline std::string Trim(const std::string& str) { return Rtrim(Ltrim(str)); }
 
+inline std::wstring strip(const std::wstring &str, const wchar_t *ch = L" ") {
+  size_t strBegin, strEnd, strRange;
+  strBegin = str.find_first_not_of(ch);
+  if (strBegin == std::wstring::npos) {
+    return L"";
+  }
+  strEnd = str.find_last_not_of(ch);
+  strRange = strEnd - strBegin + 1;
+
+  return str.substr(strBegin, strRange);
+}
+
+
 // 获取系统环境变量
 inline std::string getEnvVar( std::string const & key ){
     if(key.empty())
@@ -195,7 +221,23 @@ inline bool endswith(std::string const &fullString, std::string const &ending){
     }
 }
 
+inline bool endswith(std::wstring const &fullString, std::wstring const &ending){
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
 inline bool startswith(std::string const &fullString, std::string const &starts){
+    if (fullString.length() >= starts.length()) {
+        return (0 == fullString.compare(0, starts.length(), starts));
+    } else {
+        return false;
+    }
+}
+
+inline bool startswith(std::wstring const &fullString, std::wstring const &starts){
     if (fullString.length() >= starts.length()) {
         return (0 == fullString.compare(0, starts.length(), starts));
     } else {
