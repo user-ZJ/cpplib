@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
   }
   std::wstring wtext = L"您好";
   std::vector<std::wstring> wmatchs;
-  ret = search(wtext,ZHWord,&wmatchs);
+  ret = search(wtext,to_wstring(ZHWord),&wmatchs);
   LOG(INFO)<<"find chinese word:"<<ret;
   for(auto s:wmatchs){
     LOG(INFO)<<to_string(s);

@@ -42,3 +42,47 @@ export GLOG_v=2
 $ ./example
 ```
 
+## 指定日志存储路径
+
+1. 在代码中添加
+   
+   ```cpp
+   #include <glog/logging.h>
+   
+   int main(int argc, char* argv[]) {
+       // Initialize Google’s logging library.
+       FLAGS_log_dir=/path/to/your/logdir
+       google::InitGoogleLogging(argv[0]);
+   
+       // ...
+       LOG(INFO) << "Found " << num_cookies << " cookies";
+   }
+   ```
+
+2. 命令行参数,需要再本地安装glog
+   
+   ```shell
+   ./your_application --log_dir=/some/log/directory
+   ```
+
+3. 环境变量，在未安装glog的时候使用
+   
+   ```shell
+   GLOG_log_dir=/some/log/directory ./your_application
+   ```
+
+## 日志文件自动清理
+
+```cpp
+#include <glog/logging.h>
+
+int main(int argc, char* argv[]) {
+    // Initialize Google’s logging library.
+    FLAGS_log_dir=/path/to/your/logdir
+    google::EnableLogCleaner(3); // keep your logs for 3 days
+    google::InitGoogleLogging(argv[0]);
+
+    // ...
+    LOG(INFO) << "Found " << num_cookies << " cookies";
+}
+```

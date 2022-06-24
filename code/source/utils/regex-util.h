@@ -23,12 +23,14 @@ namespace BASE_NAMESPACE { namespace REGEX {
 // static std::string PATT_DAY = R"(31|30|[21]\d|0?[987654321])";
 
 //中文标点
-//。 ？ ！ ， 、 ； ： “ ” ‘ ' （ ） 《 》 〈 〉 【 】 『 』 「 」 ﹃ ﹄ 〔 〕 … — ～ ﹏ ￥
-//[\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5]
-static const std::wstring ZHPunct = LR"([\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5])";
-static const std::wstring ENPunct = LR"([\.\?!,;:'"\(\)\[\]\{\}<>/\-\\$@`~#%^\*_\+=\|])";  // 英文标点.?!,;:'"(){}<>/-\$@`~#%^+=|
-static const std::wstring ZHWord = LR"([\u4e00-\u9fa5])";  // 中文汉字
-static const std::wstring ENWord = LR"([a-zA-Z][A-Za-z_\-']*)";  // 英文单词
+//。 ？ ！ ， 、 ； ： “ ” ‘ ' （ ） 《 》 〈 〉 【 】 『 』 「 」 ﹃ ﹄ 〔 〕 … — ～ ﹏ ￥ • ·
+//[\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5|\u2022|\u00b7]
+static const std::string ZHPunct =
+  R"([\u3002|\uff1f|\uff01|\uff0c|\u3001|\uff1b|\uff1a|\u201c|\u201d|\u2018|\u2019|\uff08|\uff09|\u300a|\u300b|\u3008|\u3009|\u3010|\u3011|\u300e|\u300f|\u300c|\u300d|\ufe43|\ufe44|\u3014|\u3015|\u2026|\u2014|\uff5e|\ufe4f|\uffe5|\u2022|\u00b7])";
+static const std::string ENPunct =
+  R"([\.\?!,;:'"\(\)\[\]\{\}<>/\-\\$@`~#%^\*_\+=\|])";          // 英文标点.?!,;:'"(){}<>/-\$@`~#%^+=|
+static const std::string ZHWord = R"([\u4e00-\u9fa5])";        // 中文汉字
+static const std::string ENWord = R"([a-zA-Z][A-Za-z_\-']*)";  // 英文单词
 
 
 inline xpressive::wsregex to_wregex(const std::wstring &patt) {

@@ -26,8 +26,15 @@ AlignOperands: true
 # 对齐连续的尾随的注释
 AlignTrailingComments: true
 
-# 不允许函数声明的所有参数在放在下一行
-AllowAllParametersOfDeclarationOnNextLine: false
+# 如果函数调用或带括号的初始化列表不适合全部在一行时
+# 允许将所有参数放到下一行，即使BinPackArguments为false
+AllowAllArgumentsOnNextLine: true
+
+# 允许构造函数的初始化参数放在下一行
+AllowAllConstructorInitializersOnNextLine: true
+
+# 允许函数声明的所有参数在放在下一行
+AllowAllParametersOfDeclarationOnNextLine: true
 
 # 不允许短的块放在同一行
 AllowShortBlocksOnASingleLine: true
@@ -42,7 +49,7 @@ AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: true
 
 # 允许短的循环保持在同一行
-AllowShortLoopsOnASingleLine: true
+AllowShortLoopsOnASingleLine: false
 
 # 总是在返回类型后换行: None, All, TopLevel(顶级函数，不包括在类中的函数), 
 # AllDefinitions(所有的定义，不包括声明), TopLevelDefinitions(所有的顶级函数的定义)

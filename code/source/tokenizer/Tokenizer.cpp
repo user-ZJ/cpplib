@@ -83,7 +83,7 @@ std::vector<std::vector<std::string>> Tokenizer::tokenize(const std::string &tex
   std::vector<std::string> tokenized;
   for (const auto &m : matchs) {
     //处理英文，英文一个单词可能被拆分为多个token
-    if (REGEX::match(m[0], REGEX::ENWord)) {
+    if (REGEX::match(m[0], to_wstring(REGEX::ENWord))) {
       std::string estr = to_string(m[0]);
       for (auto sub : wordPieceTokenize(estr)) {
         tokenized.push_back(sub);
@@ -197,6 +197,10 @@ std::string Tokenizer::decode(int pred) {
     return id_token_dict[pred];
   else
     return std::string("[UNK]");
+}
+
+int Tokenizer::getLabelLen(){
+  return id_token_dict.size();
 }
 
 };  // namespace BASE_NAMESPACE
