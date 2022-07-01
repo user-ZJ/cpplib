@@ -25,8 +25,10 @@ int FVadWrapper::Init(const std::string &path) {
     return -1;
 }
 
-std::vector<std::pair<size_t, size_t>> FVadWrapper::SplitAudio(const std::vector<int16_t> &audio, int sample_rate) {
-  LOG(INFO)<<"fvad recive "<<audio.size()<<" samples with sample_rate "<<sample_rate;
+std::vector<std::pair<size_t, size_t>>
+FVadWrapper::SplitAudio(const std::vector<int16_t> &audio, int sample_rate) {
+  LOG(INFO) << "fvad recive " << audio.size() << " samples with sample_rate "
+            << sample_rate;
   std::vector<std::pair<size_t, size_t>> results;
   if (!is_init) {
     LOG(ERROR) << "error! please init FVadWrapper first";
@@ -62,8 +64,9 @@ std::vector<std::pair<size_t, size_t>> FVadWrapper::SplitAudio(const std::vector
     for (size_t i = 0; i < is_voice.size() - num_padding; i++) {
       window_start = i;
       window_end = window_start + num_padding;
-      int sum = std::accumulate(is_voice.begin() + window_start, is_voice.begin() + window_end, 0);
-      if (false == triggered && sum >= threshold) {  // 语音开始
+      int sum = std::accumulate(is_voice.begin() + window_start,
+                                is_voice.begin() + window_end, 0);
+      if (false == triggered && sum >= threshold) { // 语音开始
         start = window_start * framelen;
         triggered = true;
       } else if (true == triggered && sum < threshold) {  // 语音结束
@@ -75,22 +78,29 @@ std::vector<std::pair<size_t, size_t>> FVadWrapper::SplitAudio(const std::vector
         size_t part_len = end - start;
         size_t seg_num = part_len /(MAX_DURATION*sample_rate) + 1;
         size_t seg_len = part_len / seg_num;
-        LOG(INFO)<<part_len<<" "<<seg_num<<" "<<seg_len<<" "<<MAX_DURATION;
-        while (start + seg_len * 2 < part_len) {  // 如果有两个及以上的segment,则将第一个segment添加到列表
+        while (
+            start + seg_len * 2 <
+            part_len) { // 如果有两个及以上的segment,则将第一个segment添加到列表
           results.push_back({start, start + seg_len});
           start += seg_len;
         }
         results.push_back({start, end}); //最后一个segment要包含未均分的数据
-        LOG(INFO)<<"vad segment:"<<start<<","<<end;
+        VLOG(3) << "vad segment:" << start << "," << end;
       }
+    }
+    if (triggered) {
+      end = (is_voice.size() - 1) * framelen;
+      results.push_back({start, end});
     }
   }
   return results;
 }
 
-std::vector<int16_t> FVadWrapper::RemoveSilence(const std::vector<int16_t> &audio, int sample_rate) {
+std::vector<int16_t>
+FVadWrapper::RemoveSilence(const std::vector<int16_t> &audio, int sample_rate) {
   std::vector<int16_t> results;
-  LOG(INFO)<<"fvad recive "<<audio.size()<<" samples with sample_rate "<<sample_rate;
+  LOG(INFO) << "fvad recive " << audio.size() << " samples with sample_rate "
+            << sample_rate;
   if (!is_init) {
     LOG(ERROR) << "error! please init FVadWrapper first";
     return results;
@@ -134,6 +144,13 @@ std::vector<int16_t> FVadWrapper::RemoveSilence(const std::vector<int16_t> &audi
         i = window_end;
         // append audio data to results
         for(size_t j=start;j<end;j++){
+          results.push_back(audio[j]);
+        }
+      }
+      if (triggered) {
+        end = (is_voice.size() - 1) * framelen;
+        // append audio data to results
+        for (size_t j = start; j < end; j++) {
           results.push_back(audio[j]);
         }
       }

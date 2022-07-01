@@ -39,8 +39,8 @@ add_executable(threadpool_test threadpool_test.cpp)
 target_link_libraries(threadpool_test mbase pthread)
 
 
-add_executable(crypto_test crypto_test.cpp)
-target_link_libraries(crypto_test cryptopp.a pthread)
+# add_executable(crypto_test crypto_test.cpp)
+# target_link_libraries(crypto_test cryptopp.a pthread)
 
 add_executable(string_util_test string_util_test.cpp)
 target_link_libraries(string_util_test mbase)

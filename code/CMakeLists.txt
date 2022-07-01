@@ -30,6 +30,8 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
     if(MSVC)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DEBUG")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEBUG")
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+        add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
     else()
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -Wfatal-errors")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors")
@@ -39,6 +41,8 @@ else()
     if (MSVC)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /O2")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2")
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+        add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
     else()
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors")
@@ -49,17 +53,12 @@ endif()
 include(FetchContent)
 include(ExternalProject)
 set(FETCHCONTENT_QUIET off)
-set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/depends)
+set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/depends)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # third_party: boost
-FetchContent_Declare(boost
-  URL      https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz
-  URL_HASH SHA256=aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a
-)
-FetchContent_MakeAvailable(boost)
-include_directories(${boost_SOURCE_DIR})
-
+include(boost)
 
 include_directories(
     3rdparty/gflags/include
@@ -75,31 +74,15 @@ link_directories(
 )
 
 # third_party: minizip
-FetchContent_Declare(minizip
-  GIT_REPOSITORY    https://github.com/zlib-ng/minizip-ng.git
-  GIT_TAG   99d39015e29703af2612277180ea586805f655ea
-)
-#add_subdirectory(${minizip_SOURCE_DIR})
-FetchContent_MakeAvailable(minizip)
-include_directories(${minizip_SOURCE_DIR})
+include(minizip)
 
 
 # third_party: rapidjson
-FetchContent_Declare(rapidjson
-  GIT_REPOSITORY    https://github.com/Tencent/rapidjson.git
-  GIT_TAG   v1.1.0
-)
-FetchContent_Populate(rapidjson)
-include_directories(${rapidjson_SOURCE_DIR}/include)
+include(rapidjson)
 
 
-# third_party: rapidjson
-FetchContent_Declare(eigen
-  URL    https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.gz
-  URL_HASH SHA256=7985975b787340124786f092b3a07d594b2e9cd53bbfe5f3d9b1daee7d55f56f
-)
-FetchContent_Populate(eigen)
-include_directories(${eigen_SOURCE_DIR})
+# third_party: eigen
+include(eigen)
 
 
 # # third_party: cryptopp

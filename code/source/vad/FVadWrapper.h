@@ -21,8 +21,6 @@ struct vad_deleter {
 
 class FVadWrapper : public IVad {
  public:
-  ~FVadWrapper() {
-  }
   // 初始化Vad.
   int Init(const std::string &path);
   // 切分语音为语音段
