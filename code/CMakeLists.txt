@@ -6,7 +6,7 @@ option(BUILD_TEST "build test with googletest" ON)
 
 set(BASE_NAMESPACE zack)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 message(STATUS "opration system is ${CMAKE_SYSTEM_NAME}")
 #${CMAKE_SYSTEM_NAME} "Windows", "Linux","Android" or "Darwin"

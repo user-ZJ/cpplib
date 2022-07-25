@@ -11,8 +11,9 @@
 
 namespace BASE_NAMESPACE {
 
-inline std::string getFromDic(const std::map<std::string, std::string> &dic, const std::string &key,
-                              const std::string &default_value = "") {
+template<typename K,typename V>
+inline V getFromDic(const std::map<K, V> &dic, const K &key,
+                              const V &default_value) {
   auto iter = dic.find(key);
   if (iter != dic.end()) {
     return iter->second;
@@ -21,8 +22,9 @@ inline std::string getFromDic(const std::map<std::string, std::string> &dic, con
   }
 }
 
-inline std::string getFromDic(const std::unordered_map<std::string, std::string> &dic, const std::string &key,
-                              const std::string &default_value = "") {
+template<typename K,typename V>
+inline V getFromDic(const std::unordered_map<K, V> &dic, const K &key,
+                              const V &default_value) {
   auto iter = dic.find(key);
   if (iter != dic.end()) {
     return iter->second;
@@ -31,24 +33,5 @@ inline std::string getFromDic(const std::unordered_map<std::string, std::string>
   }
 }
 
-inline std::wstring getFromDic(const std::map<std::wstring, std::wstring> &dic, const std::wstring &key,
-                               const std::wstring &default_value = L"") {
-  auto iter = dic.find(key);
-  if (iter != dic.end()) {
-    return iter->second;
-  } else {
-    return default_value;
-  }
-}
-
-inline std::wstring getFromDic(const std::unordered_map<std::wstring, std::wstring> &dic, const std::wstring &key,
-                               const std::wstring &default_value = L"") {
-  auto iter = dic.find(key);
-  if (iter != dic.end()) {
-    return iter->second;
-  } else {
-    return default_value;
-  }
-}
 
 };  // namespace BASE_NAMESPACE
