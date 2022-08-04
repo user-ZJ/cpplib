@@ -64,14 +64,28 @@ class SoxUtil {
   }
 
   std::vector<char> ProcessWav(const WavInfo &info, const std::vector<float> &data, const int sample_rate,
-                               const float volume, const float speed) {
-    sox_format_t *tmp, *in, *out;
+                               const float volume, const float speed){
     std::vector<sox_sample_t> audio_data(data.size());
     for (int i = 0; i < data.size(); i++) {
       audio_data[i] = SOX_SIGNED_16BIT_TO_SAMPLE(data[i] * (std::numeric_limits<int16_t>::max() + 1.0), );
     }
+    return ProcessWav(info,audio_data,sample_rate,volume,speed);
+  }
+
+  std::vector<char> ProcessWav(const WavInfo &info, const std::vector<int16_t> &data, const int sample_rate,
+                               const float volume, const float speed){
+    std::vector<sox_sample_t> audio_data(data.size());
+    for (int i = 0; i < data.size(); i++) {
+      audio_data[i] = SOX_SIGNED_16BIT_TO_SAMPLE(data[i], );
+    }
+    return ProcessWav(info,audio_data,sample_rate,volume,speed);
+  }
+
+  std::vector<char> ProcessWav(const WavInfo &info, const std::vector<sox_sample_t> &audio_data, const int sample_rate,
+                               const float volume, const float speed) {
+    sox_format_t *tmp, *in, *out;
     sox_signalinfo_t tmp_signal = {static_cast<sox_rate_t>(info.sample_rate), info.channel, info.precision, 0, NULL};
-    std::vector<char> buffer(data.size() * 5);
+    std::vector<char> buffer(audio_data.size() * 5);
     assert(tmp = sox_open_mem_write(buffer.data(), buffer.size(), &tmp_signal, NULL, "sox", NULL));
     assert(sox_write(tmp, audio_data.data(), audio_data.size()) == audio_data.size());
     sox_close(tmp);
@@ -86,7 +100,7 @@ class SoxUtil {
                                     sox_option_default, sox_false};
     sox_signalinfo_t out_signal = {static_cast<sox_rate_t>(sample_rate), 1, 16, tgt_sample_num, NULL};
     assert(in = sox_open_mem_read(buffer.data(), buffer.size(), NULL, NULL, NULL));
-    std::vector<char> out_buff(data.size() * 5, 0);
+    std::vector<char> out_buff(audio_data.size() * 5, 0);
     assert(out =
              sox_open_mem_write(out_buff.data(), out_buff.size(), &out_signal, &out_encoding, "wav", NULL));
     chain = sox_create_effects_chain(&in->encoding, &out->encoding);
