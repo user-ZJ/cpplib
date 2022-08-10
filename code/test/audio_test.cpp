@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
   }
   auto info = SoxUtil::instance().GetWavInfo(argv[1]);
   std::cout<<info.sample_rate<<" "<<info.channel<<" "<<info.sample_num<<" "<<info.precision<<std::endl;
-  std::vector<float> data;
+  std::vector<double> data;
   SoxUtil::instance().GetData(argv[1],&data);
   std::cout<<"size:"<<data.size()<<std::endl;
   auto wav = SoxUtil::instance().ProcessWav(info,data,24000,/*volume*/1.0,/*speed*/1.5);

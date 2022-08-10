@@ -39,6 +39,19 @@ class SoxUtil {
     return info;
   }
 
+  WavInfo GetWavInfo(const std::vector<char> &buff) {
+    WavInfo info;
+    sox_format_t *in;
+    assert(in = sox_open_mem_read(const_cast<char *>(buff.data()), buff.size(), NULL, NULL, NULL));
+    info.sample_rate = in->signal.rate;
+    info.channel = in->signal.channels;
+    info.sample_num = in->signal.length;
+    info.precision = in->signal.precision;
+    sox_close(in);
+    return info;
+  }
+
+
   int GetData(const std::string &filename, std::vector<int16_t> *out) {
     sox_format_t *in;
     assert(in = sox_open_read(filename.c_str(), NULL, NULL, NULL));
@@ -52,7 +65,7 @@ class SoxUtil {
     return 0;
   }
 
-  int GetData(const std::string &filename, std::vector<float> *out) {
+  int GetData(const std::string &filename, std::vector<double> *out) {
     sox_format_t *in;
     assert(in = sox_open_read(filename.c_str(), NULL, NULL, NULL));
     std::vector<sox_sample_t> audio_data(in->signal.length);
@@ -63,7 +76,32 @@ class SoxUtil {
     return 0;
   }
 
-  std::vector<char> ProcessWav(const WavInfo &info, const std::vector<float> &data, const int sample_rate,
+  int GetData(const std::vector<char> &buff, std::vector<int16_t> *out) {
+    sox_format_t *in;
+    assert(in = sox_open_mem_read(const_cast<char *>(buff.data()), buff.size(), NULL, NULL, NULL));
+    std::vector<sox_sample_t> audio_data(in->signal.length);
+    out->resize(in->signal.length);
+    assert(sox_read(in, audio_data.data(), audio_data.size()) == audio_data.size());
+    for (size_t i = 0; i < audio_data.size(); i++) {
+      (*out)[i] = SOX_SAMPLE_TO_FLOAT_64BIT(audio_data[i], ) * (std::numeric_limits<int16_t>::max() + 1.0);
+    }
+    sox_close(in);
+    return 0;
+  }
+
+
+  int GetData(const std::vector<char> &buff, std::vector<double> *out) {
+    sox_format_t *in;
+    assert(in = sox_open_mem_read(const_cast<char *>(buff.data()), buff.size(), NULL, NULL, NULL));
+    std::vector<sox_sample_t> audio_data(in->signal.length);
+    out->resize(in->signal.length);
+    assert(sox_read(in, audio_data.data(), audio_data.size()) == audio_data.size());
+    for (size_t i = 0; i < audio_data.size(); i++) { (*out)[i] = SOX_SAMPLE_TO_FLOAT_64BIT(audio_data[i], ); }
+    sox_close(in);
+    return 0;
+  }
+
+  std::vector<char> ProcessWav(const WavInfo &info, const std::vector<double> &data, const int sample_rate,
                                const float volume, const float speed){
     std::vector<sox_sample_t> audio_data(data.size());
     for (int i = 0; i < data.size(); i++) {
