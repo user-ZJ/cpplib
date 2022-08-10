@@ -335,6 +335,24 @@ protobuf支持json编码规范，可以更方便的在各个系统中传输数�
 
 ## 9. 生成代码选项
 
+`java_package`（文件选项）：要用于生成的 Java/Kotlin 类的包。如果文件中没有给出明确java_package的选项.proto，那么默认情况下将使用 proto 包（使用文件中的“package”关键字指定.proto）。但是，proto 包通常不能制作好的 Java 包，因为不期望 proto 包以反向域名开头。如果不生成 Java 或 Kotlin 代码，则此选项无效。
+
+```protobuf
+option java_package = "com.example.foo";
+```
+
+`java_outer_classname`（文件选项）：您要生成的包装 Java 类的类名（以及文件名）。如果文件中没有明确java_outer_classname指定，.proto则将通过将.proto文件名转换为驼峰式来构造类名（因此foo_bar.proto变为FooBar.java）。如果该java_multiple_files选项被禁用，那么所有其他类/枚举/等。为文件生成的.proto文件将在这个外部包装 Java 类中生成为嵌套类/枚举/等。如果不生成 Java 代码，则此选项无效。
+
+```protobuf
+option java_outer_classname = "Ponycopter";
+```
+
+`java_multiple_files`（文件选项）：如果为 false，则只会生成一个.java文件。如果为 true，将为每个 Java 类/枚举/等生成单独的文件。默认为false. 如果不生成 Java 代码，则此选项无效。
+
+```protobuf
+option java_multiple_files = true;
+```
+
 `optimize_for`（文件选项）：可以设置为`SPEED`、`CODE_SIZE`或`LITE_RUNTIME`。这会通过以下方式影响 C++ 和 Java 代码生成器（可能还有第三方生成器）：
 
 - `SPEED`（默认）：protocol buffer 编译器将生成用于对消息类型进行序列化、解析和执行其他常见操作的代码。这段代码是高度优化的。
@@ -345,7 +363,7 @@ protobuf支持json编码规范，可以更方便的在各个系统中传输数�
 option optimize_for = CODE_SIZE;
 ```
 
-`cc_enable_arenas`（文件选项）：为 C++ 生成的代码启用[竞技场分配。](https://developers.google.com/protocol-buffers/docs/reference/arenas)
+`cc_enable_arenas`（文件选项）：为 C++ 生成的代码启用[arenas内存分配器](https://developers.google.com/protocol-buffers/docs/reference/arenas)
 
 `deprecated`（字段选项）：如果设置为`true`，则表示该字段已弃用，不应被新代码使用。在大多数语言中，这没有实际效果。在 Java 中，这成为`@Deprecated`注解。将来，其他特定于语言的代码生成器可能会在字段的访问器上生成弃用注释，这反过来会导致在编译尝试使用该字段的代码时发出警告。如果该字段未被任何人使用并且您希望阻止新用户使用它，请考虑将字段声明替换为[保留](https://developers.google.com/protocol-buffers/docs/proto3#reserved)语句。
 

@@ -138,6 +138,7 @@ INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 # add_dependencies(${PROJECT_NAME} gflags_module glog_module)
 
 add_subdirectory(source/web)
+add_subdirectory(source/grpc)
 add_subdirectory(source/db)
 add_subdirectory(source/vad)
 
