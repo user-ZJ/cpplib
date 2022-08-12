@@ -26,16 +26,16 @@ const char WHITESPACE[] = " \n\r\t\f\v";
 
 // 以流的方式打印vector
 template <typename T>
-std::ostream &operator<<(std::ostream &os, const std::vector<T> &v) {
-  os << "[";
+std::string v2s(const std::vector<T> &v) {
+  std::string s= "[";
   for (int i = 0; i < v.size(); ++i) {
-    os << v[i];
+    s += std::to_string(v[i]);
     if (i != v.size() - 1) {
-      os << ", ";
+      s+= ", ";
     }
   }
-  os << "]";
-  return os;
+  s+= "]";
+  return s;
 }
 
 // wstring和string之间转换

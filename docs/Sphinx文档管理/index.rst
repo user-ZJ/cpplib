@@ -3,17 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to cppdoc's documentation!
+Sphinx文档管理
 ==================================
 
 .. toctree::
    :maxdepth: 2
-   :glob:
 
-   *
-   Sphinx文档管理/index
-
-
+   readthedoc使用
+   reStructureedText示例
+   Sphinx文档管理
 
 
 

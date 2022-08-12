@@ -55,9 +55,12 @@ class SoxUtil {
   int GetData(const std::string &filename, std::vector<int16_t> *out) {
     sox_format_t *in;
     assert(in = sox_open_read(filename.c_str(), NULL, NULL, NULL));
-    std::vector<sox_sample_t> audio_data(in->signal.length);
+    std::vector<sox_sample_t> audio_data(in->signal.length,0);
     out->resize(in->signal.length);
-    assert(sox_read(in, audio_data.data(), audio_data.size()) == audio_data.size());
+    size_t read_num = sox_read(in, audio_data.data(), audio_data.size());
+    if( read_num != audio_data.size()){
+      LOG(WARNING)<<"can not get enough audio data:expect "<<audio_data.size()<<" but got "<<read_num;
+    }
     for (size_t i = 0; i < audio_data.size(); i++) {
       (*out)[i] = SOX_SAMPLE_TO_FLOAT_64BIT(audio_data[i], ) * (std::numeric_limits<int16_t>::max() + 1.0);
     }
@@ -68,9 +71,12 @@ class SoxUtil {
   int GetData(const std::string &filename, std::vector<double> *out) {
     sox_format_t *in;
     assert(in = sox_open_read(filename.c_str(), NULL, NULL, NULL));
-    std::vector<sox_sample_t> audio_data(in->signal.length);
+    std::vector<sox_sample_t> audio_data(in->signal.length,0);
     out->resize(in->signal.length);
-    assert(sox_read(in, audio_data.data(), audio_data.size()) == audio_data.size());
+    size_t read_num = sox_read(in, audio_data.data(), audio_data.size());
+    if( read_num != audio_data.size()){
+      LOG(WARNING)<<"can not get enough audio data:expect "<<audio_data.size()<<" but got "<<read_num;
+    }
     for (size_t i = 0; i < audio_data.size(); i++) { (*out)[i] = SOX_SAMPLE_TO_FLOAT_64BIT(audio_data[i], ); }
     sox_close(in);
     return 0;
@@ -79,9 +85,12 @@ class SoxUtil {
   int GetData(const std::vector<char> &buff, std::vector<int16_t> *out) {
     sox_format_t *in;
     assert(in = sox_open_mem_read(const_cast<char *>(buff.data()), buff.size(), NULL, NULL, NULL));
-    std::vector<sox_sample_t> audio_data(in->signal.length);
+    std::vector<sox_sample_t> audio_data(in->signal.length,0);
     out->resize(in->signal.length);
-    assert(sox_read(in, audio_data.data(), audio_data.size()) == audio_data.size());
+    size_t read_num = sox_read(in, audio_data.data(), audio_data.size());
+    if( read_num != audio_data.size()){
+      LOG(WARNING)<<"can not get enough audio data:expect "<<audio_data.size()<<" but got "<<read_num;
+    }
     for (size_t i = 0; i < audio_data.size(); i++) {
       (*out)[i] = SOX_SAMPLE_TO_FLOAT_64BIT(audio_data[i], ) * (std::numeric_limits<int16_t>::max() + 1.0);
     }
@@ -93,9 +102,12 @@ class SoxUtil {
   int GetData(const std::vector<char> &buff, std::vector<double> *out) {
     sox_format_t *in;
     assert(in = sox_open_mem_read(const_cast<char *>(buff.data()), buff.size(), NULL, NULL, NULL));
-    std::vector<sox_sample_t> audio_data(in->signal.length);
+    std::vector<sox_sample_t> audio_data(in->signal.length,0);
     out->resize(in->signal.length);
-    assert(sox_read(in, audio_data.data(), audio_data.size()) == audio_data.size());
+    size_t read_num = sox_read(in, audio_data.data(), audio_data.size());
+    if( read_num != audio_data.size()){
+      LOG(WARNING)<<"can not get enough audio data:expect "<<audio_data.size()<<" but got "<<read_num;
+    }
     for (size_t i = 0; i < audio_data.size(); i++) { (*out)[i] = SOX_SAMPLE_TO_FLOAT_64BIT(audio_data[i], ); }
     sox_close(in);
     return 0;
