@@ -273,6 +273,29 @@ True   True   True
 ==================
 https://zh-sphinx-doc.readthedocs.io/en/latest/markup/toctree.html
 
+toctree
+-------------------------
+toctree 的用法，可以参考如下 `ReStructuredText 快速教程 <https://rst-tutorial.readthedocs.io/zh/latest/index.html#topics-index>`_ 的文档源码即可。
+
+toctree指令会在当前位置插入文档的目录树。关联文档的路径可以使用相对路径或者绝对路径。
+相对路径是指相对于toctree指令所在文件的路径。绝对路径是相对于源文件目录的路径。
+
+toctree参数:
+
+.. code:: text
+
+    :maxdepth:2             指明了目录的层数，默认是包含所有的层。
+    :numbered:              自动给章节添加编号
+    :caption:               指定目录树的标题
+    :name:                  名字，以便使用ref引用
+    :titlesonly:            只显示文档的一级标题
+    :glob:                  设置glob后，可以使用unix通配符匹配文档
+    :reversed:              反向编号
+    :hidden:                如果你只想使用最顶层的toctree，而忽略掉其它的toctree指令
+
+
+
+
 参考
 =================
 https://macplay.github.io/posts/cong-markdown-dao-restructuredtext/#id10
@@ -280,4 +303,6 @@ https://macplay.github.io/posts/cong-markdown-dao-restructuredtext/#id10
 https://3vshej.cn/rstSyntax/index.html
 
 https://hzz-rst.readthedocs.io/zh_CN/latest/index.html
+
+https://cloud.tencent.com/developer/article/1195732
 

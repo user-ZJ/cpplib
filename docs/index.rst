@@ -7,7 +7,7 @@ Welcome to cppdoc's documentation!
 ==================================
 
 .. toctree::
-   :maxdepth: 2
+   :titlesonly:
    :glob:
 
    *
