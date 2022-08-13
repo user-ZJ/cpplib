@@ -8,10 +8,13 @@ Sphinx文档管理
 
 .. toctree::
    :maxdepth: 2
+   :caption: Sphinx文档管理
+   :name: Sphinx文档管理
 
-   readthedoc使用
+   Sphinx环境配置
    reStructureedText示例
-   Sphinx文档管理
+   readthedoc使用
+   
 
 
 
