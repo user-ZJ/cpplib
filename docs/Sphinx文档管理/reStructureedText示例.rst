@@ -8,7 +8,7 @@ reStructuredText简介
 =========================
 Sphinx 是一个 **文档生成器** ，您也可以把它看成一种工具，它可以将一组纯文本源文件转换成各种输出格式，
 并且自动生成交叉引用、索引等。也就是说，
-如果您的目录包含一堆 `reStructuredText <https://www.sphinx-doc.org/zh_CN/master/usage/restructuredtext/index.html>`_  
+如果您的目录包含一堆 `reStructuredText文件 <https://www.sphinx-doc.org/zh_CN/master/usage/restructuredtext/index.html>`_  
 或 `Markdown <https://www.sphinx-doc.org/zh_CN/master/usage/markdown.html>`_  文档，
 那么 Sphinx 就能生成一系列HTML文件，PDF文件（通过LaTeX），手册页等。
 
@@ -72,17 +72,57 @@ reStructuredText 支持有序列表和无序列表，语法与 Markdown 基本�
 
 代码块
 =============
+在reST文档中列出代码有三种方式：
+
+1. 行内代码 用``code``
+2. 简单代码块 在代码块的上一个段落后面加2个冒号，空一行后开始代码块，代码块要缩进
+3. 复杂代码块 使用code-block指导语句，还可以选择列出行号和高亮重点行等
+    * :linenos:显示行号
+    * :emphasize-lines:3,6 3,6行高亮
+
+行内代码
+---------------
+:: 
+
+    ``echo "Hello World!";``
+
+``echo "Hello World!";``
+
+双冒号方式
+-----------------
 ::
 
-    .. code:: python
+    ::
+        
+        echo "Hello World!";
 
-        import sys
-        print(sys.version)
+::
 
-.. code:: python
+        echo "Hello World!";
 
-   import sys
-   print(sys.version)
+code-block 方式
+-------------------------
+::
+
+    .. code-block:: python
+        :emphasize-lines: 3,5
+        :linenos:
+
+        def some_function():
+            interesting = False
+            print 'This line is highlighted.'
+            print 'This one is not...'
+            print '...but this one is.'
+
+.. code-block:: python
+    :emphasize-lines: 3,5
+    :linenos:
+
+    def some_function():
+        interesting = False
+        print 'This line is highlighted.'
+        print 'This one is not...'
+        print '...but this one is.'
 
 数学公式
 ===========

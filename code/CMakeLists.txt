@@ -49,6 +49,9 @@ else()
     endif()
 endif()
 
+option(USE_MNN "whether to build MNN" OFF)
+option(USE_TFLITE "whether to build tflite" OFF)
+option(USE_ONNXRUNTIME "whether to build ONNXRUNTIME" ON)
 
 include(FetchContent)
 include(ExternalProject)

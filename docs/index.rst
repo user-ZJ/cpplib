@@ -11,6 +11,7 @@ Welcome to cppdoc's documentation!
    :glob:
 
    *
+   第三方库使用/index
    Sphinx文档管理/index
 
 

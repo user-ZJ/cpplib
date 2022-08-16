@@ -14,7 +14,7 @@ make install
 
 
 
-```cmake
+```
 cmake_minimum_required (VERSION 2.6)   该语句一般都可以放置在CMakeLists.txt的开头，用于说明CMake最低版本要求
 
 add_executable()是标注生成的执行文件名和使用的source 文件名，如：add_executable(Tutorial tutorial.cpp)

@@ -6,7 +6,7 @@ https://readthedocs.org/
 
 一般的做法是将文档托管到版本控制系统比如github上面，push源码后自动构建发布到readthedoc上面， 这样既有版本控制好处，又能自动发布到readthedoc
 
-先在GitHub创建一个仓库名字叫xxx（注意项目要是公开项目）， 然后在本地.gitignore文件中添加`build/`目录，初始化git，commit后，添加远程仓库。
+先在GitHub创建一个仓库名字叫xxx（注意项目要是公开项目）， 然后在本地 `.gitignore` 文件中添加 `build/` 目录，初始化git，commit后，添加远程仓库。  
 
 具体几个步骤非常简单，参考官方文档：https://github.com/rtfd/readthedocs.org:
 

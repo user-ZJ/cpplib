@@ -772,7 +772,7 @@ int main()
 g++ -o dumptest2 dumptest2.cpp
 ```
 
-```shell
+```
 gdb /root/dumptest2 core
 (gdb) bt
 #0  0x00007f5520246f64 in __GI___libc_free (mem=0x7ffed1ccae20) at malloc.c:2968
