@@ -14,6 +14,7 @@
    protobuf使用笔记
    grpc笔记
    onnxruntime
+   MNN笔记
    tflite使用
    Eigen3使用笔记
    log4cpp
