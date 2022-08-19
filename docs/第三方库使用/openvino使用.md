@@ -1,4 +1,4 @@
-# openvino
+# openvino使用
 
 ## 安装
 
@@ -41,7 +41,7 @@ cd /opt/intel/openvino_2021/deployment_tools/model_optimizer/install_prerequisit
 /opt/intel/openvino_2021/deployment_tools/inference_engine/samples
 ```
 
-```txt
+```
 安装问题1：
 lspci: command not found
 解决方案：
@@ -154,11 +154,11 @@ python3 mo_onnx.py --input_model /root/xvector.onnx --input_shape [1,512,20]
 
 ```cpp
 //创建特定布局的blob
-InferenceEngige :: TensorDesc tdesc（FP32，{1，3，227，227}，InferenceEngine :: Layout :: NCHW）;
-InferenceEngine :: Blob :: Ptr blob = InferenceEngine :: make_shared_blob <float>（tdesc）;
+InferenceEngige::TensorDesc tdesc(FP32,{1,3,227,227},InferenceEngine::Layout::NCHW);
+InferenceEngine::Blob::Ptr blob = InferenceEngine::make_shared_blob<float>(tdesc);
 //使用指定数据创建Blob
 float *data = new float[1*3*227*227];
-InferenceEngine :: Blob :: Ptr blob = InferenceEngine :: make_shared_blob <float>（tdesc,data）;
+InferenceEngine::Blob::Ptr blob = InferenceEngine::make_shared_blob<float>(tdesc,data);
 ```
 
 ### Layouts
@@ -188,7 +188,7 @@ cout<<cpuDeviceName<<endl;  //Intel(R) Core(TM) i7-8750H CPU @ 2.20GHz
 
 https://docs.openvinotoolkit.org/latest/openvino_docs_IE_DG_Integrate_with_customer_application_new_API.html
 
-![](images/integration_process.png)
+![](/images/integration_process.png)
 
 1. **创建推理引擎核心**以管理可用设备并读取网络对象：
 
@@ -241,9 +241,9 @@ https://docs.openvinotoolkit.org/latest/openvino_docs_IE_DG_Integrate_with_custo
 4. 使用以下命令**将模型加载**到设备`InferenceEngine::Core::LoadNetwork()`：
 
    ```cpp
-   / **可选配置。例如，这可以对性能计数器进行性能分析。** /
-   std :: map <std :: string，std :: string> config = {{ InferenceEngine :: PluginConfigParams :: KEY_PERF_COUNT，InferenceEngine :: PluginConfigParams :: YES }};
-   execute_network = core.LoadNetwork（network，“ CPU”，config）;
+   /**可选配置。例如，这可以对性能计数器进行性能分析。**/
+   std::map<std::string,std::string> config = {{ InferenceEngine::PluginConfigParams::KEY_PERF_COUNT,InferenceEngine::PluginConfigParams::YES }};
+   auto execute_network = core.LoadNetwork(network,"CPU",config);
    ```
 
 5. **创建一个推断请求**
@@ -259,7 +259,7 @@ https://docs.openvinotoolkit.org/latest/openvino_docs_IE_DG_Integrate_with_custo
    ```cpp
    //异步
    infer_request.StartAsync();
-   infer_request.Wait（InferenceEngine :: IInferRequest :: WaitMode :: RESULT_READY）;
+   infer_request.Wait(InferenceEngine::IInferRequest::WaitMode::RESULT_READY);
    //wait三种参数
    //1. 指定要阻止的最大持续时间（以毫秒为单位）。在指定的超时时间过去或结果变为可用之前（以先到者为准），该方法将被阻止。
    //2. InferenceEngine::IInferRequest::WaitMode::RESULT_READY -等待推理结果可用
@@ -423,9 +423,9 @@ python3 converter.py --name mobilenet-v2-pytorch
 python3 /opt/intel/openvino_2021/deployment_tools/tools/post_training_optimization_toolkit/main.py --config mobilenet_v2_pytorch_int8.json
 ls results/mobilenet-v2-pytorch_DefaultQuantization/2021-04-25_14-25-55/optimized/
 ```
+mobilenet_v2_pytorch_int8.json:
 
 ```json
-// mobilenet_v2_pytorch_int8.json
 {
     "model": {
         "model_name": "mobilenet-v2-pytorch",

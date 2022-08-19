@@ -8,7 +8,7 @@ Sphinx文档管理
 
    Sphinx环境配置
    reStructureedText示例
-   readthedoc使用
+   readthedocs托管文档
    
 
 

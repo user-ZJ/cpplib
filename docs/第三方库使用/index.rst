@@ -16,7 +16,12 @@
    onnxruntime
    MNN笔记
    tflite使用
+   TensorRT使用
+   openvino使用
    Eigen3使用笔记
+   halide笔记
+   cuda编程
+   faiss使用
    log4cpp
 
 

@@ -199,6 +199,41 @@ reStructuredText 文档的各级标题（Sections）会自动生成链接，就�
 
 本小节内容应该与 `行内标记`_ 结合学习。
 
+rst文档链接
+--------------------
+::
+
+    使用路径引用rst文档
+    自定义引用文字
+    :doc:`自定义名称为readthedocs <./readthedocs托管文档>`
+    使用标题文字
+    :doc:`./readthedocs托管文档`
+
+:doc:`自定义名称为readthedocs <./readthedocs托管文档>`
+
+:doc:`./readthedocs托管文档`
+
+::
+
+    使用标签引用文档
+    :ref:`自定义名称为readthedocs <readthedocs托管文档>`
+    :ref:`readthedocs托管文档`
+
+    注意，需要再被引用的文件中添加 ".. _readthedocs托管文档:",否则不能被引用
+
+:ref:`自定义名称为readthedocs <readthedocs托管文档>`
+
+:ref:`readthedocs托管文档`
+
+非rst文档链接
+--------------------
+会呈现出点击后下载文件的效果。注意这种引用方式在生成pdf文件时链接会无效。
+::
+
+    :download:`引用非rst的本地文档 <./download.zip>`
+
+:download:`引用非rst的本地文档 <./download.zip>`
+
 强调
 ====================
 与 Markdown 语法基本相同。参看 `行内标记`_  

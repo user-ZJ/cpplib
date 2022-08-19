@@ -1,4 +1,4 @@
-# faiss
+# faiss使用
 
 https://github.com/facebookresearch/faiss/wiki/Getting-started
 
