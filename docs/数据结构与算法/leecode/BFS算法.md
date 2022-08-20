@@ -1,4 +1,4 @@
-# BFS
+# BFS算法
 
 BFS——广度优先算法(Breadth First Search)
 
