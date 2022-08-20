@@ -4,7 +4,7 @@ TOP命令使用
 
 top命令显示
 ==============
-.. image:: ./images/top.png
+.. image:: /images/top.png
 
 统计区域信息
 --------------

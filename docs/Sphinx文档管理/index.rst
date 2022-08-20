@@ -11,11 +11,3 @@ Sphinx文档管理
    readthedocs托管文档
    
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

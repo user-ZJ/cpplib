@@ -7,22 +7,13 @@ linux笔记
    :name: linux笔记
 
    linux常用命令
+   sox使用
+   top命令使用
    linux性能优化笔记
+   Vim使用
    awk工具使用
-   gitsubmodule使用
-   github-token-ssh
+   gdb使用笔记
    gcc升级
    glibc升级
-   sox使用
    
-
    
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

@@ -24,11 +24,3 @@
    faiss使用
    log4cpp
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

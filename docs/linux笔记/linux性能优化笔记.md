@@ -873,7 +873,7 @@ operf ./my_test_program my_arg
 #当./my_test_program完成时（或按Ctrl-C），剖析停止，你就可以使用opreport或其他OProfile的后处理工具。默认情况下，operf将示例数据存储在 中<cur_dir>/oprofile_data/samples/current，并且opreport和其他后处理工具将首先在该位置查找配置文件数据，除非您传递该--session-dir选项。
 ```
 
-# 优化CPU使用情况
+## 优化CPU使用情况
 
 1. 使用time命令来确定一个应用程序在内核和用户模式下消耗的时间。opprofile也可以用来确定时间花在哪里。
 2. 如果应用程序在内核空间消耗了大量的时间（超过25%），使用strace查看有哪些系统调用，以及他们完成的时长是多少，减少系统调用次数有可能提升性能
@@ -881,7 +881,7 @@ operf ./my_test_program my_arg
 4. 这些函数调用次数是否可以减少，使用gprof，oprofile，ltrace
 5. 这些代码行为热点是应为cache缺失吗，使用profile，cachegrind，kcache
 
-# 优化内存使用情况
+## 优化内存使用情况
 
 一般使用大量内存的应用程序通常会导致其他一些性能问题的产生，比如cache缺失，转换后援缓冲器（TLB）缺失以及交换
 
@@ -896,13 +896,13 @@ operf ./my_test_program my_arg
 9. 进程使用的库多大？使用/proc/pid/map显示每个库及其代码与数据的大小
 10. 哪些函数分配堆内存？使用memprof找出哪些函数分配了堆内存
 
-# 优化磁盘IO使用
+## 优化磁盘IO使用
 
 1. 系统强调特定磁盘吗？使用iostat寻找await大于零的分区
 2. 哪个应用程序访问了磁盘？
 3. 应用程序访问了哪些文件？通过strace -e trace=file来追踪应用程序中所有与文件IO相关的系统调用
 
-# 优化网络IO使用
+## 优化网络IO使用
 
 1. 网络设备发送/接收量接近理论极限了吗？使用ethtool确定网络设备的硬件速度是多少；使用iptraf来明确流经每个接口的流量
 2. 网络设备产生了大量错误吗？使用ifconfig来确定是否有接口产生了大量的错误
