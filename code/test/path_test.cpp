@@ -24,5 +24,6 @@ int main(int argc, char *argv[]) {
   LOG(INFO)<<"extension_name:"<<extension_name(path);
   LOG(INFO)<<"path_get_filename:"<<path_get_filename(path);
   LOG(INFO)<<"path_resolve:"<<path_resolve(path);
+  
 
 }

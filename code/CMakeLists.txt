@@ -70,10 +70,10 @@ include_directories(
     3rdparty/fvad/include 
 )
 link_directories(
-    3rdparty/gflags/lib/linux/x64
-    3rdparty/glog/lib/linux/x64
-    3rdparty/poco/lib/linux/x64
-    3rdparty/fvad/lib/linux/x64
+    3rdparty/gflags/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
+    3rdparty/glog/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
+    3rdparty/poco/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
+    3rdparty/fvad/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
 )
 
 # third_party: minizip
@@ -141,7 +141,7 @@ INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 # add_dependencies(${PROJECT_NAME} gflags_module glog_module)
 
 add_subdirectory(source/web)
-add_subdirectory(source/grpc)
+# add_subdirectory(source/grpc)
 add_subdirectory(source/db)
 add_subdirectory(source/vad)
 
