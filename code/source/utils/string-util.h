@@ -24,18 +24,18 @@ namespace BASE_NAMESPACE {
 
 const char WHITESPACE[] = " \n\r\t\f\v";
 
-// 以流的方式打印vector
 template <typename T>
 std::string v2s(const std::vector<T> &v) {
-  std::string s= "[";
+  std::stringstream ss;
+  ss << "[";
   for (int i = 0; i < v.size(); ++i) {
-    s += std::to_string(v[i]);
+    ss<< v[i];
     if (i != v.size() - 1) {
-      s+= ", ";
+      ss<< ", ";
     }
   }
-  s+= "]";
-  return s;
+  ss<< "]";
+  return ss.str();
 }
 
 // wstring和string之间转换
