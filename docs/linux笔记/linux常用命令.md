@@ -10,7 +10,32 @@ diff -Nrq a b
 sed -i 's/\r//' <filename>
 ```
 
+## 替换文件中的内容
+```shell
+sed -i 's/oo/kk/g' ./test*
+```
 
+## pigz 多线程压缩
+
+**分包压缩**:
+
+使用128线程对文件夹进行压缩，并将压缩有的文件分割为10G大小
+```shell
+tar -c /path/to/dir | pigz -p 128 -c | split -a 5 -d -b 10G - file_split.gz
+```
+
+**解压**：
+
+将分割的文件还原回来，并用pigz进行解压：
+```shell
+cat file_split.gz* > file_split.gz
+pigz -p 128 -dc  file_split.gz | tar xf -
+```
+
+## scp在命令行中带密码远程拷贝文件
+```shell
+sshpass -p 密码 scp -P 端口 源文件 目的文件
+```
 
 ## 加快git下载
 
