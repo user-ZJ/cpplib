@@ -28,3 +28,8 @@ target_link_libraries(HTTPFormServer PocoNet PocoUtil PocoXML PocoJSON PocoFound
 add_executable(HTTPFormClient HTTPFormClient.cpp)
 target_link_libraries(HTTPFormClient PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread)
 
+add_executable(HTTPClient HTTPClient.cpp)
+target_link_libraries(HTTPClient PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread glog gflags)
+
+add_executable(web_server_bin WebServerBin.cpp WebServer.cpp WebsocketHandler.cpp HttpGetHandler.cpp HttpJsonHandler.cpp HttpFormHandler.cpp DefaultHandler.cpp)
+target_link_libraries(web_server_bin PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread glog gflags)

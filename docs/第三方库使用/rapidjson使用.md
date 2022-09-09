@@ -57,48 +57,47 @@ RapidJSON 是只有头文件的 C++ 库。只需把 `include/rapidjson` 目录�
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
-using namespace rapidjson;
 
 int main(int argc,char *argv[]){
     std::string str = "hello";
-    Document d;  // 创建一个空的Document
+    rapidjson::Document d;  // 创建一个空的Document
     d.SetObject();   // 将Document设置为Object类型
-    Document::AllocatorType &allocator = d.GetAllocator();
-    d.AddMember("name",StringRef(str.c_str()),allocator);  // 设置字符串
-    d.AddMember("id",Value().SetInt(88888),allocator);  // 设置Int
-    d.AddMember("pi",Value().SetFloat(3.1416),allocator);  // 设置float
-    d.AddMember("f",Value().SetBool(true),allocator);  // 设置Boolean
-    d.AddMember("n",Value(),allocator);  // 设置null
+    rapidjson::Document::AllocatorType &allocator = d.GetAllocator();
+    d.AddMember("name",rapidjson::StringRef(str.c_str()),allocator);  // 设置字符串
+    d.AddMember("id",rapidjson::Value().SetInt(88888),allocator);  // 设置Int
+    d.AddMember("pi",rapidjson::Value().SetFloat(3.1416),allocator);  // 设置float
+    d.AddMember("f",rapidjson::Value().SetBool(true),allocator);  // 设置Boolean
+    d.AddMember("n",rapidjson::Value(),allocator);  // 设置null
     // 设置list
-    Value a(kArrayType);
+    rapidjson::Value a(kArrayType);
     for (int i = 1; i < 5; i++)
         a.PushBack(i, allocator); 
     d.AddMember("ta",a,allocator);
     // 设置object
-    Value o(kObjectType);
+    rapidjson::Value o(rapidjson::kObjectType);
     o.AddMember("a",1,allocator);
     o.AddMember("b",2,allocator);
     o.AddMember("c",3,allocator);
     d.AddMember("tr",o,allocator);
     // 设置object中包含list
-    Value tp(kObjectType);
-    Value tp1(kArrayType);
+    rapidjson::Value tp(rapidjson::kObjectType);
+    rapidjson::Value tp1(rapidjson::kArrayType);
     tp1.PushBack("he",allocator).PushBack("llo",allocator);
-    Value tp2(kArrayType);
+    Value tp2(rapidjson::kArrayType);
     tp2.PushBack("w",allocator).PushBack("ord",allocator);
     tp.AddMember("hello",tp1,allocator).
         AddMember("word",tp2,allocator);
     d.AddMember("tp",tp,allocator);
  
     // 把 DOM 转换（stringify）成 JSON。
-    StringBuffer buffer;
-    PrettyWriter<StringBuffer> writer(buffer);   // 为 JSON 加入缩进与换行,使得输出可读性更强
+    rapidjson::StringBuffer buffer;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);   // 为 JSON 加入缩进与换行,使得输出可读性更强
     writer.SetMaxDecimalPlaces(3);   // 设置浮点数小数点后的位数
     d.Accept(writer);
     std::cout << buffer.GetString() << std::endl;
 
-    StringBuffer buffer1;
-    Writer<StringBuffer> writer1(buffer1);
+    rapidjson::StringBuffer buffer1;
+    rapidjson::Writer<rapidjson::StringBuffer> writer1(buffer1);
     d.Accept(writer1);
     std::cout << buffer1.GetString() << std::endl;
 
@@ -117,16 +116,15 @@ int main(int argc,char *argv[]){
 #include "rapidjson/filereadstream.h"
 
 using namespace std;
-using namespace rapidjson;
 
 int main()
 {
     string jsonfile="test.json";
     FILE* fp = fopen(jsonfile.c_str(), "rb");
     char readBuffer[65536];
-    FileReadStream is(fp, readBuffer, sizeof(readBuffer));
-    Document d;
-    ParseResult ok = d.ParseStream(is);  // 如果已经是string，使用d.Parse(char *)解析
+    rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+    rapidjson::Document d;
+    rapidjson::ParseResult ok = d.ParseStream(is);  // 如果已经是string，使用d.Parse(char *)解析
     if (!ok)
   		cout<<"JSON parse error: "<<GetParseError_En(ok.Code())<<" ("<<ok.Offset()<<")\n";
     static const char* kTypeNames[] =  { "Null", "False", "True", "Object", "Array", "String", "Number" };
@@ -145,12 +143,12 @@ int main()
     cout<<mynull<<endl;
     /*************************Array************************************/
     //a.IsArray()判断是否是Array数据
-    const Value& a = d["ta"];
+    const rapidjson::Value& a = d["ta"];
     //使用下标访问Array
-    for (SizeType i = 0; i < a.Size(); i++) // 使用 SizeType 而不是 size_t
+    for (rapidjson::SizeType i = 0; i < a.Size(); i++) // 使用 SizeType 而不是 size_t
         cout<<"a["<<i<<"] = "<<a[i].GetInt()<<endl;
     //使用迭代器访问
-    for (Value::ConstValueIterator itr = a.Begin(); itr != a.End(); ++itr)
+    for (rapidjson::Value::ConstValueIterator itr = a.Begin(); itr != a.End(); ++itr)
         cout<<itr->GetInt()<<endl;
     //使用c++11的形式访问Array
     for (auto& v : a.GetArray())
@@ -159,12 +157,12 @@ int main()
     /*************************Dict************************************/
     // 判断key是否在json的key中
     d.HasMember("hello");
-    Value::ConstMemberIterator itr = d.FindMember("hello");
+    rapidjson::Value::ConstMemberIterator itr = d.FindMember("hello");
     if (itr != d.MemberEnd()){
         cout<<itr->value.GetString()<<endl;
     }
     //1. 使用迭代器方式访问dict，并判断Value的类型
-    for (Value::ConstMemberIterator itr = d.MemberBegin();itr != d.MemberEnd(); ++itr)
+    for (rapidjson::Value::ConstMemberIterator itr = d.MemberBegin();itr != d.MemberEnd(); ++itr)
 	{
     	printf("Type of member %s is %s\n",itr->name.GetString(), kTypeNames[itr->value.GetType()]);
 	}
@@ -181,6 +179,47 @@ int main()
         cout<<endl;
     }
     /*************************Dict************************************/
+    return 0;
+}
+```
+
+## 修改json
+```cpp
+#include <iostream>
+#include "rapidjson/document.h"
+#include "rapidjson/error/en.h"
+#include "rapidjson/filereadstream.h"
+
+using namespace std;
+
+int main()
+{
+    string jsonfile="test.json";
+    FILE* fp = fopen(jsonfile.c_str(), "rb");
+    char readBuffer[65536];
+    rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+    rapidjson::Document d;
+    rapidjson::Document::AllocatorType &allocator = d.GetAllocator();
+    rapidjson::ParseResult ok = d.ParseStream(is);  // 如果已经是string，使用d.Parse(char *)解析
+    if (!ok)
+  		cout<<"JSON parse error: "<<rapidjson::GetParseError_En(ok.Code())<<" ("<<ok.Offset()<<")\n";
+    static const char* kTypeNames[] =  { "Null", "False", "True", "Object", "Array", "String", "Number" };
+    //读取string的value;使用d["name"].IsString()判断是否是string
+    cout<<d["name"].GetString()<<endl;
+    //读取int的value，同样可以使用GetUint()/GetInt64()/GetUint64()
+    //使用IsNumber()/IsInt()/IsUint()/IsInt64()/IsUint64()判断是否是数字以及数字类型
+    cout<<d["id"].GetInt()<<endl;
+    //获取浮点数据，或使用GetDouble()；使用IsNumber()/IsFloat()/IsDouble判断是不是数字或浮点数据
+    cout<<d["pi"].GetFloat()<<endl;
+    //获取bool类型数据，使用IsBool()判断是否是bool类型数据
+    string mybool = d["f"].GetBool() ? "true" : "false";
+    cout<<d["f"].GetBool()<<" "<<mybool<<endl;
+    //IsNull()判断是否是null
+    string mynull = d["n"].IsNull() ? "null" : "?";
+    cout<<mynull<<endl;
+    // 修改name
+    std::string fixname = "xxxxxxxx";
+    d["name"].SetString(rapidjson::StringRef(fixname.c_str()),allocator);
     return 0;
 }
 ```

@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
   try {
     std::string url = "http://localhost:9980/form";
     std::string body = "username=user1@yourdomain.com&password=mypword";
-    // std::string body = "{\"password\":\"mypword\",\"username\":\"user1@yourdomain.com\"}";
+    // std::string body = R"({"password":"mypword","username":"user1@yourdomain.com"})";
     
     std::map<std::string, std::string> headers;
     headers["Test-Header"] = "Test-Header";

@@ -4,7 +4,8 @@
  * @Last Modified by: zack
  * @Last Modified time: 2021-10-05 10:30:43
  */
-#pragma once
+#ifndef BASE_STRING_UTIL_H_
+#define BASE_STRING_UTIL_H_
 
 #include <codecvt>
 #include <cstring>
@@ -55,13 +56,14 @@ inline std::wstring to_wstring(std::string str) {
 }
 
 //float转换为string并修正格式
-inline std::string toFormatStr(float number) {
+inline std::string toFormatStr(float number,int precision=2) {
   // std::ostringstream oss;
   // oss << std::setprecision(7) << number;
   // return oss.str();
   char buffer[64];
   memset(buffer, 0, sizeof(buffer));
-  snprintf(buffer, sizeof(buffer), "%.2f", number);
+  std::string format = "%."+std::to_string(precision)+"f";
+  snprintf(buffer, sizeof(buffer), format.c_str(), number);
   return std::string(buffer);
 }
 
@@ -288,3 +290,5 @@ inline bool haveAlpha(const std::wstring &wstr){
 }
 
 }; 
+
+#endif
