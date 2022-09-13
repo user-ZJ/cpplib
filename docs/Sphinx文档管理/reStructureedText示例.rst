@@ -304,7 +304,9 @@ reStructuredText 使用指令（Directives)的方式来插入图片。指令（D
 +------------------------+------------+---------------------+
 
 
-这种表格语法被称为 Grid Tables 。如上所见， Grid Tables 支持跨行跨列。如果你使用的编辑器创建该表格有困难，reStructuredText 还提供 Simple Tables 表格语法：
+这种表格语法被称为 Grid Tables 。如上所见， 
+`Grid Tables <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#grid-tables>`_ 支持跨行跨列。
+如果你使用的编辑器创建该表格有困难，reStructuredText 还提供 Simple Tables 表格语法：
 
 ::
 
