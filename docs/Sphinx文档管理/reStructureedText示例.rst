@@ -306,6 +306,27 @@ reStructuredText 使用指令（Directives)的方式来插入图片。指令（D
 
 这种表格语法被称为 Grid Tables 。如上所见， 
 `Grid Tables <https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#grid-tables>`_ 支持跨行跨列。
+
+**在Grid Tables中支持"|"**
+
+方法1：通过在之前添加一个额外的空格来移动文本;
+
+方法2：添加一个额外的行
+
+*注意：表格中有竖线，则不能使用vscode的Table Formatter进行格式化*
+
+::
+    
+    +--------------+----------+-----------+-----------+
+    | row 1, col 1 | column 2 | column 3  | column 4  |
+    +==============+==========+===========+===========+
+    | row 2        |  Use the command ``ls | more``.  |
+    +--------------+----------+-----------+-----------+
+    | row 3        |  ``|``   |           |           |
+    |              |          |           |           |
+    +--------------+----------+-----------+-----------+
+
+
 如果你使用的编辑器创建该表格有困难，reStructuredText 还提供 Simple Tables 表格语法：
 
 ::
