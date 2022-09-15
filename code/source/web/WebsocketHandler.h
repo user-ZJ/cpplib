@@ -44,6 +44,7 @@ public:
 	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);
 	void OnText(const std::string &text);
 	void OnBinary(const Poco::Buffer<char> &buffer);
+	void OnClose();
 private:
     std::shared_ptr<WebSocket> ws;
 };

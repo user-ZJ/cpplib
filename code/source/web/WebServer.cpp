@@ -38,7 +38,7 @@ HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const HTTPServer
 
   if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
     return new WebSocketHandler;
-  else if (request.getURI() == "/get") {
+  else if (request.getMethod() == "GET") {
     return new HTTPGetHandler;
   } else if (request.getURI() == "/form") {
     return new HTTPFormHandler;

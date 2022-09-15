@@ -8,13 +8,18 @@ namespace BASE_NAMESPACE {
 void HTTPJsonHandler::handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
   try {
     LOG(INFO) << "URI: " << request.getURI() << "  Method:" << request.getMethod();
+    std::string jsonstr;
+    StreamCopier::copyToString(request.stream(), jsonstr);
+    LOG(INFO)<<"json str:"<<jsonstr;
     Parser parser;
-    auto result = parser.parse(request.stream());
+    auto result = parser.parse(jsonstr);
     auto pObject = result.extract<Object::Ptr>();
     std::string username = pObject->getValue<std::string>("username");
     std::string password = pObject->getValue<std::string>("password");
-    LOG(INFO) << "username:" << username ;
-    LOG(INFO) << "password:" << password ;
+    
+    LOG(INFO)<<"parsed json:";
+    LOG(INFO) << "\tusername:" << username ;
+    LOG(INFO) << "\tpassword:" << password ;
 
     response.setChunkedTransferEncoding(true);
     response.setContentType("application/json");
@@ -26,8 +31,9 @@ void HTTPJsonHandler::handleRequest(HTTPServerRequest &request, HTTPServerRespon
     LOG(INFO) << "URI: " << request.getURI();
     NameValueCollection::ConstIterator it = request.begin();
     NameValueCollection::ConstIterator end = request.end();
+    LOG(INFO)<<"request header:";
     for (; it != end; ++it) {
-      std::cout << it->first << ": " << it->second << "\n";
+      LOG(INFO) <<"\t"<< it->first << ": " << it->second;
     }
 
     Poco::JSON::Object obj;

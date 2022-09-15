@@ -12,6 +12,7 @@
 #include "Poco/Exception.h"
 #include "Poco/JSON/Object.h"
 #include "Poco/JSON/Parser.h"
+#include "Poco/Net/FilePartSource.h"
 #include "Poco/Net/HTMLForm.h"
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/Net/HTTPCredentials.h"
@@ -21,6 +22,7 @@
 #include "Poco/Path.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/URI.h"
+#include "utils/file-util.h"
 #include "utils/logging.h"
 #include <iostream>
 #include <map>
@@ -30,6 +32,7 @@ using Poco::Net::HTTPClientSession;
 using Poco::Net::HTTPRequest;
 using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPMessage;
+using Poco::Net::FilePartSource;
 using Poco::StreamCopier;
 using Poco::Path;
 using Poco::URI;
@@ -67,7 +70,10 @@ void get() {
     std::stringstream oss;
     StreamCopier::copyStream(responseStream, oss);
     LOG(INFO) << oss.str();
-  } catch (Exception &ex) { LOG(ERROR) << ex.displayText(); }
+  }
+  catch (Exception &ex) {
+    LOG(ERROR) << ex.displayText();
+  }
 }
 
 void form() {
@@ -79,18 +85,24 @@ void form() {
     std::string path(uri.getPathAndQuery());
     if (path.empty()) path = "/";
 
-    HTTPRequest request(HTTPRequest::HTTP_GET, path, HTTPMessage::HTTP_1_1);
+    HTTPRequest request(HTTPRequest::HTTP_POST, path, HTTPMessage::HTTP_1_1);
+
+    std::string teststr = "测试文件文本";
+    std::vector<char> buf(teststr.begin(), teststr.end());
+    BASE_NAMESPACE::write_to_file("text.txt", buf);
 
     Poco::Net::HTMLForm form;
+    form.setEncoding(Poco::Net::HTMLForm::ENCODING_MULTIPART);  //没有文件时设置为ENCODING_URL
     form.add("grant_type", "password");
     form.add("client_id", "client token");
     form.add("client_secret", "client secret");
-    form.add("username", "user@example.com");
-    form.add("password", "secret");
+    form.set("username", "user@example.com");
+    form.set("password", "secret");
+    form.addPart("test.txt", new FilePartSource("test.txt"));
     form.prepareSubmit(request);
 
     std::ostream &requestStream = session.sendRequest(request);
-    form.write(requestStream); //发送form表单
+    form.write(requestStream);  //发送form表单
     //获取请求文本
     std::stringstream iss;
     request.write(iss);
@@ -100,12 +112,17 @@ void form() {
     HTTPResponse response;
     std::istream &responseStream = session.receiveResponse(response);
     LOG(INFO) << response.getStatus() << " " << response.getReason();
-    std::stringstream oss;
-    StreamCopier::copyStream(responseStream, oss);
-    LOG(INFO) << oss.str();
-    Poco::JSON::Parser parser;
-    Poco::JSON::Object::Ptr authObj = parser.parse(oss).extract<Poco::JSON::Object::Ptr>();
-  } catch (Exception &ex) { LOG(ERROR) << ex.displayText(); }
+    std::string ostr;
+    StreamCopier::copyToString(responseStream, ostr);
+    LOG(INFO) << ostr;
+    if (!ostr.empty()) {
+      Poco::JSON::Parser parser;
+      Poco::JSON::Object::Ptr authObj = parser.parse(ostr).extract<Poco::JSON::Object::Ptr>();
+    }
+  }
+  catch (Exception &ex) {
+    LOG(ERROR) << ex.displayText();
+  }
 }
 
 void json() {
@@ -117,8 +134,8 @@ void json() {
     std::string path(uri.getPathAndQuery());
     if (path.empty()) path = "/";
 
-    HTTPRequest request(HTTPRequest::HTTP_GET, path, HTTPMessage::HTTP_1_1);
-    
+    HTTPRequest request(HTTPRequest::HTTP_POST, path, HTTPMessage::HTTP_1_1);
+
     std::map<std::string, std::string> headers;
     headers["Test-Header"] = "Test-Header";
     // req.setContentType("application/x-www-form-urlencoded");
@@ -151,12 +168,15 @@ void json() {
     HTTPResponse response;
     std::istream &responseStream = session.receiveResponse(response);
     LOG(INFO) << response.getStatus() << " " << response.getReason();
-    std::stringstream oss;
-    StreamCopier::copyStream(responseStream, oss);
-    LOG(INFO) << oss.str();
+    std::string ostr;
+    StreamCopier::copyToString(responseStream, ostr);
+    LOG(INFO) << ostr;
     Poco::JSON::Parser parser;
-    Poco::JSON::Object::Ptr authObj = parser.parse(oss).extract<Poco::JSON::Object::Ptr>();
-  } catch (Exception &ex) { LOG(ERROR) << ex.displayText(); }
+    Poco::JSON::Object::Ptr authObj = parser.parse(ostr).extract<Poco::JSON::Object::Ptr>();
+  }
+  catch (Exception &ex) {
+    LOG(ERROR) << ex.displayText();
+  }
 }
 
 int main(int argc, char **argv) {

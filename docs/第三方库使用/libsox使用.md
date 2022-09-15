@@ -166,7 +166,7 @@ size_t sox_read(
 
 `sox_open_write`
 
-```cpp
+```
 sox_format_t *
 sox_open_write(
     LSX_PARAM_IN_Z     char               const * path,     /**文件路径 */
@@ -194,15 +194,15 @@ sox_open_mem_write(
 
 `sox_open_memstream_write`
 
-```cpp
+```
 sox_format_t *
 sox_open_memstream_write(
-    LSX_PARAM_OUT      char                     * * buffer_ptr,    /**< Receives pointer to audio data buffer that receives data (required). */
-    LSX_PARAM_OUT      size_t                   * buffer_size_ptr, /**< Receives size of data written to audio data buffer (required). */
-    LSX_PARAM_IN       sox_signalinfo_t   const * signal,          /**< Information about desired audio stream (required). */
-    LSX_PARAM_IN_OPT   sox_encodinginfo_t const * encoding,        /**< Information about desired sample encoding, or NULL to use defaults. */
-    LSX_PARAM_IN_OPT_Z char               const * filetype,        /**< Previously-determined file type, or NULL to auto-detect. */
-    LSX_PARAM_IN_OPT   sox_oob_t          const * oob              /**< Out-of-band data to add to file, or NULL if none. */
+    LSX_PARAM_OUT      char                     **buffer_ptr,    /**< Receives pointer to audio data buffer that receives data (required). */
+    LSX_PARAM_OUT      size_t                   *buffer_size_ptr, /**< Receives size of data written to audio data buffer (required). */
+    LSX_PARAM_IN       sox_signalinfo_t   const *signal,          /**< Information about desired audio stream (required). */
+    LSX_PARAM_IN_OPT   sox_encodinginfo_t const *encoding,        /**< Information about desired sample encoding, or NULL to use defaults. */
+    LSX_PARAM_IN_OPT_Z char               const *filetype,        /**< Previously-determined file type, or NULL to auto-detect. */
+    LSX_PARAM_IN_OPT   sox_oob_t          const *oob              /**< Out-of-band data to add to file, or NULL if none. */
     );
 ```
 
