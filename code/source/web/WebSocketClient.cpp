@@ -51,36 +51,23 @@ static bool IsClose(const int &flags) {
   return (flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_CLOSE;
 }
 
-class WebSocketClient {
- public:
-  explicit WebSocketClient(std::string url) {
-    try {
-      URI uri(url);
-      session = std::make_shared<HTTPClientSession>(uri.getHost(), uri.getPort());
-
-      std::string path(uri.getPathAndQuery());
-      if (path.empty()) path = "/";
-
-      request = std::make_shared<HTTPRequest>(HTTPRequest::HTTP_GET, path, HTTPMessage::HTTP_1_1);
-      response = std::make_shared<HTTPResponse>();
-      ws.reset(new WebSocket(*session, *request, *response));
-      connect = std::thread(&WebSocketClient::GetResponse, this);
-    }
-    catch (WebSocketException &exc) {
-      LOG(ERROR) << "OnError: ERRORCODE:" << exc.code() << " MESSAGE:" << exc.message();
-    }
-    catch (std::exception &e) {
-      LOG(ERROR) << "ws exception:" << e.what();
-    }
+class MessageHandler{
+public:
+  void OnClose() {
+    LOG(INFO) << "OnClose";
+  }
+  void OnText(const std::string &text) {
+    LOG(INFO) << "OnText" << text;
+  }
+  void OnBinary(const Poco::Buffer<char> &buffer) {
+    LOG(INFO) << "OnBinary: receiver" << buffer.sizeBytes() << "bytes";
   }
 
-  ~WebSocketClient() {
-    ws->shutdown();
-    connect.join();
-    ws->close();
+  void OnError(){
+    LOG(INFO)<<"OnError";
   }
 
-  void GetResponse() {
+  void operator()(std::shared_ptr<WebSocket> ws) {
     try {
       Poco::Buffer<char> buffer(1024);
       int flags;
@@ -103,6 +90,32 @@ class WebSocketClient {
       }
     }
     catch (WebSocketException &exc) {
+      OnError();
+      LOG(ERROR) << "OnError: ERRORCODE:" << exc.code() << " MESSAGE:" << exc.message();
+    }
+    catch (std::exception &e) {
+      OnError();
+      LOG(ERROR) << "ws exception:" << e.what();
+    }
+  }
+};
+
+class WebSocketClient {
+ public:
+  explicit WebSocketClient(std::string url) {
+    try {
+      URI uri(url);
+      session = std::make_shared<HTTPClientSession>(uri.getHost(), uri.getPort());
+
+      std::string path(uri.getPathAndQuery());
+      if (path.empty()) path = "/";
+
+      request = std::make_shared<HTTPRequest>(HTTPRequest::HTTP_GET, path, HTTPMessage::HTTP_1_1);
+      response = std::make_shared<HTTPResponse>();
+      ws.reset(new WebSocket(*session, *request, *response));
+      message_handler = std::thread(MessageHandler(),ws);
+    }
+    catch (WebSocketException &exc) {
       LOG(ERROR) << "OnError: ERRORCODE:" << exc.code() << " MESSAGE:" << exc.message();
     }
     catch (std::exception &e) {
@@ -110,14 +123,10 @@ class WebSocketClient {
     }
   }
 
-  void OnClose() {
-    LOG(INFO) << "OnClose";
-  }
-  void OnText(const std::string &text) {
-    LOG(INFO) << "OnText" << text;
-  }
-  void OnBinary(const Poco::Buffer<char> &buffer) {
-    LOG(INFO) << "OnBinary: receiver" << buffer.sizeBytes() << "bytes";
+  ~WebSocketClient() {
+    ws->shutdown();
+    message_handler.join();
+    ws->close();
   }
 
   int SendText(const std::string &text) {
@@ -136,7 +145,7 @@ class WebSocketClient {
   std::shared_ptr<HTTPResponse> response;
   std::shared_ptr<HTTPClientSession> session;
   std::shared_ptr<WebSocket> ws;
-  std::thread connect;
+  std::thread message_handler;
 };
 
 int main(int argc, char **argv) {
