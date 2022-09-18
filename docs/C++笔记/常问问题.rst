@@ -1699,3 +1699,34 @@ C++11 对这个问题的 解决方案如下所示：
 ~~~~~~~~~~~~~~
 
 封装buffer类，内部数据结构使用数组，当使用修改数据接口时没有判断数据边界，容易出现踩内存问题
+
+
+仿函数/函数对象
+------------------
+一个如传递参数一样传递函数的办法是：定义一个包含零个数据和一个成员函数的类，然后传递这个类的实例。
+从效果上看就是，通过将其放在对象中实现了函数的传递。该对象通常称为 **函数对象**。opeartor()被称为 **函数调用操作符**。
+
+.. code-block:: cpp
+
+   #include <iostream>
+   #include <thread>
+   class DisplayThread
+   {
+   public:
+      void operator(int N)()     
+      {
+         for(int i = 0; i < N; i++)
+               std::cout<<"Display Thread Executing"<<std::endl;
+      }
+   };
+
+   int main()  
+   {
+      std::thread threadObj( (DisplayThread()),10000 );
+      for(int i = 0; i < 10000; i++)
+         std::cout<<"Display From Main Thread "<<std::endl;
+      std::cout<<"Waiting For Thread to complete"<<std::endl;
+      threadObj.join();
+      std::cout<<"Exiting from Main Thread"<<std::endl;
+      return 0;
+   }

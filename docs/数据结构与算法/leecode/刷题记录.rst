@@ -1,0 +1,57 @@
+刷题记录
+===============
+
+反转链表
+----------------
+.. code-block:: cpp
+
+    ListNode* ReverseList(ListNode* pHead) {
+        ListNode *pre = nullptr;
+        ListNode *cur = pHead;
+        ListNode *nex = nullptr; // 这里可以指向nullptr，循环里面要重新指向
+        while (cur) {
+            // 反转next指针
+            nex = cur->next;
+            cur->next = pre;
+            // 更新指针位置
+            pre = cur;
+            cur = nex;
+        }
+        return pre;
+    }
+
+最大公约数(gcd)
+--------------------
+.. code-block:: cpp
+
+    long gcd(long m,long n){
+        while(n != 0){
+            long rem = m % n;
+            m = n;
+            n = rem;
+        }
+        return m;
+    }
+
+
+幂运算
+-------------
+:math:`X^N = X^{N/2} * X^{N/2}`  N为偶数时， 
+
+:math:`X^N = X^{(N-1)/2} * X^{(N-1)/2} * X`  N为奇数时
+
+.. code-block:: cpp
+
+    long pow(long x,int n){
+        if(n==0)
+            return 1;
+        if(n==1)
+            return x;
+        if(n%2==0)
+            return pow(x*x, n/2);
+        else
+            return pow(x*x,n/2) * x;
+    }
+
+
+
