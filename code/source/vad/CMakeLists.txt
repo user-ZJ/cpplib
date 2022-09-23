@@ -11,5 +11,5 @@ link_directories(
 
 
 add_library(vadwrapper FVadWrapper.cpp)
-target_link_libraries(vadwrapper fvad mbase)
+target_link_libraries(vadwrapper fvad utils)
 

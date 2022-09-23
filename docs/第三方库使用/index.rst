@@ -7,9 +7,9 @@
    :name: 第三方库使用
 
    rapidjson使用
-   glog
-   googletest
-   poco
+   glog使用笔记
+   googletest笔记
+   POCO使用笔记
    libsox使用
    protobuf使用笔记
    grpc笔记
@@ -21,6 +21,6 @@
    Eigen3使用笔记
    halide笔记
    cuda编程
-   faiss使用
-   log4cpp
+   faiss使用笔记
+   log4cpp使用笔记
 

@@ -2,9 +2,10 @@
  * @Author: zack
  * @Date: 2021-10-13 10:04:28
  * @Last Modified by: zack
- * @Last Modified time: 2021-10-15 17:48:26
+ * @Last Modified time: 2022-09-21 15:18:34
  */
-#pragma once
+#ifndef BASE_FILE_UTIL_H_
+#define BASE_FILE_UTIL_H_
 
 #include "logging.h"
 #include <fstream>
@@ -79,3 +80,5 @@ inline int write_to_file(const char *path,const std::vector<char> &buff){
 }
 
 };  // namespace BASE_NAMESPACE
+
+#endif

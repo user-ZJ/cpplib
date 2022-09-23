@@ -2,8 +2,10 @@
  * @Author: zack 
  * @Date: 2021-12-21 16:32:36 
  * @Last Modified by: zack
- * @Last Modified time: 2021-12-21 16:34:45
+ * @Last Modified time: 2022-09-21 14:39:23
  */
+#ifndef BASE_UUID_UTIL_H_
+#define BASE_UUID_UTIL_H_
 #include <boost/uuid/uuid.hpp>            // uuid class
 #include <boost/uuid/uuid_generators.hpp> // generators
 #include <boost/uuid/uuid_io.hpp>         // streaming operators etc.
@@ -22,3 +24,5 @@ static std::string gen_uuid() {
 }
 
 };
+
+#endif

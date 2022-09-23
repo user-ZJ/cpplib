@@ -1,4 +1,5 @@
-# halide笔记
+halide笔记
+=================
 
 ``` text
 Halide::Func   方法

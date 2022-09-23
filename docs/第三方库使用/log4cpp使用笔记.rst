@@ -1,4 +1,5 @@
-# log4cpp使用笔记
+log4cpp使用笔记
+======================
 
 
 
@@ -20,7 +21,8 @@ Priorty（优先 级）、NDC（嵌套的诊断上下）
 
 
 
-## 参考
+参考
+--------------
 
 https://blog.csdn.net/jigetage/article/details/80624692
 

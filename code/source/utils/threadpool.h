@@ -1,5 +1,6 @@
 //refrence from https://github.com/progschj/ThreadPool/blob/master/ThreadPool.h
-#pragma once
+#ifndef BASE_THREADPOOL_UTIL_H_
+#define BASE_THREADPOOL_UTIL_H_
 
 #include <condition_variable>
 #include <functional>
@@ -89,3 +90,6 @@ inline ThreadPool::~ThreadPool() {
 }
 
 }; // namespace BASE_NAMESPACE
+
+
+#endif

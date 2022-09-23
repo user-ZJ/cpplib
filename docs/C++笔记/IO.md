@@ -2,7 +2,7 @@
 
 基本IO类的继承结构
 
-![](images/IO_1.jpg)
+![](/images/IO_1.jpg)
 
 
 

@@ -122,24 +122,24 @@ link_directories(
 		)
 
 
-aux_source_directory(source/tokenizer Tokenizer_SRC)
-aux_source_directory(source/utils UTILS_SOURCES)
+# aux_source_directory(source/tokenizer Tokenizer_SRC)
+# aux_source_directory(source/utils UTILS_SOURCES)
 
 
 
-add_library(${PROJECT_NAME} OBJECT ${Tokenizer_SRC} ${UTILS_SOURCES})
+# add_library(${PROJECT_NAME} OBJECT ${Tokenizer_SRC} ${UTILS_SOURCES})
 
 #链接静态库，需要使用-Wl,-whole-archive,其他动态库不需要，在退出时需要使用-Wl,--no-whole-archive还原
 # 所以静态库链接形式为-Wl,-whole-archive static_libs -Wl,--no-whole-archive
-target_link_libraries(${PROJECT_NAME}
-        minizip
-        glog
-        gflags
-        pthread
-		)
-INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
+# target_link_libraries(${PROJECT_NAME}
+#         minizip
+#         glog
+#         gflags
+#         pthread
+# 		)
+# INSTALL(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 # add_dependencies(${PROJECT_NAME} gflags_module glog_module)
-
+add_subdirectory(source/utils)
 add_subdirectory(source/web)
 # add_subdirectory(source/grpc)
 add_subdirectory(source/db)

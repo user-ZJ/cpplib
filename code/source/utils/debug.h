@@ -1,4 +1,11 @@
-#pragma once
+/*
+ * @Author: zack 
+ * @Date: 2022-09-21 15:18:45 
+ * @Last Modified by: zack
+ * @Last Modified time: 2022-09-21 15:19:28
+ */
+#ifndef BASE_DEBUG_UTIL_H_
+#define BASE_DEBUG_UTIL_H_
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -59,3 +66,5 @@ int readFromFile(std::string filepath,std::vector<T> *data) {
 }
 
 };  
+
+#endif

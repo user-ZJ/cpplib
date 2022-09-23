@@ -1,4 +1,11 @@
-#pragma once
+/*
+ * @Author: zack 
+ * @Date: 2022-09-21 15:17:32 
+ * @Last Modified by: zack
+ * @Last Modified time: 2022-09-21 15:18:00
+ */
+#ifndef BASE_HEX_UTIL_H_
+#define BASE_HEX_UTIL_H_
 #include <string>
 #include <vector>
 
@@ -41,3 +48,5 @@ std::vector<char> HexBinaryDecoder(const std::string &str) {
 }
 
 };  // namespace BASE_NAMESPACE
+
+#endif

@@ -15,6 +15,7 @@ Welcome to cppdoc's documentation!
    Sphinx文档管理/index
    linux笔记/index
    数据结构与算法/index
+   git使用/index
    *
 
 

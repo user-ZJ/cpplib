@@ -2,9 +2,10 @@
  * @Author: zack 
  * @Date: 2021-10-05 10:26:48 
  * @Last Modified by: zack
- * @Last Modified time: 2021-10-21 16:51:30
+ * @Last Modified time: 2022-09-21 15:21:49
  */
-#pragma once
+#ifndef BASE_CTENSOR_UTIL_H_
+#define BASE_CTENSOR_UTIL_H_
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -37,7 +38,7 @@ public:
     size_ = shapes_[0];
     strides_[shapes.size()-1] = 1;
     for (int i=shapes_.size()-1; i>0; i--) {
-      assert(shapes_[i]>0);
+      //assert(shapes_[i]>0);
       size_ *= shapes_[i];
       strides_[i-1] = strides_[i]*shapes_[i];
     }
@@ -52,7 +53,7 @@ public:
     size_ = shapes_[0];
     strides_[shapes.size()-1] = 1;
     for (int i=shapes_.size()-1; i>0; i--) {
-      assert(shapes_[i]>0);
+      // assert(shapes_[i]>0);
       size_ *= shapes_[i];
       strides_[i-1] = strides_[i]*shapes_[i];
     }
@@ -227,3 +228,5 @@ typedef CTensor<int32_t,int32_t> CTensorii;
 typedef CTensor<int32_t,int64_t> CTensoril;
 
 };
+
+#endif

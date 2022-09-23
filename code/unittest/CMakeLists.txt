@@ -11,7 +11,7 @@ link_directories(
 
 aux_source_directory(. UNITTEST_SRC)
 add_executable(unit_test ${UNITTEST_SRC})
-target_link_libraries(unit_test mbase gtest_main)
+target_link_libraries(unit_test utils gtest_main)
 add_test(NAME unit_test COMMAND unit_test)
 
 # include(GoogleTest)

@@ -1,6 +1,10 @@
-# socket使用笔记
+socket使用笔记
+=================
 
-## 头文件
+头文件
+-----------------
+
+.. code-block:: cpp
 
 	#include <iostream>     // std::cout、std::endl
 	#include <sys/socket.h> // socket、bind、listen、accept
@@ -9,7 +13,11 @@
 	#include <string.h>     // bzero
 	#include <arpa/inet.h>  // inet_addr
 
-## 服务端
+服务端
+-------------
+
+.. code-block::  cpp
+
 	#define PORT 7000  //端口号
 	#define QUEUE 100  //队列长度
 	
@@ -74,7 +82,11 @@
 	}
 	close(ss)
 
-## 客户端
+客户端
+-------------
+
+.. code-block:: cpp
+
 	string query = "test"
 	int sock_cli = socket(AF_INET,SOCK_STREAM, 0);
 	struct sockaddr_in servaddr;
@@ -98,7 +110,5 @@
 	close(sock_cli);
 
 
-​	
 
-​	
 
