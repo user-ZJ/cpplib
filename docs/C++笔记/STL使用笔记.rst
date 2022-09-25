@@ -2,14 +2,14 @@
 STL使用笔记
 ===========
 
-1. vector
+vector
 ---------
 
 *vector*\ 是一个能够存放任意类型的动态数组，能够增加和压缩数据，增加的时候容量不够，则以2倍的存储增加容量
 
 https://blog.csdn.net/phoebin/article/details/3864590
 
-1.1 创建
+创建
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -29,7 +29,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
         std::vector<std::vector<float>> result(10,vector<float>(20,0.0f));
     }
 
-1.2 增加/插入数据
+增加/插入数据
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -41,7 +41,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
    vInts.insert(vInts.begin()+1,6); //插入数据
    a.insert(a.end(), b.begin(), b.end()); //将vector b append到vector a后面
 
-1.3 获取容器大小
+获取容器大小
 ^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -49,13 +49,15 @@ https://blog.csdn.net/phoebin/article/details/3864590
     #include <vector>
     int main(int argc,char *argv[]){
         std::vector<int> vInts;
-        std::vInts.empty();   //判断是否为空
-        std::vInts.size();   //返回容器中实际数据的个数。
-        std::vInts.capacity();
+        vInts.empty();   //判断是否为空
+        vInts.size();   //返回容器中实际数据的个数。
+        vInts.capacity();  // 获取vector的容量
+        vInts.reserve(10); // 将容量设置为10
+        
     }
    
 
-1.4 访问数据
+访问数据
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -65,8 +67,10 @@ https://blog.csdn.net/phoebin/article/details/3864590
    vector<int> vInts(10,9);
    vInts.at(2);   //推荐使用，at()进行了边界检查，如果访问超过了vector的范围，将抛出一个异常
    vInts[2];    //不推荐使用，主要是为了与C语言进行兼容。它可以像C语言数组一样操作
+   vInts.back(); // 获取末尾数据
+   vInts.front(); // 获取第一个数据
 
-1.5 删除数据
+删除数据
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -79,7 +83,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
    vInts.pop_back();  //删除最后一个数据。
    vInts.clear()();  //删除所有数据。   size为0，capacity不变，内存不会释放
 
-1.6 遍历
+遍历
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -101,7 +105,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
        cout << i<< endl;
    }
 
-1.7 查找
+查找
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -121,7 +125,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
        }   
    }
 
-1.8 排序
+排序
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -137,7 +141,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
        sort(vInts.rbegin(),vInts.rend());  //从大到小
    }
 
-1.9 拼接
+拼接
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -165,7 +169,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
    Resultant vector is:
    1 2 3 4 5
 
-1.10 求和
+求和
 ^^^^^^^^^
 
 .. code-block:: text
@@ -208,7 +212,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
    dash-separated string: 1-2-3-4-5-6-7-8-9-10
    dash-separated string (right-folded): 10-9-8-7-6-5-4-3-2-1
 
-1.11 最大、最小值
+最大、最小值
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -239,7 +243,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
        std::cout << "max element (absolute) at: " << std::distance(v.begin(), result) << '\n';
    }
 
-1.12 翻转
+翻转
 ^^^^^^^^^
 
 .. code-block:: cpp
@@ -248,7 +252,7 @@ https://blog.csdn.net/phoebin/article/details/3864590
    const auto v = { 3, 9, 1, 4, 2, 5, 9 };
    std::reverse(v.begin(),v.end());
 
-2. List
+List
 -------
 
 list容器就是一个双向链表,可以高效地进行插入删除元素
@@ -275,7 +279,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-2.2 增加/插入数据
+增加/插入数据
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -306,7 +310,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-2.3 获取/修改容器大小
+获取/修改容器大小
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -325,7 +329,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-2.4 访问元素
+访问元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -344,7 +348,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-2.5 删除数据
+删除数据
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -373,7 +377,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-2.6 遍历
+遍历
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -398,7 +402,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-2.7 查找
+查找
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -417,7 +421,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        }   
    }
 
-2.8 翻转
+翻转
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -426,7 +430,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
    list<int> a1{1,2,3,4,5};
    a1.reverse();
 
-2.9 排序
+排序
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -449,7 +453,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-2.10 去重
+去重
 ^^^^^^^^^
 
 .. code-block:: cpp
@@ -469,10 +473,10 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-3. map
+map
 ------
 
-3.1 创建
+创建
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -487,7 +491,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
    //用另一个容器的一段元素来创建一个 map
    std::map<std::string, size_t> personnel {std::begin(people),std::end(people)};
 
-3.2 增加/插入数据
+增加/插入数据
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -515,7 +519,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-3.3 获取/修改容器大小
+获取/修改容器大小
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -538,10 +542,10 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-3.4 访问元素
+访问元素
 ^^^^^^^^^^^^
 
-3.5 删除元素
+删除元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -569,7 +573,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-3.6 遍历
+遍历
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -594,7 +598,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-3.7 查找
+查找
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -622,7 +626,7 @@ https://www.cnblogs.com/scandy-yuan/archive/2013/01/08/2851324.html
        return 0;
    }
 
-3.8 排序
+排序
 ^^^^^^^^
 
 map中的元素是自动按Key升序排序，所以不能对map用sort函数,如果要是的key降序，使用：
@@ -633,7 +637,7 @@ map中的元素是自动按Key升序排序，所以不能对map用sort函数,如
 
 STL中默认是采用小于号来排序的，以上代码在排序上是不存在任何问题的，因为上面的关键字是int 型，它本身支持小于号运算，在一些特殊情况，比如关键字是一个结构体，涉及到排序就会出现问题，因为它没有小于号操作，insert等函数在编译的时候过 不去；需要重载小于号
 
-4. unordered_map
+unordered_map
 ----------------
 
 https://www.cnblogs.com/langyao/p/8823092.html
@@ -646,10 +650,10 @@ map中的元素是按照二叉搜索树存储（用红黑树实现），进行�
 
 unordered_map编译时gxx需要添加编译选项：--std=c++11
 
-5. queue
+queue
 --------
 
-5.1 创建
+创建
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -657,7 +661,7 @@ unordered_map编译时gxx需要添加编译选项：--std=c++11
    queue<int> mqueue;
    queue<int> mqueue1{mqueue};
 
-5.2 增加/插入数据
+增加/插入数据
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -666,7 +670,7 @@ unordered_map编译时gxx需要添加编译选项：--std=c++11
    mqueue.push(1);
    mqueue.emplace(2);  //可以避免对象的拷贝，重复调用构造函数
 
-5.3 获取/修改容器大小
+获取/修改容器大小
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -677,7 +681,7 @@ unordered_map编译时gxx需要添加编译选项：--std=c++11
    mqueue.size();
    mqueue.empty();  //判断是否为空
 
-5.4 访问元素
+访问元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -685,22 +689,22 @@ unordered_map编译时gxx需要添加编译选项：--std=c++11
    mqueue.front();  //返回 queue 中第一个元素的引用
    mqueue.back();  //返回 queue 中最后一个元素的引用
 
-5.5 删除元素
+删除元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
 
    mqueue.pop();
 
-5.6 遍历
+遍历
 ^^^^^^^^
 
 和 stack 一样，queue 也没有迭代器。访问元素的唯一方式是遍历容器内容，并移除访问过的每一个元素
 
-5.7 查找
+查找
 ^^^^^^^^
 
-6. deque
+deque
 --------
 
 deque两端都能够快速插入和删除元素
@@ -719,7 +723,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
 
  由于deque在性能上并不是最高效的，有时候对deque元素进行排序，更高效的做法是，将deque的元素移到到vector再进行排序，然后在移到回来。
 
-6.1 创建
+创建
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -734,7 +738,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    deque<int> mqueue1{mqueue};  //使用另一个deque初始化
    deque<int>  d2({1,2,3,4,5,6,7});  //初始化列表进行初始化
 
-6.2 增加/插入数据
+增加/插入数据
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -744,7 +748,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    mqueue.emplace_front(2);  //可以避免对象的拷贝，重复调用构造函数
    mqueue.emplace_back(2);  //可以避免对象的拷贝，重复调用构造函数
 
-6.3 获取/修改容器大小
+获取/修改容器大小
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -755,7 +759,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    mqueue.size();
    mqueue.empty();  //判断是否为空
 
-6.4 访问元素
+访问元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -763,7 +767,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    mqueue.front();  //返回 queue 中第一个元素的引用
    mqueue.back();  //返回 queue 中最后一个元素的引用
 
-6.5 删除元素
+删除元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -771,7 +775,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    mqueue.pop_front();
    mqueue.pop_end();
 
-6.6 遍历
+遍历
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -779,13 +783,13 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    for (std::deque<int>::iterator it = dq.begin(); it!=dq.end(); ++it)
        std::cout << ' ' << *it;
 
-6.7 查找
+查找
 ^^^^^^^^
 
-7. stack
+stack
 --------
 
-7.1  创建
+创建
 ^^^^^^^^^
 
 .. code-block:: cpp
@@ -804,7 +808,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    stack<int, deque<int>> s6(d1);
    stack<int> s7(d1);                  //用deque 为 stack  初始化时 deque可省  因为stack是基于deque, 默认以deque方式构造
 
-7.2 增加/插入数据
+增加/插入数据
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -812,7 +816,7 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    mstack.push(333);
    mstach.emplace(333);
 
-7.3 获取/修改容器大小
+获取/修改容器大小
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -820,21 +824,21 @@ deque元素是分布在一段段连续空间上，因此deque具有如下特点�
    mstack.size();
    mstack.empty();
 
-7.4 访问元素
+访问元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
 
    mstack.top();
 
-7.5 删除元素
+删除元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
 
    mstack.pop();
 
-7.6 遍历
+遍历
 ^^^^^^^^
 
 stack 遍历需要将所有元素出栈
@@ -856,14 +860,14 @@ stack 遍历需要将所有元素出栈
        return 0;
    }
 
-8. priority_queue（堆）
+priority_queue（堆）
 -----------------------
 
 和\ ``queue``\ 不同的就在于我们可以自定义其中数据的优先级, 让优先级高的排在队列前面,优先出队
 
 优先队列具有队列的所有特性，包括基本操作，只是在这基础上添加了内部的一个排序，它本质是一个\ **堆**\ 实现的
 
-8.1 创建
+创建
 ^^^^^^^^
 
 .. code-block:: cpp
@@ -955,7 +959,7 @@ stack 遍历需要将所有元素出栈
        }
    }
 
-8.2 增加/插入数据
+增加/插入数据
 ^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -964,7 +968,7 @@ stack 遍历需要将所有元素出栈
    mqueue.push(1);
    mqueue.emplace(2);  //可以避免对象的拷贝，重复调用构造函数
 
-8.3 获取/修改容器大小
+获取/修改容器大小
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -975,33 +979,33 @@ stack 遍历需要将所有元素出栈
    mqueue.size();
    mqueue.empty();  //判断是否为空
 
-8.4 访问元素
+访问元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
 
    mqueue.top();  //返回 queue中第一个元素，即最大/最小的元素
 
-8.5 删除元素
+删除元素
 ^^^^^^^^^^^^
 
 .. code-block:: cpp
 
    mqueue.pop();
 
-8.6 遍历
+遍历
 ^^^^^^^^
 
 和 stack 一样，queue 也没有迭代器。访问元素的唯一方式是遍历容器内容，并移除访问过的每一个元素
 
-9. 排列组合
+排列组合
 -----------
 
 **next_permutation和prev_permutation区别：**
 
 next_permutation（start,end），和prev_permutation（start,end）。这两个函数作用是一样的，区别就在于前者求的是当前排列的下一个排列，后一个求的是当前排列的上一个排列。至于这里的“前一个”和“后一个”，我们可以把它理解为序列的字典序的前后，严格来讲，就是对于当前序列pn，他的下一个序列pn+1满足：不存在另外的序列pm，使pn<pm<pn+1.
 
-9.1 生成N个不同元素的全排列
+生成N个不同元素的全排列
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 这是next_permutation()的基本用法，把元素从小到大放好（即字典序的最小的排列），然后反复调用next_permutation()就行了
@@ -1041,7 +1045,7 @@ next_permutation（start,end），和prev_permutation（start,end）。这两个
        } while(std::next_permutation(s.begin(), s.end()));
    }
 
-9.2 生成从N个元素中取出M个的所有组合
+生成从N个元素中取出M个的所有组合
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **题目：**\ 输出从7个不同元素中取出3个元素的所有组合
@@ -1073,7 +1077,8 @@ next_permutation（start,end），和prev_permutation（start,end）。这两个
      }while(std::prev_permutation(selectors.begin(),selectors.end()));
    }
 
-10. unique(去重)
+
+unique(去重)
 ----------------
 
 std::unique()的作用是去除相邻的重复元素，可以自定义判断元素重复的方法
@@ -1122,7 +1127,7 @@ std::unique()通用适用于容器；
      return 0;
    }
 
-11. set
+set
 -------
 
 set是一种关联\ `容器 <https://www.geeksforgeeks.org/containers-cpp-stl/>`_\ ，其中每个元素都必须是唯一的，这些值按特定顺序存储。
@@ -1136,7 +1141,7 @@ set是一种关联\ `容器 <https://www.geeksforgeeks.org/containers-cpp-stl/>`
 #. set底层是基于二叉搜索树实现的
 #. set集合中的值不可以通过下标索引
 
-11.1 创建
+创建
 ^^^^^^^^^
 
 .. code-block:: cpp
@@ -1146,7 +1151,7 @@ set是一种关联\ `容器 <https://www.geeksforgeeks.org/containers-cpp-stl/>`
    set<int, greater<int> > s1;  // 创建一个空的set，自定义排序方法
    set<int> s2(s1.begin(), s1.end());  // 从其他set集合中拷贝
 
-11.2 增加/插入数据
+增加/插入数据
 ^^^^^^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -1175,7 +1180,7 @@ set是一种关联\ `容器 <https://www.geeksforgeeks.org/containers-cpp-stl/>`
        return 0;
    }
 
-11.3 获取/修改容器大小
+获取/修改容器大小
 ^^^^^^^^^^^^^^^^^^^^^^
 
 只能获取set的大小，不能直接修改set的大小
@@ -1198,12 +1203,12 @@ set是一种关联\ `容器 <https://www.geeksforgeeks.org/containers-cpp-stl/>`
        return 0;
    }
 
-11.4 访问元素
+访问元素
 ^^^^^^^^^^^^^
 
 set只能通过迭代器访问
 
-11.5 删除元素
+删除元素
 ^^^^^^^^^^^^^
 
 .. code-block:: cpp
@@ -1221,7 +1226,7 @@ set只能通过迭代器访问
        return 0;
    }
 
-11.6 遍历
+遍历
 ^^^^^^^^^
 
 .. code-block:: cpp
@@ -1237,7 +1242,7 @@ set只能通过迭代器访问
        return 0;
    }
 
-11.7 查找
+查找
 ^^^^^^^^^
 
 .. code-block:: cpp
@@ -1263,7 +1268,7 @@ set只能通过迭代器访问
        return 0;
    }
 
-12. hash
+hash
 --------
 
 哈希模板定义一个函数对象，实现了\ `散列函数 <http://en.wikipedia.com/wiki/Hash_function>`_\ 。这个函数对象的实例定义一个operator()

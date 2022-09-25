@@ -39,6 +39,21 @@ std::string v2s(const std::vector<T> &v) {
   return ss.str();
 }
 
+template <typename Container>
+std::string printCollection(const Contrainer &c){
+  std::stringstream ss;
+  if(c.empty()){
+    ss<<"(empty)";
+  }else{
+    typename Container::const_iterator itr = c.begin();
+    ss << "[ " << *itr++;
+    while(itr!=c.end())
+      ss<<", "<<*itr++;
+    ss << " ]";
+  }
+  return ss.str();
+}
+
 // wstring和string之间转换
 using convert_t = std::codecvt_utf8<wchar_t>;
 static std::wstring_convert<convert_t, wchar_t> strconverter;
