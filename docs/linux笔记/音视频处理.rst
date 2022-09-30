@@ -1,0 +1,32 @@
+音视频处理
+=================
+
+sox使用
+---------------------
+
+wav转pcm
+```````````````````
+
+.. code-block:: shell
+
+    sox aa.wav --bits 16 --encoding signed-integer --endian little bb.raw
+
+
+修改采样率
+`````````````````````````
+.. code-block:: shell
+
+    sox a.wav -r 16000 b.wav
+
+
+ffmpeg使用
+---------------------
+
+从视频中提取音频
+```````````````````````````
+.. code-block:: shell
+
+    # 提取音频格式为wav,采样率为48000，通道数为1
+    ffmpeg -i xxx.mp4 -f wav -ar 48000 -ac 1 test.wav
+    # 提取音频格式为mp3
+    ffmpeg -i xxx.mp4 -f mp3 -ar 48000 -ac 1 test.mp3

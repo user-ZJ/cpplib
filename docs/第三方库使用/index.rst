@@ -23,4 +23,5 @@
    cuda编程
    faiss使用笔记
    log4cpp使用笔记
+   blas库
 

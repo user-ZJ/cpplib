@@ -40,7 +40,7 @@ std::string v2s(const std::vector<T> &v) {
 }
 
 template <typename Container>
-std::string printCollection(const Contrainer &c){
+std::string printCollection(const Container &c){
   std::stringstream ss;
   if(c.empty()){
     ss<<"(empty)";

@@ -1,130 +1,146 @@
-# C++类型转换
+C++类型转换
+==================
 
-### int转string
+int转string
+-----------------------------
 
 1. 使用to_string()函数
 2. 使用stringstream
 
-```cpp
-#include <sstream>
-#include<iostream>
-#include<vector>
-using namespace std;
-int main()
-{
-	vector<int> data = {104,97,104,97};
-	stringstream ss;
-	string ss1;
-	for (int i = 0; i < data.size(); i++) {
-		ss<<data[i];
-		ss1 += to_string(data[i]);
-	}
-	cout << ss.str()<<endl;
-	cout << ss1 << endl;
-	system("Pause");
-    return 0;
-}
-```
+.. code-block:: cpp
 
-### string转int
+	#include <sstream>
+	#include<iostream>
+	#include<vector>
+	using namespace std;
+	int main()
+	{
+		vector<int> data = {104,97,104,97};
+		stringstream ss;
+		string ss1;
+		for (int i = 0; i < data.size(); i++) {
+			ss<<data[i];
+			ss1 += to_string(data[i]);
+		}
+		cout << ss.str()<<endl;
+		cout << ss1 << endl;
+		system("Pause");
+		return 0;
+	}
+
+
+string转int
+------------------
 
 1. stoi函数（stoi/stol/stoll）转换为int,long,long long
 2. 使用stringstream
 
-```cpp
-#include <sstream>
-#include<iostream>
-#include<vector>
-using namespace std;
+.. code-block:: cpp
 
-int main()
-{
-	string s1 = "102";
-	int a = atoi(s1.c_str());
-	stringstream ss;
-	int b;
-	ss << s1;
-	ss >> b;
-	cout << a << endl;
-	cout << b << endl;
-	system("Pause");
-	return 0;
-}
-```
+	#include <sstream>
+	#include<iostream>
+	#include<vector>
+	using namespace std;
 
-### char* 和string 之间转换
-
-```cpp
-//1. string转const char*
-string s ="abc";
-constchar* c_s = s.c_str();
-//2. const char*转string
-constchar* c_s ="abc";
-string s(c_s);
-// 3. string转char*
-string s ="abc";
-char* c;
-constint len = s.length();
-c =newchar[len+1];
-strcpy(c,s.c_str());
-// 4. char*转string
-char* c ="abc";
-string s(c);
-// 5. const char*转char*
-constchar* cpc ="abc";
-char* pc =newchar[100];//足够长
-strcpy(pc,c);
-```
+	int main()
+	{
+		string s1 = "102";
+		int a = atoi(s1.c_str());
+		stringstream ss;
+		int b;
+		ss << s1;
+		ss >> b;
+		cout << a << endl;
+		cout << b << endl;
+		system("Pause");
+		return 0;
+	}
 
 
+char* 和string 之间转换
+------------------------------
 
-### static_cast
+.. code-block:: cpp
+
+	//1. string转const char*
+	string s ="abc";
+	constchar* c_s = s.c_str();
+	//2. const char*转string
+	constchar* c_s ="abc";
+	string s(c_s);
+	// 3. string转char*
+	string s ="abc";
+	char* c;
+	constint len = s.length();
+	c =newchar[len+1];
+	strcpy(c,s.c_str());
+	// 4. char*转string
+	char* c ="abc";
+	string s(c);
+	// 5. const char*转char*
+	constchar* cpc ="abc";
+	char* pc =newchar[100];//足够长
+	strcpy(pc,c);
+
+
+
+
+static_cast
+------------------
 
 用法：static_cast <类型说明符> （变量或表达式）
 
 它主要有如下几种用法：
-  （1）用于类层次结构中基类和派生类之间指针或引用的转换
+
+1. 用于类层次结构中基类和派生类之间指针或引用的转换
    进行上行转换（把派生类的指针或引用转换成基类表示）是安全的
    进行下行转换（把基类的指针或引用转换为派生类表示），由于没有动态类型检查，所以是不安全的
-  （2）用于基本数据类型之间的转换，如把int转换成char。这种转换的安全也要开发人员来保证
-  （3）把空指针转换成目标类型的空指针
-  （4）把任何类型的表达式转换为void类型
-  注意：static_cast不能转换掉expression的const、volitale或者__unaligned属性。
 
-```cpp
-int a=10;
-double b = static_cast<double>(a)
-```
+2. 用于基本数据类型之间的转换，如把int转换成char。这种转换的安全也要开发人员来保证
+3. 把空指针转换成目标类型的空指针
+4. 把任何类型的表达式转换为void类型
 
-### const_cast
+注意：static_cast不能转换掉expression的const、volitale或者__unaligned属性。
+
+.. code-block:: cpp
+
+	int a=10;
+	double b = static_cast<double>(a)
+
+
+const_cast
+----------------------
 
 用法：const_cast<type_id> (expression)
   该运算符用来修改类型的const或volatile属性。除了const 或volatile修饰之外， type_id和expression的类型是一样的。
+
 常量指针被转化成非常量指针，并且仍然指向原来的对象；
 常量引用被转换成非常量引用，并且仍然指向原来的对象；常量对象被转换成非常量对象。
 
 **const_cast强制转换对象必须为指针或引用**
 
-```cpp
-#include<iostream>
-#include<vector>
-using namespace std;
+.. code-block:: cpp
 
-int main()
-{
-	const int a = 10;
-	const int * p = &a;
-	int *q;
-	q = const_cast<int *>(p);
-	*q = 20;    //fine
-	cout << a << " " << *p << " " << *q << endl;
-	cout << &a << " " << p << " " << q << endl;
-	system("Pause");
-	return 0;
-}
-```
+	#include<iostream>
+	#include<vector>
+	using namespace std;
 
-### reinterpret_cast
+	int main()
+	{
+		const int a = 10;
+		const int * p = &a;
+		int *q;
+		q = const_cast<int *>(p);
+		*q = 20;    //fine
+		cout << a << " " << *p << " " << *q << endl;
+		cout << &a << " " << p << " " << q << endl;
+		system("Pause");
+		return 0;
+	}
+
+
+reinterpret_cast
+------------------------
 
 reinterpret_cast主要有三种强制转换用途：改变指针或引用的类型、将指针或引用转换为一个足够长度的整形、将整型转换为指针或引用类型。
 
@@ -134,12 +150,14 @@ type-id必须是一个指针、引用、算术类型、函数指针或者成员�
   它可以把一个指针转换成一个整数，也可以把一个整数转换成一个指针（先把一个指针转换成一个整数，在把该整数转换成原类型的指针，还可以得到原先的指针值）。
   在使用reinterpret_cast强制转换过程仅仅只是比特位的拷贝，因此在使用过程中需要特别谨慎！
 
-```cpp
-int *a = new int;
-double *d = reinterpret_cast<double *>(a);
-```
+.. code-block:: cpp
 
-### dynamic_cast
+	int *a = new int;
+	double *d = reinterpret_cast<double *>(a);
+
+
+dynamic_cast
+-----------------------
 
 dynamic_cast<type_id> (expression)
 

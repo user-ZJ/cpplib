@@ -1,6 +1,8 @@
 稀疏矩阵
 ===================
 
+SpMM:sparsedense matrix multiplication
+
 COO(coordinate) Format
 ----------------------------
 仅存储非零元素以及每个非零元素的坐标。
@@ -94,11 +96,18 @@ FastSpMM: An Efﬁcient Libraryfor Sparse Matrix Matrix Producton GPUs
 
 `librsb <http://librsb.sourceforge.net/>`_ : A shared memory parallel sparse matrix computations library for the Recursive Sparse Blocks format
 
+librsb在大型矩阵上速度很快；这些是内存占用超过内存缓存的矩阵。如今，这个边界大约是几百万个非零值。如果您的矩阵小于这个值，您可能会发现librsb比一个好的 CSR/CSC 串行实现要慢；但如果比这大，也快得多。
 
 Eigen支持Sparse matrix：https://eigen.tuxfamily.org/dox/group__TutorialSparse.html
 
 onnxruntime不支持稀疏矩阵运算：
 https://github.com/microsoft/onnxruntime/issues/2121
+
+
+SparseDNN: Fast Sparse Deep Learning Inference on CPUs  https://arxiv.org/abs/2101.07948
+
+
+
 
 
 

@@ -7,7 +7,7 @@ linux笔记
    :name: linux笔记
 
    linux常用命令
-   sox使用
+   音视频处理
    top命令使用
    linux性能优化笔记
    Vim使用
