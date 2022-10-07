@@ -1,0 +1,178 @@
+回溯算法
+==============
+
+解决一个回溯问题,实际上就是一个决策树的遍历过程。你只需要思考 3 个问题:
+
+1. 路径:也就是已经做出的选择。
+2. 选择列表:也就是你当前可以做的选择。
+3. 结束条件:也就是到达决策树底层,无法再做选择的条件。
+
+回溯算法的框架:
+
+::
+
+    result = []
+    def backtrack(路径, 选择列表):
+        if 满足结束条件:
+            result.add(路径)
+            return
+        for 选择 in 选择列表:
+            做选择
+            backtrack(路径, 选择列表)
+            撤销选择
+
+
+**其核心就是 for 循环里面的递归,在递归调用之前「做选择」,在递归调用之后「撤销选择」**
+
+矩阵中的路径
+------------------------
+::
+
+    请设计一个函数，用来判断在一个矩阵中是否存在一条包含某字符串所有字符的路径。
+    路径可以从矩阵中的任意一个格子开始，每一步可以在矩阵中向左，向右，向上，向下移动一个格子。
+    如果一条路径经过了矩阵中的某一个格子，则该路径不能再进入该格子。 例如 
+    a b t g
+    c f c s
+    j d e h
+    矩阵中包含一条字符串"bcced"的路径，但是矩阵中不包含"abcb"路径，
+    因为字符串的第一个字符b占据了矩阵中的第一行第二个格子之后，路径不能再次进入该格子。
+
+.. code-block:: cpp
+
+    bool hasPath(string matrix, int rows, int cols, string str) {
+            // write code here
+            if(matrix.length()==0 || rows<=0 || cols<=0 || str.length()==0)
+                return false;
+            vector<vector<bool>> visit(rows,vector<bool>(cols));
+            for(int i=0;i<rows;i++){
+                for(int j=0;j<cols;j++){
+                    if(dfs(matrix,i,j,0,rows,cols,str,visit))
+                        return true;
+                }
+            }
+            return false;
+    }
+        
+    bool dfs(const string &matrix,int i,int j,int k,int rows,int cols,string &str,vector<vector<bool>> &visit){
+            int pos = i*cols+j;
+            if(i<0||i>=rows||j<0||j>=cols||visit[i][j]==true||matrix[pos]!=str[k])
+                return false;
+            if(k==str.length()-1)
+                return true;
+            visit[i][j] = true;
+            if(dfs(matrix,i-1,j,k+1,rows,cols,str,visit)||
+            dfs(matrix,i+1,j,k+1,rows,cols,str,visit)||
+            dfs(matrix,i,j-1,k+1,rows,cols,str,visit)||
+            dfs(matrix,i,j+1,k+1,rows,cols,str,visit))
+                return true;
+            visit[i][j]=false;
+            return false;
+    }
+
+机器人的运动范围
+-----------------------
+::
+
+    地上有一个m行和n列的方格。一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，
+    但是不能进入行坐标和列坐标的数位之和大于k的格子。 
+    例如，当k为18时，机器人能够进入方格（35,37），因为3+5+3+7 = 18。
+    但是，它不能进入方格（35,38），因为3+5+3+8 = 19。请问该机器人能够达到多少个格子？
+
+.. code-block:: cpp
+
+    int movingCount(int threshold, int rows, int cols) {
+            if(threshold<=0)
+                return 0;
+            vector<vector<int>> mask(rows,vector<int>(cols,-1));
+            int res = 0;
+            dfs(0,0,threshold,rows,cols,res,mask);
+            return res;
+    }
+    int check(int n){
+            int sum=0;
+            while(n){
+                sum += n%10;
+                n/=10;
+            }
+            return sum;
+    }
+    void dfs(int x,int y,int threshold,int r,int c,int &res,vector<vector<int>> &mask){
+            if(x<0||x>=r||y<0||y>=c||mask[x][y]==1)
+                return;
+            if(check(x)+check(y)>threshold)
+                return;
+            mask[x][y] = 1;
+            res += 1;
+            dfs(x+1,y,threshold,r,c,res,mask);
+            dfs(x-1,y,threshold,r,c,res,mask);
+            dfs(x,y+1,threshold,r,c,res,mask);
+            dfs(x,y-1,threshold,r,c,res,mask);
+    }
+
+二叉树中和为某一值的路径
+-----------------------------
+::
+
+    输入一颗二叉树的根节点和一个整数，按字典序打印出二叉树中结点值的和为输入整数的所有路径。
+    路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。
+
+.. code-block:: cpp
+
+    vector<vector<int> > FindPath(TreeNode* root,int expectNumber) {
+            vector<vector<int>> result;
+            vector<int> path;
+            dfs(root,expectNumber,result,path);
+            return result;
+    }
+    void dfs(TreeNode *root, int sum, vector<vector<int>> &result, vector<int> &path){
+            if(root == NULL){
+                return;
+            }
+            sum -= root->val;
+            path.push_back(root->val);
+            //如果是叶子节点，且路劲上节点值的和等于输入的值
+            if(sum == 0 && root->left == NULL && root->right == NULL){
+                result.push_back(path);
+            }
+            dfs(root->left,sum, result,path);
+            dfs(root->right,sum,result,path);
+            path.pop_back();
+            sum += root->val;
+    }
+
+字符串的全排列
+-----------------------
+::
+
+    输入一个字符串,按字典序打印出该字符串中字符的所有排列。
+    例如输入字符串abc,则按字典序打印出由字符a,b,c所能排列出来的所有字符串abc,acb,bac,bca,cab和cba。
+
+.. code-block:: cpp
+
+    class Solution {
+    public:
+        /*思路：递归法，问题转换为先固定第一个字符，求剩余字符的排列；求剩余字符排列时跟原问题一样。
+        (1) 遍历出所有可能出现在第一个位置的字符（即：依次将第一个字符同后面所有字符交换）；
+        (2) 固定第一个字符，求后面字符的排列（即：在第1步的遍历过程中，插入递归进行实现）。*/
+        
+        vector<string> res;
+        
+        void subPermutation(string str,int num){
+            int n = str.size();
+            if(num==n-1){
+                res.push_back(str);
+            }
+            for(int i=num;i<n;i++){
+                if(str[num]!=str[i] || num==i){
+                    swap(str[num],str[i]);
+                    subPermutation(str, num+1);
+                }
+            }
+        }
+        
+        vector<string> Permutation(string str) {
+            subPermutation(str, 0);
+            return res;
+        }
+    };
+

@@ -55,3 +55,478 @@
 
 
 
+表示数值的字符串
+--------------------
+::
+
+    请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。
+    例如，字符串"+100","5e2","-123","3.1416"和"-1E-16"都表示数值。 但是"12e","1a3.14","1.2.3","+-5"和"12e+4.3"都不是。
+
+::
+
+    数值可以表示为 A[.[B]]e|E[C]或.B[e|EC]
+    其中A 和C 可以带有正负号，B不能带有符号
+
+.. code-block:: cpp
+
+    bool isNumeric(string str) {
+            // write code here
+            if(str.length()==0)
+                return false;
+            int index=0;
+            bool numeric = scanInterger(str,index);
+            //如果出现'.',则接下来是小数部分
+            if(str[index]=='.'){
+                ++index;
+                //使用或的原因：
+                //1. 小数可以没有整数部分；如 .123
+                //2. 小数点后可以没有数字；如 233.
+                //3. 小数点前后都可以有数字
+                numeric = scanUnsignedInteger(str,index) || numeric;
+            }
+            if(str[index]=='e'||str[index]=='E'){
+                ++index;
+                //使用&&的原因
+                //1. 当e或E前面没有数字时，整个字符串不能表示数字，如 .e1 e1
+                //2. 当e或E后面没有整数时，整个字符串不能表示数字，如 12e 12e+5.4
+                numeric=numeric&&scanInterger(str,index);
+            }
+            return numeric && (index==str.size());
+    }
+    bool scanInterger(string str,int &index){
+            if(str[index]=='+'||str[index]=='-')
+                ++index;
+            return scanUnsignedInteger(str,index);
+    }
+    bool scanUnsignedInteger(string str,int &index){
+            int begin=index;
+            while(index<str.length()&&str[index]>='0'&&str[index]<='9')
+                ++index;
+            return index>begin;
+    }
+
+
+顺时针打印矩阵
+--------------------
+
+::
+
+    输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵： 
+    1 2 3 4 
+    5 6 7 8 
+    9 10 11 12 
+    13 14 15 16 
+    则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+
+
+.. code-block:: cpp
+
+    vector<int> printMatrix(vector<vector<int> > matrix) {
+            vector<int> res;
+            if(matrix.empty()) return res;
+            int left=0,top=0;
+            int right = matrix[0].size()-1,bottom=matrix.size()-1;
+            while(left<=right && top<=bottom){
+                //上
+                for(int i=left;i<=right;i++) res.push_back(matrix[top][i]);
+                top ++;
+                //右
+                for(int i=top;i<=bottom;i++) res.push_back(matrix[i][right]);
+                right--;
+                //下
+                for(int i=right;i>=left&& top-1!=bottom;i--) res.push_back(matrix[bottom][i]);  //只有一行时不用走回来，前面已经走了
+                bottom--;
+                //左
+                for(int i=bottom;i>=top&&left-1!=right;i--) res.push_back(matrix[i][left]); //只有一列时不用走回来，前面已经走了
+                left++;   
+            }
+            return res;
+    }
+
+
+二进制中1的个数
+---------------------
+
+::
+
+    输入一个整数，输出该数32位二进制表示中1的个数。其中负数用补码表示。
+
+
+::
+
+    把一个整数减去1，再和原整数做与运算，会把该整数最右边的1变成0。那么一个整数的二进制中有多少个1就可以进行多少次这样的操作
+
+
+.. code-block:: cpp
+
+    int  NumberOf1(int n) {
+            int res = 0;
+            while(n){
+                res++;
+                n = n & (n-1);
+            }
+            return res;
+    }
+
+数值的整数次方
+-----------------------
+
+::
+
+    给定一个double类型的浮点数base和int类型的整数exponent。求base的exponent次方。
+    不得使用库函数，同时需要考虑大数问题。
+
+::
+
+    预处理：求pow(a, n)，如果n为负数怎么解决？
+    n为偶数，a^n = a^(n/2)*a^(n/2)
+    n为奇数，a^n = a^((n-1)/2)*a^((n-1)/2)*a
+
+
+.. code-block:: cpp
+
+    double Power(double base, int exponent) {
+            if(base==0.0 && exponent<0) //对0求倒数的情况
+                return 0.0;
+            int absExp = abs(exponent);
+            double res = PowerExponent(base,absExp);
+            if(exponent<0)
+                res = 1.0/res;
+            return res;
+        }
+        double PowerExponent(double base,int absExp){
+            if(absExp==0)
+                return 1.0;
+            if(absExp==1)
+                return base;
+            double res = PowerExponent(base,absExp/2);
+            res *= res;
+            if(absExp & 0x1)  //奇数
+                res *= base;
+            return res;
+    }
+
+
+打印从1到最大的N位数
+-------------------------
+
+::
+
+    输入数字n，按照顺序打印出从1到最大的n位十进制数，比如数组3，则打印1 2 3 一直到最大的3位数999
+
+::
+
+    陷阱：当n很大时，需要考虑大数问题，需要使用字符串模型数字加法
+
+.. code-block:: cpp
+
+    void Print1ToMaxOfNDigits(int n){
+        if(n<=0)
+            return;
+        string number(n,'0');
+        while(!Increment(number)){
+            PrintNumber(number);
+        }
+    }
+    bool Increment(string &number){
+        bool isOverflow = false;
+        int nTakeOwver = 0;
+        int nLength = number.length();
+        for(int i=nLength-1;i>=0;i--){
+            int nSum = number[i]-'0'+nTakeOver;
+            if(i==nLength-1)
+                nSum += 1;
+            if(nSum >= 10){
+                if(i==0)
+                    isOverflow = true;
+                else{
+                    nSum -= 10;
+                    nTakeOver = 1;
+                    number[i] = '0'+nSum;
+                }
+            }else{
+                number[i] = '0' + nSum;
+                break;
+            }
+        }
+        return isOverflow;
+    }
+    void PrintNumber(string number){
+        bool isBegining0 = true;
+        int nLength = number.length();
+        for(int i=0;i<nLength;i++){
+            if(isBegining0&&number[i]!='0')
+                isBegining0=false;
+            if(!isBegining0)
+                cout<<number[i];
+        }
+        cout<<"\t";
+    }
+
+1~n整数中1出现的次数
+------------------------------
+::
+
+    输入一个整数 n ，求1～n这n个整数的十进制表示中1出现的次数
+    例如，1~13中包含1的数字有1、10、11、12、13因此共出现6次
+
+::
+
+    统计某个位置上 1出现的次数。如34，1在十位上出现的次数是10次（10到19），1在个位上出现的次数是4次（1，11，21，31），因此34中1出现了14次。
+    对于整数n，将这个整数分为三部分：当前位数字cur，更高位数字high，更低位数字low，如：对于n=21034，当位数是十位时，cur=3，high=210，low=4。
+    我们从个位到最高位 依次计算每个位置出现1的次数：
+    在计算时，会出现三种情况
+    1）当前位的数字等于0时，例如n=21034，在百位上的数字cur=0，百位上是1的情况有：00100-00199，01100-01199，……，20100-20199。一共有21*100种情况，即high*100;
+    2）当前位的数字等于1时，例如n=21034，在千位上的数字cur=1，千位上是1的情况有：01000-01999，11000-11999，21000-21034。一共有2*1000+（34+1）种情况，即high*1000+(low+1)。
+    3）当前位的数字大于1时，例如n=21034，在十位上的数字cur=3，十位上是1的情况有：00010-00019，……，21010-21019。一共有(210+1)*10种情况，即(high+1)*10。
+
+.. code-block:: cpp
+
+    int NumberOf1Between1AndN_Solution(int n) {
+            int count=0;
+            for(int i=1;i<=n;i*=10){  //i代表位数
+                int high=n/(i*10); //更高位数字
+                int low=(n%i);  //更低位数字
+                int cur=(n/i)%10;  //当前位数字
+                if(cur==0){
+                    count+=high*i;
+                }else if(cur==1){
+                    count+=high*i+(low+1);
+                }else{
+                    count+=(high+1)*i;
+                }
+            }
+            return count;
+    }
+
+数字序列中某一位的数字
+--------------------------------
+::
+
+    数字以0123456789101112131415...的格式序列化到一个字符序列中。在这个序列中，第5位（从0开始计数）是5，第13位是1，第19位是4，等等。
+    请写一个函数，求任意第n位对应的数字。
+
+.. code-block:: cpp
+
+    int digitAtIndex(int index){
+        if(index<0)
+            return -1;
+        int digits = 1;  //数字的位数
+        while(true){
+            int numbers = countOfIntegers(digits);  //计算相应位数数字的总个数
+            if(index<numbers*digits)
+                return digitAtIndex(index,digits);
+            index -= digits*numbers;
+            digits++;
+        }
+        return -1;
+    }
+    int countOfIntegers(int digits){
+        if(digits==1)
+            return 10;
+        int count = (int)std::pow(10,digits-1);
+        return 9*count;
+    }
+    int digitAtIndex(int index,int digits){
+        int number = beginNumber(digits)+index/digits;
+        int indexFromRight = digits - index%digits;
+        for(int i=1;i<indexFromRight;++i)
+            number/=10;
+        return number%10;
+    }
+    int beginNumber(int digits){
+        if(digits == 1)
+            return 0;
+        return (int)std::pow(10,digits-1);
+    }
+
+
+翻转单词顺序
+---------------
+::
+
+    输入一个英文句子，翻转句子中单词的顺序，但单词内字符的顺序不变。为简单起见，标点符号和普通字母一样处理。
+    例如输入字符串“I am a student.”，则输出“student. a am I”。
+
+::
+
+    第一步翻转句子中所有的字符。
+    第二步再翻转每个单词中字符的顺序。
+
+.. code-block:: cpp
+
+    string ReverseSentence(string str) {
+            if(str.empty())
+                return str;
+            Reverse(str,0,str.length()-1);  //转句子中所有的字符
+            int start=0,end=0;
+            while(start < str.length()){
+                if(str[start]==' '){
+                    start++;
+                    end++;
+                }else if(end==str.length()||str[end]==' '){
+                    Reverse(str, start, end-1);
+                    end++;
+                    start=end;
+                }else{
+                    end++;
+                }
+            }
+            return str;
+    }
+    void Reverse(string &str,int begin,int end){
+            while(begin<end){
+                swap(str[begin],str[end]);
+                begin++;
+                end--;
+            }
+    }
+
+
+左旋转字符串
+--------------------
+::
+
+    字符串的左旋转操作是把字符串你前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。
+    比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"
+
+::
+
+    把字符串分为两个部分，分别翻转这两部分，再翻转整个字符串
+
+.. code-block:: cpp
+
+    string LeftRotateString(string str, int n) {
+            if(!str.empty()){
+                int nLength = str.length();
+                if(nLength>0&&n>0&&n<nLength){
+                    Reverse(str, 0, n-1);
+                    Reverse(str, n, nLength-1);
+                    Reverse(str, 0, nLength-1);
+                }
+            }
+            return str;
+    }
+    void Reverse(string &str,int begin,int end){
+            while(begin<end){
+                swap(str[begin],str[end]);
+                begin++;
+                end--;
+            }
+    }
+
+不使用加减乘除做加法
+----------------------------
+::
+
+    写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
+
+::
+
+    计算a和b的无进位和，和进位
+    如果进位不为0，则说明a+b的结果等于无进位和+进位，此时，把无进位和作为a，进位作为b，继续计算
+    如果进位等于0， 说明此时a+b的结果就等于无进位和，返回无进位和即可。
+
+.. code-block:: cpp
+
+    int Add(int num1, int num2) {
+            while (num2 != 0) {
+                // 负数左移会在低位补1，所以转化为无符号整数
+                int c = ((unsigned int)(num1 & num2)) << 1;
+                num1 ^= num2;
+                num2 = c;
+            }
+            return num1;
+    }
+
+
+丑数
+----------------
+::
+
+    把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。
+    求按从小到大的顺序的第N个丑数。
+
+.. code-block:: cpp
+
+    int GetUglyNumber_Solution(int index) {
+            if(index <= 0)return 0;
+            int p2=0,p3=0,p5=0;//初始化三个指向三个潜在成为最小丑数的位置
+            int *result = new int[index];
+            result[0] = 1;//
+            for(int i=1; i < index; i++){
+                result[i] = min(result[p2]*2, min(result[p3]*3, result[p5]*5));
+                if(result[i] == result[p2]*2)p2++;//为了防止重复需要三个if都能够走到
+                if(result[i] == result[p3]*3)p3++;//为了防止重复需要三个if都能够走到
+                if(result[i] == result[p5]*5)p5++;//为了防止重复需要三个if都能够走到
+    
+    
+            }
+            return result[index-1];
+    }
+
+
+第一个只出现一次的字符
+-----------------------------
+::
+
+    在一个字符串(0<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置, 
+    如果没有则返回 -1（需要区分大小写）.（从0开始计数）
+    如输入“abaccdeff”,则输出1
+
+.. code-block:: cpp
+
+    int FirstNotRepeatingChar(string str) {
+            unordered_map<char, int> mp;
+            for (const char ch : str) {
+                ++mp[ch];
+            }    
+            for (int i=0; i<str.length(); ++i) {
+                if (mp[str[i]] == 1) return i;
+            }
+            return -1;
+    }
+
+
+字符流中第一个只出现一次的字符
+---------------------------------
+::
+
+    请实现一个函数用来找出字符流中第一个只出现一次的字符。例如，当从字符流中只读出前两个字符"go"时，第一个只出现一次的字符是"g"。
+    当从该字符流中读出前六个字符“google"时，第一个只出现一次的字符是"l"。
+
+.. code-block:: cpp
+
+    #include<vector>
+
+    class Solution
+    {
+        int index;
+        int occurrence[256];
+    public:
+        Solution():index(0){
+            for(int i=0;i<256;i++)
+                occurrence[i] = -1;
+        }
+    //Insert one char from stringstream
+        void Insert(char ch) {
+            if(occurrence[ch]==-1)
+                occurrence[ch] = index;
+            else if(occurrence[ch]>=0)
+                occurrence[ch] = -2;
+            index ++;
+        }
+    //return the first appearence once char in current stringstream
+        char FirstAppearingOnce() {
+            char ch = '#';
+            int minIndex = numeric_limits<int>::max();
+            for(int i=0;i<256;i++){
+                if(occurrence[i]>=0 && occurrence[i]<minIndex){
+                    ch = (char)i;
+                    minIndex = occurrence[i];
+                }
+            }
+            return ch;
+        }
+
+    };

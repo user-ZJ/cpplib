@@ -8,7 +8,7 @@ onnxruntime
 
 需要安装cmake 3.18以上
 
-.. code-block:: cpp
+.. code-block:: shell
 
     git clone --recursive https://github.com/Microsoft/onnxruntime
     cd onnxruntime
