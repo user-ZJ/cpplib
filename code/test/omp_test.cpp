@@ -12,7 +12,6 @@ using namespace BASE_NAMESPACE;
 int counter = 0;
 #pragma omp threadprivate(counter)
 
-
 void fun()
 {
     #pragma omp parallel

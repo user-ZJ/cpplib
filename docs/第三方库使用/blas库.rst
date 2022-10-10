@@ -30,6 +30,10 @@ OpenBLAS实现BLAS和部分LAPACK
 
 EIGEN是基于C++实现的可以用来进行线性代数、矩阵、向量操作等运算的库，采用源码的方式提供给用户，支持多平台。
 
+blas API
+-----------------------
+https://netlib.org/blas/#_blas_routines
+
 参考
 ----------------
 
