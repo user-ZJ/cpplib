@@ -8,6 +8,9 @@ OpenMP提供了对并行算法的高层抽象描述，特别适合在多核CPU�
 编译器根据程序中添加的pragma指令，自动将程序并行处理，使用OpenMP降低了并行编程的难度和复杂度。
 当编译器不支持OpenMP时，程序会退化成普通（串行）程序。程序中已有的OpenMP指令不会影响程序的正常编译运行。
 
+在Linux平台上，如果需要使用omp，只需在编译时使用"-fopenmp"指令。
+在Windows的visual studio开发环境中，开启omp支持的步骤为“项目属性 -> C/C++ -> 所有选项 -> openmp支持 -> 是(/openmp)”。
+
 OpenMP执行模式
 ------------------
 OpenMP采用fork-join的执行模式。开始的时候只存在一个主线程，当需要进行并行计算的时候，派生出若干个分支线程来执行并行任务。
@@ -54,7 +57,7 @@ OpenMP的编译器指令的目标主要有：
 +-------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | barrier           | 用于并行域内代码的线程同步，线程执行到barrier时要停下等待，直到所有线程都执行到barrier时才继续往下执行；                                    |
 +-------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
-| atomic            | 用于指定一个数据操作需要原子性地完成                                                                                                        |
+| atomic            | 用于指定一个数据操作需要原子性地完成,只能用于简单的表达式，比如 `+=、-=、*=、&=` 等，它们通常能够被编译成一条指令。                         |
 +-------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
 | master            | 用于指定一段代码由主线程执行                                                                                                                |
 +-------------------+---------------------------------------------------------------------------------------------------------------------------------------------+
@@ -165,10 +168,12 @@ parallel指令是用来为一段代码创建多个线程来执行它的。parall
             std::cout << "Test" << std::endl;
         }
     }
+    // g++ -std=c++11 -fopenmp omp.cc
 
 for
 ```````
-for指令则是用来将一个for循环分配到多个线程中执行。for指令一般可以和parallel指令合起来形成parallel for指令使用，也可以单独用在parallel语句的并行块中。
+for指令则是用来将一个for循环分配到多个线程中执行。for指令一般可以和parallel指令合起来形成parallel for指令使用，
+也可以单独用在parallel语句的并行块中。
 parallel for用于生成一个并行域，并将计算任务在多个线程之间分配，用于分担任务
 
 .. code-block:: cpp
@@ -370,6 +375,110 @@ copyprivate只能用于private/firstprivate或threadprivate修饰的变量。
             printf("ThreadId: %d, count = %d\n", omp_get_thread_num(), count);
         }
     }
+
+ordered
+`````````````````
+ordered指令用于控制一段代码在for循环中的执行顺序，它保证这段代码一定是按照for中的顺序依次执行的
+
+.. code-block:: cpp
+
+    #pragma  omp parallel for ordered schedule(dynamic)
+    for (int i = 0; i < 10; ++i)
+    {
+        Data data = ReadFile(files[i]);
+        #pragma omp ordered
+        PutDataToDataset(data);
+    }
+
+这个循环负责读取10个文件，然后将数据放入一个内存结构中。
+读文件的操作是并行的，但是将数据存入内存结构中则是严格串行的。
+即先存第一个文件数据，然后第二个…，最后是第十个文件。
+假设一个线程已经读取了第七个文件的，但是第六个文件还没有存入内存结构，那么这个线程会阻塞，
+直到第六个文件存入内存结构之后，线程才会继续运行。
+
+在每一个ordered for循环中，有且仅有一个“#pragma omp ordered”指令限定的代码块。
+
+reduction
+```````````````````
+reductino指令是private,shared及atomic的综合体。它的语法是：
+
+::
+
+    reduction(operator : list)
+
+其中operator指操作符，list表示操作符要作用的列表，通常是一个共享变量名，
+之所以称之为列表是因为线程组中的每个线程都有一份变量的拷贝，
+reduction即负责用给定的操作符将这些拷贝的局部变量的值进行聚合，并设置回共享变量。
+
+Operator可以是： `+, -, |, ^, ||,*, &&,&`
+
+.. code-block:: cpp
+
+    //阶乘的多线程的实现
+    int factorial(int number)
+    {
+        int fac =1;
+        #pragma omp parallel for reduction(*:fac)
+        for(int n=2; n<=number;++n)
+            fac *= n;
+        return fac;
+    }
+
+    // 不用reduction，那么则需用适用atomic指令,但是这样一来，性能会大大的下降，
+    // 因为这里没有使用局部变量，每个线程对fac的操作都需要进行同步。
+    // 所以在这个例子中，并不会从多线程中受益多少，因为atomic成为了性能瓶颈。
+    int factorial(int number)
+    {
+        int fac =1;
+        #pragma omp parallel for
+        for(int n=2; n<=number;++n)
+        {
+            #pragma omp atomic
+            fac *= n;
+        }
+        return fac;
+    }
+
+    //使用reduction指令的代码事实上类似于以下代码
+    int factorial(int number)
+    {
+        int fac =1;
+        #pragma omp parallel
+        {
+            int fac_private =1;
+            #pragma omp for nowait
+            for(int n=2; n<=number;++n)
+                fac_private *= n;
+                #pragma omp atomic
+                fac *= fac_private;
+        }
+        return fac;
+    }
+
+nowait
+```````````````
+nowait指令用来告诉编译器无需隐式调用barrier指令，因此如果为for、section、single设置了nowait标志，
+则在它们最后不会隐式的调用barrier指令
+
+single
+`````````````
+single指令相关的代码块只运行一个线程执行，但并不限定具体哪一个线程来执行，其它线程必须跳过这个代码块，
+并在代码块后wait，直到执行这段代码的线程完成。
+
+.. code-block:: cpp
+
+    #pragma omp parallel
+    {
+    Work1();
+    #pragma omp single
+    {
+        Work2();
+    }
+    Work3();
+    }
+    // work1()和work3()会在线程组中所有线程都 运行一遍，
+    // 但是work2()只会在一个线程中执行，即只会执行一遍。
+
 
 OpenMP中的任务调度
 -----------------------

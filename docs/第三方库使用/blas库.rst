@@ -34,6 +34,8 @@ blas API
 -----------------------
 https://netlib.org/blas/#_blas_routines
 
+:ref:`blas api`
+
 参考
 ----------------
 

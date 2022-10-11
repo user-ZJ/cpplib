@@ -24,4 +24,7 @@
    faiss使用笔记
    log4cpp使用笔记
    blas库
+   blas API
+   OpenBLAS使用笔记
+   
 
