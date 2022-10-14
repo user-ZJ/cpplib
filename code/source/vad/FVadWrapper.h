@@ -30,6 +30,7 @@ class FVadWrapper : public IVad {
   std::vector<int16_t> RemoveSilence(const std::vector<int16_t> &audio, int sample_rate);
 
  private:
+  void smooth_window(std::vector<int> &is_voice);
   std::shared_ptr<Fvad> vad;
   int mode;         // vad模式
   int frame_ms;     // 每帧长度

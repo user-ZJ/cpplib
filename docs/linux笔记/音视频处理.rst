@@ -19,6 +19,12 @@ wav转pcm
     sox a.wav -r 16000 b.wav
 
 
+语音拼接
+`````````````````
+.. code-block:: shell
+
+    sox 1.wav 2.wav combined.wav
+
 ffmpeg使用
 ---------------------
 
