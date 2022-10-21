@@ -20,7 +20,7 @@ target_link_libraries(ctensor_test utils)
 
 
 add_executable(audio_test audio_test.cpp)
-target_link_libraries(audio_test sox vadwrapper utils)
+target_link_libraries(audio_test opuswrapper sox vadwrapper utils)
 
 add_executable(redis_test redis_test.cpp)
 target_link_libraries(redis_test dbwrapper)

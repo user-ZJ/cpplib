@@ -67,13 +67,15 @@ include_directories(
     3rdparty/gflags/include
     3rdparty/glog/include
     3rdparty/poco/include 
-    3rdparty/fvad/include 
+    3rdparty/fvad/include
+    3rdparty/opus/include  
 )
 link_directories(
     3rdparty/gflags/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/glog/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/poco/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/fvad/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
+    3rdparty/opus/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
 )
 
 # third_party: minizip
@@ -144,6 +146,7 @@ add_subdirectory(source/web)
 # add_subdirectory(source/grpc)
 add_subdirectory(source/db)
 add_subdirectory(source/vad)
+add_subdirectory(source/opus)
 
 if(BUILD_TEST)
     add_subdirectory(test)

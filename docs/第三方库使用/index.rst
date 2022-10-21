@@ -26,5 +26,6 @@
    blas库
    blas API
    OpenBLAS使用笔记
+   opus使用笔记
    
 

@@ -15,5 +15,6 @@ linux笔记
    gdb使用笔记
    gcc升级
    glibc升级
+   默认程序管理
    
    
