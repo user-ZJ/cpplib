@@ -16,6 +16,7 @@ Welcome to cppdoc's documentation!
    linux笔记/index
    数据结构与算法/index
    git使用/index
+   语音/index
    *
 
 
