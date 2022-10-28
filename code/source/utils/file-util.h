@@ -29,6 +29,11 @@ inline std::vector<char> file_to_buff(const char *path) {
   return buffer;
 }
 
+inline std::string file_to_str(const char *path){
+  auto buffer = file_to_buff(path);
+  return std::string(buffer.begin(),buffer.end()); 
+}
+
 inline std::stringstream file_to_ss(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary);
   std::stringstream buffer;
@@ -75,6 +80,14 @@ inline int write_to_file(const char *path,const std::vector<char> &buff){
   LOG(INFO)<<"write "<<path;
   std::ofstream out (path, std::ios::out|std::ios::binary);
   out.write(buff.data(),buff.size());
+  out.close();
+  return 0;
+}
+
+inline int write_to_file(const char *path,const std::string &msg){
+  LOG(INFO)<<"write "<<path;
+  std::ofstream out (path, std::ios::out|std::ios::binary);
+  out.write(msg.data(),msg.length());
   out.close();
   return 0;
 }

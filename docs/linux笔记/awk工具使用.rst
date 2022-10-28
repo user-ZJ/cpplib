@@ -54,7 +54,7 @@ $NF表示倒数第一列，$(NF-1)表示倒数第二列
 -------------------------------
 .. code-block:: shell
 
-    
+    awk '{a[$n]=$0}END{for(i in a)print a[i]}' filename
 
 
 内建函数

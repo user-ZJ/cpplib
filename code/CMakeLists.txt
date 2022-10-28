@@ -147,6 +147,8 @@ add_subdirectory(source/web)
 add_subdirectory(source/db)
 add_subdirectory(source/vad)
 add_subdirectory(source/opus)
+add_subdirectory(source/crypto)
+add_subdirectory(source/bin)
 
 if(BUILD_TEST)
     add_subdirectory(test)

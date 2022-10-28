@@ -38,6 +38,9 @@ target_link_libraries(threadpool_test utils pthread)
 # add_executable(crypto_test crypto_test.cpp)
 # target_link_libraries(crypto_test cryptopp.a pthread)
 
+add_executable(crypto_test1 crypto_test1.cpp)
+target_link_libraries(crypto_test1 crypto_wrapper)
+
 add_executable(string_util_test string_util_test.cpp)
 target_link_libraries(string_util_test utils)
 

@@ -618,6 +618,8 @@ core文件会包含了程序运行时的内存，寄存器状态，堆栈指针�
     ulimit -c unlimited
     # 将使程序崩溃时生成的coredump文件位于/data/coredump/目录下
     echo /data/coredump/core.%e.%p> /proc/sys/kernel/core_pattern 
+    echo "kernel.core_pattern = /data/coredump/core.%e.%p.%t" > /etc/sysctl.conf
+    sysctl -p
 
 coredump产生的几种可能情况
 ```````````````````````````````

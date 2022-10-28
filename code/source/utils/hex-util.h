@@ -14,19 +14,19 @@ namespace BASE_NAMESPACE {
 static const int eof = std::char_traits<char>::eof();
 static const char digits[] = "0123456789abcdef0123456789ABCDEF";
 
-std::string HexBinaryEncoder(const std::vector<char> &binary, bool isUpper = false) {
+inline std::string HexBinaryEncoder(const std::vector<unsigned char> &binary, bool isUpper = false) {
   int uppercase = isUpper ? 16 : 0;
   std::string res = "";
   for (const auto &c : binary) {
     res += digits[uppercase + ((c >> 4) & 0xF)];
-    res += digits[_uppercase + (c & 0xF)];
+    res += digits[uppercase + (c & 0xF)];
   }
   return res;
 }
 
-std::vector<char> HexBinaryDecoder(const std::string &str) {
-  std::vector<char> res;
-  char c, n;
+inline std::vector<unsigned char> HexBinaryDecoder(const std::string &str) {
+  std::vector<unsigned char> res;
+  unsigned char c, n;
   for (int i=0;i<str.length()/2;i++) {
     n = str[2*i];
     if (n >= '0' && n <= '9')

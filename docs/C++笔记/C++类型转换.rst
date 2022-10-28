@@ -64,25 +64,55 @@ char* 和string 之间转换
 
 	//1. string转const char*
 	string s ="abc";
-	constchar* c_s = s.c_str();
+	const char* c_s = s.c_str();
 	//2. const char*转string
-	constchar* c_s ="abc";
+	const char* c_s ="abc";
 	string s(c_s);
 	// 3. string转char*
 	string s ="abc";
 	char* c;
-	constint len = s.length();
+	const int len = s.length();
 	c =newchar[len+1];
 	strcpy(c,s.c_str());
 	// 4. char*转string
 	char* c ="abc";
 	string s(c);
 	// 5. const char*转char*
-	constchar* cpc ="abc";
+	const char* cpc ="abc";
 	char* pc =newchar[100];//足够长
 	strcpy(pc,c);
 
+vector转string
+----------------------------
+.. code-block:: cpp
 
+	#include <iostream>
+	#include <vector>
+	
+	int main() {
+		std::vector<char> vec { 'A', 'B', 'C' };
+		std::string str(vec.begin(), vec.end());
+		std::cout << str << std::endl;            // ABC
+		return 0;
+	}
+
+string转vector
+---------------------
+.. code-block:: cpp
+
+	#include <iostream>
+	#include <string>
+	#include <vector>
+	
+	int main()
+	{
+		std::string s = "Hello World!";
+		std::vector<char> v(s.begin(), s.end());
+		for (const char &c: v) {
+			std::cout << c;
+		}
+		return 0;
+	}
 
 
 static_cast
