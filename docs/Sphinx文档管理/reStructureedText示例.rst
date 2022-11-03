@@ -392,10 +392,51 @@ toctree参数:
     :hidden:                如果你只想使用最顶层的toctree，而忽略掉其它的toctree指令
 
 
+指示性信息
+=======================
+
+.. attention:: 
+    
+    this is a attention message
+
+.. caution:: 
+
+    this is a caution message
+
+.. danger:: 
+
+    this is a danger message
+
+.. error:: 
+
+    this is a error message 
+
+.. hint:: 
+
+    this is a hint message 
+
+.. important:: 
+
+    this is a important message 
+
+.. note:: 
+
+    this is a note message 
+
+.. tip:: 
+
+    this is a tip message 
+
+.. warning:: 
+
+    this is a warning message 
+
 
 
 参考
 =================
+https://docutils.sourceforge.io/docs/user/rst/quickref.html
+
 https://macplay.github.io/posts/cong-markdown-dao-restructuredtext/#id10
 
 https://3vshej.cn/rstSyntax/index.html
