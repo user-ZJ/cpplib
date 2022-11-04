@@ -56,6 +56,12 @@ $NF表示倒数第一列，$(NF-1)表示倒数第二列
 
     awk '{a[$n]=$0}END{for(i in a)print a[i]}' filename
 
+批量处理
+-----------------
+.. code-block:: shell
+
+    cat file.list | awk '{ cmd = "sox -t raw -c 1 -e signed-integer -b 16 -r 16000 "$0" "$0".wav";print cmd;system(cmd);}'
+
 
 内建函数
 -----------------
