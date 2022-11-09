@@ -1,6 +1,0 @@
-数据结构笔记
-=======================
-
-数据结构可视化网站
-
-https://www.cs.usfca.edu/~galles/visualization/Algorithms.html

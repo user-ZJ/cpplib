@@ -42,7 +42,7 @@ source_suffix = {
     '.md': 'markdown',
 }
 
-highlight_langeuage="c,cpp,python,shell"
+highlight_langeuage="c,cpp,python,shell,xml,yaml"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
