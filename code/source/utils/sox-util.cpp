@@ -1,7 +1,8 @@
 #include "sox-util.h"
 #include "utils/logging.h"
 #include <algorithm>
-#include <cassert>
+#include <fstream>
+#include <mutex>
 #include <vector>
 
 namespace BASE_NAMESPACE {
@@ -10,6 +11,17 @@ namespace BASE_NAMESPACE {
 使用该头文件需要安装libsox-dev. 如：apt install libsox-dev
 另外需要链接libsox.so
 */
+
+static std::mutex sox_mutex;
+
+SoxUtil::SoxUtil() {
+  int res = sox_init();
+  if (res != SOX_SUCCESS) { LOG(ERROR) << "sox_init failed."; }
+}
+
+SoxUtil::~SoxUtil() {
+  sox_quit();
+}
 
 int SoxUtil::GetWavInfo(const std::string &filename, WavInfo &info) {
   sox_format_t *in;
@@ -147,7 +159,8 @@ int SoxUtil::GetData(const std::vector<char> &buff, std::vector<double> &out) {
 std::vector<char> SoxUtil::Write2Buff(const WavInfo &info, const std::vector<sox_sample_t> &data) {
   try {
     std::vector<char> buffer(data.size() * 5);
-    sox_signalinfo_t out_signal = {static_cast<sox_rate_t>(info.sample_rate), info.channel, info.precision, data.size(), NULL};
+    sox_signalinfo_t out_signal = {static_cast<sox_rate_t>(info.sample_rate), info.channel, info.precision, data.size(),
+                                   NULL};
     sox_format_t *out = sox_open_mem_write(buffer.data(), buffer.size(), &out_signal, NULL, "sox", NULL);
     if (out == nullptr) {
       LOG(ERROR) << "Opens an encoding session error";
@@ -269,7 +282,7 @@ std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const int
     LOG(ERROR) << "read audio error";
     return {};
   }
-  std::vector<char> out_buff(static_cast<size_t>(buffer.size() * speed + 1), 0);
+  std::vector<char> out_buff(static_cast<size_t>(buffer.size() / speed + 1), 0);
   out = sox_open_mem_write(out_buff.data(), out_buff.size(), &out_signal, &out_encoding, "wav", NULL);
   if (out == nullptr) {
     LOG(ERROR) << "write audio buffer error";
@@ -382,11 +395,62 @@ std::vector<char> SoxUtil::Wav2Mp3(const std::vector<char> &buffer) {
   sox_format_t *in, *out;
   sox_encodinginfo_t mp3_encoding{SOX_ENCODING_MP3,   0,        0, sox_option_default, sox_option_default,
                                   sox_option_default, sox_false};
-  assert(in = sox_open_mem_read(const_cast<char *>(buffer.data()), buffer.size(), NULL, NULL, NULL));
-  assert(out = sox_open_mem_write(result.data(), result.size(), &in->signal, &mp3_encoding, "mp3", NULL));
+  in = sox_open_mem_read(const_cast<char *>(buffer.data()), buffer.size(), NULL, NULL, NULL);
+  if (in == nullptr) {
+    LOG(ERROR) << "read audio error";
+    return {};
+  }
+  out = sox_open_mem_write(result.data(), result.size(), &in->signal, &mp3_encoding, "mp3", NULL);
+  if (out == nullptr) {
+    LOG(ERROR) << "write audio buffer error";
+    return {};
+  }
+  int channel = in->signal.channels;
   std::vector<sox_sample_t> audio_data(in->signal.length);
-  assert(sox_read(in, audio_data.data(), in->signal.length) == in->signal.length);
-  assert(sox_write(out, audio_data.data(), audio_data.size()) == audio_data.size());
+  size_t read_num = sox_read(in, audio_data.data(), in->signal.length);
+  if (read_num != audio_data.size()) {
+    LOG(WARNING) << "can not get enough audio data:expect " << audio_data.size() << " but got " << read_num;
+  }
+  size_t write_num = sox_write(out, audio_data.data(), audio_data.size());
+  if (write_num != audio_data.size()) {
+    LOG(WARNING) << "not write all data:expect " << audio_data.size() << " but got " << write_num;
+  }
+  sox_close(out);
+  sox_close(in);
+  result.resize(out->tell_off);
+  return result;
+}
+
+std::vector<char> SoxUtil::Mp3ToWav(const std::vector<char> &buffer) {
+  std::vector<char> result(buffer.size() * 15);
+  sox_format_t *in, *out;
+  {
+    sox_encodinginfo_t mp3_encoding{SOX_ENCODING_MP3,   0,        0, sox_option_default, sox_option_default,
+                                  sox_option_default, sox_false};
+    in = sox_open_mem_read(const_cast<char *>(buffer.data()), buffer.size(), NULL, &mp3_encoding, "mp3");
+    in->signal.length = buffer.size()*6;
+    if (in == nullptr) {
+      LOG(ERROR) << "read audio error";
+      return {};
+    }
+    
+    std::vector<sox_sample_t> audio_data(in->signal.length);
+    size_t read_num = sox_read(in, audio_data.data(), in->signal.length);
+    if (read_num != audio_data.size()) {
+      in->signal.length = read_num;
+      audio_data.resize(read_num);
+    }
+
+    out = sox_open_mem_write(result.data(), result.size(), &in->signal, NULL, "sox", NULL);
+    if (out == nullptr) {
+      LOG(ERROR) << "write audio buffer error";
+      return {};
+    }
+    size_t write_num = sox_write(out, audio_data.data(), audio_data.size());
+    if (write_num != audio_data.size()) {
+      LOG(WARNING) << "not write all data:expect " << audio_data.size() << " but got " << write_num;
+    }
+  }
   sox_close(out);
   sox_close(in);
   result.resize(out->tell_off);

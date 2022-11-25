@@ -10,7 +10,7 @@
 using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]); 
   CTensor<float,int> t1({3,5,7,9});
   std::cout<<"shapes:"<<v2s(t1.shapes())<<std::endl;

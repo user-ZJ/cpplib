@@ -11,23 +11,34 @@
 namespace BASE_NAMESPACE {
 
 int WebServer::start() {
-  LOG(INFO) << "websocet listen at " << _port << " port";
-  HTTPServerParams *pParams = new HTTPServerParams;
-  pParams->setMaxQueued(100);
-  pParams->setMaxThreads(std::thread::hardware_concurrency());
+  try {
+    LOG(INFO) << "websocet listen at " << _port << " port";
+    HTTPServerParams *pParams = new HTTPServerParams;
+    pParams->setMaxQueued(100);
+    pParams->setMaxThreads(std::thread::hardware_concurrency());
 
-  // set-up a server socket
-  ServerSocket svs(_port);
-  // set-up a HTTPServer instance
-  HTTPServer srv(new RequestHandlerFactory, svs, pParams);
-  // start the HTTPServer
-  srv.start();
-  // wait for CTRL-C or kill
-  waitForTerminationRequest();
-  // Stop the HTTPServer
-  srv.stop();
+    // set-up a server socket
+    // ServerSocket svs(_port);
+    Poco::Net::IPAddress wildcardAddr;
+    Poco::Net::SocketAddress address(wildcardAddr, _port);
+    ServerSocket svs;
+    svs.bind(address, true, false);  // 地址可重用，端口不可重用
+    svs.listen(64);
+    // set-up a HTTPServer instance
+    HTTPServer srv(new RequestHandlerFactory, svs, pParams);
+    // start the HTTPServer
+    srv.start();
+    // wait for CTRL-C or kill
+    waitForTerminationRequest();
+    // Stop the HTTPServer
+    srv.stop();
 
-  return Application::EXIT_OK;
+    return Application::EXIT_OK;
+  }
+  catch (Poco::Exception &e) {
+    LOG(ERROR) << "server start error! " << e.displayText();
+    return -1;
+  }
 }
 
 HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const HTTPServerRequest &request) {

@@ -7,7 +7,7 @@
 using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]); 
   LOG(INFO) << "redis test" << std::endl;
   RedisWrapper redis("10.12.51.12");

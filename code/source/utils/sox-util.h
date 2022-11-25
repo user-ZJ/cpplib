@@ -3,7 +3,6 @@
 #include "sox.h"
 #include "utils/logging.h"
 #include <algorithm>
-#include <cassert>
 #include <vector>
 
 namespace BASE_NAMESPACE {
@@ -54,14 +53,11 @@ class SoxUtil {
                                const float speed);
   // wav转为mp3
   std::vector<char> Wav2Mp3(const std::vector<char> &buffer);
+  std::vector<char> Mp3ToWav(const std::vector<char> &buffer);
 
  private:
-  SoxUtil() {
-    assert(sox_init() == SOX_SUCCESS);
-  }
-  ~SoxUtil() {
-    sox_quit();
-  }
+  SoxUtil();
+  ~SoxUtil();
 };
 
 };  // namespace BASE_NAMESPACE

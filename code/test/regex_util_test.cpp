@@ -10,7 +10,7 @@ using namespace BASE_NAMESPACE::REGEX;
 using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);
   google::EnableLogCleaner(3);
 

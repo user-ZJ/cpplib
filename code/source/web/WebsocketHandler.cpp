@@ -17,6 +17,14 @@ static bool IsClose(const int &flags) {
   return (flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_CLOSE;
 }
 
+static bool IsPing(const int &flags) {
+  return ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PING);
+}
+
+static bool IsPong(const int &flags) {
+  return ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PONG);
+}
+
 void WebSocketHandler::handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
   try {
     ws = std::make_shared<WebSocket>(request, response);
@@ -29,7 +37,12 @@ void WebSocketHandler::handleRequest(HTTPServerRequest &request, HTTPServerRespo
       n = ws->receiveFrame(buffer, flags);
       LOG(INFO) << Poco::format("recive data (length=%d, flags=0x%x).", n, unsigned(flags));
       // flag 0x00为close  flag 0x88为shutdown
-      if (n == 0 || IsClose(flags)) {  
+      if(IsPing(flags)){
+        LOG(INFO)<<"on_ping";
+        ws->sendFrame(buffer.begin(), n, WebSocket::FRAME_OP_PONG);
+      }else if(IsPong(flags)){
+        LOG(INFO)<<"on_pong";
+      }else if(n == 0 || IsClose(flags)) {  
         LOG(INFO) << "on_close";
         break;
       } else if (IsText(flags)) {

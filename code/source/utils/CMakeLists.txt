@@ -11,6 +11,7 @@ include_directories(
 # 		)
 
 
-add_library(utils sox-util.cpp)
+add_library(utils STATIC sox-util.cpp)
 target_link_libraries(utils glog gflags_nothreads sox pthread)
+#target_link_libraries(utils glog gflags sox pthread)
 

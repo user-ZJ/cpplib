@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 project(mbase)
 
-option(BUILD_UNITTEST "build test with googletest" ON)
+option(BUILD_UNITTEST "build test with googletest" OFF)
 option(BUILD_TEST "build test with googletest" ON)
 
 set(BASE_NAMESPACE zack)
@@ -45,34 +45,45 @@ else()
         add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
     else()
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors")
+        # -DNDEBUG 禁用assert
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors -DNDEBUG")
     endif()
 endif()
 
 option(USE_MNN "whether to build MNN" OFF)
 option(USE_TFLITE "whether to build tflite" OFF)
 option(USE_ONNXRUNTIME "whether to build ONNXRUNTIME" ON)
+# 设置所有编译出的库为静态库
+set(BUILD_SHARED_LIBS OFF)
 
 include(FetchContent)
 include(ExternalProject)
 set(FETCHCONTENT_QUIET off)
-set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/depends)
+# set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/depends)
+set(FETCHCONTENT_BASE_DIR $ENV{HOME}/fc_base)
+#set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/fc_base)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+
+include(glog)
+include(gflags)
 
 # third_party: boost
 include(boost)
 
+include(opencc)
+
 include_directories(
-    3rdparty/gflags/include
-    3rdparty/glog/include
+    # 3rdparty/gflags/include
+    # 3rdparty/glog/include
     3rdparty/poco/include 
     3rdparty/fvad/include
     3rdparty/opus/include  
 )
 link_directories(
-    3rdparty/gflags/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
-    3rdparty/glog/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
+    # 3rdparty/gflags/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
+    # 3rdparty/glog/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/poco/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/fvad/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/opus/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
@@ -98,22 +109,22 @@ include(eigen)
 # FetchContent_MakeAvailable(cryptopp)
 # include_directories(${cryptopp_BINARY_DIR}/include)
 
-set(cryptopp_SRC_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-src)
-set(cryptopp_BUILD_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-build)
-set(cryptopp_PREFIX_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-subbuild/cryptopp-populate-prefix)
-ExternalProject_Add(cryptopp
-    URL               https://cryptopp.com/cryptopp860.zip
-    URL_HASH          SHA256=20aa413957d9c8ae353ee2f7747bd7ac392f933c60a53e3fd1e41cadbc48d193
-    PREFIX            ${cryptopp_PREFIX_DIR}
-    # DOWNLOAD_DIR      ${cryptopp_PREFIX_DIR}
-    SOURCE_DIR        ${cryptopp_SRC_DIR}
-    BINARY_DIR        ${cryptopp_SRC_DIR}
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND     make -j 4
-    INSTALL_COMMAND   make install PREFIX=${cryptopp_BUILD_DIR}
-)
-include_directories(${cryptopp_SRC_DIR})
-link_directories(${cryptopp_SRC_DIR})
+# set(cryptopp_SRC_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-src)
+# set(cryptopp_BUILD_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-build)
+# set(cryptopp_PREFIX_DIR ${FETCHCONTENT_BASE_DIR}/cryptopp-subbuild/cryptopp-populate-prefix)
+# ExternalProject_Add(cryptopp
+#     URL               https://cryptopp.com/cryptopp860.zip
+#     URL_HASH          SHA256=20aa413957d9c8ae353ee2f7747bd7ac392f933c60a53e3fd1e41cadbc48d193
+#     PREFIX            ${cryptopp_PREFIX_DIR}
+#     # DOWNLOAD_DIR      ${cryptopp_PREFIX_DIR}
+#     SOURCE_DIR        ${cryptopp_SRC_DIR}
+#     BINARY_DIR        ${cryptopp_SRC_DIR}
+#     CONFIGURE_COMMAND ""
+#     BUILD_COMMAND     make -j 4
+#     INSTALL_COMMAND   make install PREFIX=${cryptopp_BUILD_DIR}
+# )
+# include_directories(${cryptopp_SRC_DIR})
+# link_directories(${cryptopp_SRC_DIR})
 
 
 include_directories(

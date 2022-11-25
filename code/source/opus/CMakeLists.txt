@@ -9,6 +9,6 @@ link_directories(
 )
 
 
-add_library(opuswrapper OpusWrapper.cpp)
+add_library(opuswrapper STATIC OpusWrapper.cpp)
 target_link_libraries(opuswrapper opus utils)
 

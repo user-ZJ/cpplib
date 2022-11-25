@@ -1,6 +1,9 @@
+# if(NOT DEFINED glog_SOURCE_DIR)
 FetchContent_Declare(glog
-  URL      https://github.com/google/glog/archive/v0.4.0.zip
-  URL_HASH SHA256=9e1b54eb2782f53cd8af107ecf08d2ab64b8d0dc2b7f5594472f3bd63ca85cdc
+  URL      https://github.com/google/glog/archive/refs/tags/v0.6.0.zip
+  URL_HASH SHA256=122fb6b712808ef43fbf80f75c52a21c9760683dae470154f02bddfc61135022
 )
 FetchContent_MakeAvailable(glog)
+# endif()
 include_directories(${glog_SOURCE_DIR}/src ${glog_BINARY_DIR})
+link_directories(${glog_BINARY_DIR})

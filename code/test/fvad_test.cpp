@@ -7,6 +7,7 @@
 #include "utils/sox-util.h"
 #include "utils/file-util.h"
 #include "utils/logging.h"
+#include "utils/flags.h"
 
 
 using namespace BASE_NAMESPACE;

@@ -7,6 +7,7 @@
 #include "utils/sox-util.h"
 #include "utils/file-util.h"
 #include "utils/logging.h"
+#include "utils/flags.h"
 #include "opus/OpusWrapper.h"
 
 
@@ -30,10 +31,13 @@ int main(int argc, char *argv[]) {
   std::vector<short> data;
   res = SoxUtil::instance().GetData(argv[1],data);
   LOG(INFO)<<"size:"<<data.size()<<std::endl;
-  auto wav = SoxUtil::instance().ProcessWav(info,data,24000,/*volume*/1.0,/*speed*/1.5);
+  auto wav = SoxUtil::instance().ProcessWav(info,data,24000,/*volume*/1.0,/*speed*/0.5);
   write_to_file("out.wav",wav);
   auto mp3 = SoxUtil::instance().Wav2Mp3(wav);
   write_to_file("out.mp3",mp3);
+
+  auto wav_buff = SoxUtil::instance().Mp3ToWav(mp3);
+  write_to_file("out1.wav",wav_buff);
 
 
   std::vector<unsigned char> opus_buff;

@@ -8,7 +8,7 @@
 using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]); 
   google::EnableLogCleaner(3);
   std::string path = "C:\\Users\\Administrator\\..\\..\\Desktop\\text\\data.22.txt";

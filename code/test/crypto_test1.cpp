@@ -1,6 +1,7 @@
 #include "crypto/RSACryptoWrapper.h"
 #include "crypto/AESCryptoWrapper.h"
 #include "utils/logging.h"
+#include "utils/flags.h"
 #include <iostream>
 #include <string>
 #include <tuple>

@@ -51,8 +51,16 @@ static bool IsClose(const int &flags) {
   return (flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_CLOSE;
 }
 
-class MessageHandler{
-public:
+static bool IsPing(const int &flags) {
+  return ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PING);
+}
+
+static bool IsPong(const int &flags) {
+  return ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PONG);
+}
+
+class MessageHandler {
+ public:
   void OnClose() {
     LOG(INFO) << "OnClose";
   }
@@ -63,8 +71,8 @@ public:
     LOG(INFO) << "OnBinary: receiver" << buffer.sizeBytes() << "bytes";
   }
 
-  void OnError(){
-    LOG(INFO)<<"OnError";
+  void OnError() {
+    LOG(INFO) << "OnError";
   }
 
   void operator()(std::shared_ptr<WebSocket> ws) {
@@ -76,6 +84,12 @@ public:
         buffer.resize(0);
         n = ws->receiveFrame(buffer, flags);
         LOG(INFO) << Poco::format("recive data (length=%d, flags=0x%x).", n, unsigned(flags));
+        if (IsPing(flags)) {
+          LOG(INFO) << "on_ping";
+          ws->sendFrame(buffer.begin(), n, WebSocket::FRAME_OP_PONG);
+        } else if (IsPong(flags)) {
+          LOG(INFO) << "on_pong";
+        }
         if (n == 0 || IsClose(flags)) {
           OnClose();
           break;
@@ -102,7 +116,7 @@ public:
 
 class WebSocketClient {
  public:
-  explicit WebSocketClient(std::string url) {
+  explicit WebSocketClient(std::string url, MessageHandler &handler) {
     try {
       URI uri(url);
       session = std::make_shared<HTTPClientSession>(uri.getHost(), uri.getPort());
@@ -113,7 +127,7 @@ class WebSocketClient {
       request = std::make_shared<HTTPRequest>(HTTPRequest::HTTP_GET, path, HTTPMessage::HTTP_1_1);
       response = std::make_shared<HTTPResponse>();
       ws.reset(new WebSocket(*session, *request, *response));
-      message_handler = std::thread(MessageHandler(),ws);
+      message_handler = std::thread(std::ref(handler), ws);
     }
     catch (WebSocketException &exc) {
       LOG(ERROR) << "OnError: ERRORCODE:" << exc.code() << " MESSAGE:" << exc.message();
@@ -125,7 +139,7 @@ class WebSocketClient {
 
   ~WebSocketClient() {
     ws->shutdown();
-    message_handler.join();
+    if (message_handler.joinable()) message_handler.join();
     ws->close();
   }
 
@@ -138,6 +152,10 @@ class WebSocketClient {
     LOG(INFO) << "Send binary";
     int n = ws->sendFrame(buffer.data(), buffer.size(), WebSocket::FRAME_BINARY);
     return n;
+  }
+
+  void Join() {
+    if (message_handler.joinable()) message_handler.join();
   }
 
  private:
@@ -160,7 +178,8 @@ int main(int argc, char **argv) {
     obj.stringify(sbody);
     std::cout << "send body:" << sbody.str() << std::endl;
     std::string text = sbody.str();
-    WebSocketClient wsc(url);
+    MessageHandler handler;
+    WebSocketClient wsc(url,handler);
     wsc.SendText(text);
   }
   catch (Exception &ex) {
