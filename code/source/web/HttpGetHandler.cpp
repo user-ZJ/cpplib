@@ -13,6 +13,14 @@ void HTTPGetHandler::handleRequest(HTTPServerRequest &request, HTTPServerRespons
     for (const auto &kv : query) {
       LOG(INFO) << "key:" << std::get<0>(kv) << " value:" << std::get<1>(kv);
     }
+    response.setChunkedTransferEncoding(true);
+    response.setContentType("application/json");
+
+    std::ostream &ostr = response.send();
+    Poco::JSON::Object obj;
+    obj.set("code", "0000");
+    obj.set("message", "success");
+    obj.stringify(ostr);
   }
   catch (const std::exception &e) {
     LOG(ERROR) << "http exception:" << e.what();

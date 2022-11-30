@@ -46,7 +46,7 @@ else()
     else()
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors")
         # -DNDEBUG 禁用assert
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors -DNDEBUG")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors")
     endif()
 endif()
 

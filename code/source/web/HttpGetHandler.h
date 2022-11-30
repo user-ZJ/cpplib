@@ -15,6 +15,7 @@
 #include "Poco/Format.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/URI.h"
+#include "Poco/JSON/Parser.h"
 
 using Poco::Net::ServerSocket;
 using Poco::Net::WebSocket;

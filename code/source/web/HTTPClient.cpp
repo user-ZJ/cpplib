@@ -38,6 +38,8 @@ using Poco::Path;
 using Poco::URI;
 using Poco::Exception;
 
+using namespace BASE_NAMESPACE;
+
 void get() {
   try {
     std::string url = "http://localhost:9900/get";
@@ -179,8 +181,58 @@ void json() {
   }
 }
 
+void octet_stream() {
+  try {
+    std::string url = "http://localhost:9900/octet_stream";
+    URI uri(url);
+    HTTPClientSession session(uri.getHost(), uri.getPort());
+
+    std::string path(uri.getPathAndQuery());
+    if (path.empty()) path = "/";
+
+    HTTPRequest request(HTTPRequest::HTTP_POST, path, HTTPMessage::HTTP_1_1);
+
+    std::map<std::string, std::string> headers;
+    headers["Test-Header"] = "Test-Header";
+    request.setContentType("application/octet-stream");
+    // Set headers here
+    for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++) {
+      request.set(it->first, it->second);
+    }
+
+    std::string filestr = file_to_str("test.txt");
+  
+    request.setContentLength(filestr.size());
+
+
+    // sends request, returns open stream
+    std::ostream &requestStream = session.sendRequest(request);
+    requestStream << filestr; // sends the body
+
+
+    //获取请求文本
+    std::stringstream iss;
+    request.write(iss);
+    LOG(INFO) << iss.str();
+
+    // get response
+    HTTPResponse response;
+    std::istream &responseStream = session.receiveResponse(response);
+    LOG(INFO) << response.getStatus() << " " << response.getReason();
+    std::string ostr;
+    StreamCopier::copyToString(responseStream, ostr);
+    LOG(INFO) << ostr;
+    Poco::JSON::Parser parser;
+    Poco::JSON::Object::Ptr authObj = parser.parse(ostr).extract<Poco::JSON::Object::Ptr>();
+  }
+  catch (Exception &ex) {
+    LOG(ERROR) << ex.displayText();
+  }
+}
+
 int main(int argc, char **argv) {
   get();
   form();
   json();
+  octet_stream();
 }

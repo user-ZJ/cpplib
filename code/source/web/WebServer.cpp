@@ -3,6 +3,7 @@
 #include "HttpFormHandler.h"
 #include "HttpGetHandler.h"
 #include "HttpJsonHandler.h"
+#include "HttpStreamHandler.h"
 #include "WebsocketHandler.h"
 #include "utils/logging.h"
 
@@ -46,15 +47,18 @@ HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const HTTPServer
   s = "Request from " + request.clientAddress().toString() + ": " + request.getMethod() + " " + request.getURI() + " "
       + request.getVersion();
   LOG(INFO) << s;
+  Poco::URI uri(request.getURI());
 
   if (request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
     return new WebSocketHandler;
   else if (request.getMethod() == "GET") {
     return new HTTPGetHandler;
-  } else if (request.getURI() == "/form") {
+  } else if (uri.getPath() == "/form") {
     return new HTTPFormHandler;
-  } else if (request.getURI() == "/json") {
+  } else if (uri.getPath() == "/json") {
     return new HTTPJsonHandler;
+  } else if (uri.getPath() == "/octet_stream") {
+    return new HttpStreamHandler;
   } else
     return new DefaultHandler;
 }
