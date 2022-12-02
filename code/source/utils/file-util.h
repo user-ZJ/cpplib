@@ -18,7 +18,7 @@ namespace BASE_NAMESPACE {
 inline std::vector<char> file_to_buff(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary | std::ios::ate);
   if (!in.good()) {
-    LOG(ERROR) << "file not exist," << std::string(path);
+    LOG(ERROR) << "file not exist:"<<std::string(path);
     return {};
   }
   long size = in.tellg();
@@ -38,7 +38,7 @@ inline std::stringstream file_to_ss(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary);
   std::stringstream buffer;
   if (!in.good()) {
-    LOG(ERROR) << "file not exist," << std::string(path);
+    LOG(ERROR) << "file not exist:"<<std::string(path);
     return buffer;
   }
   buffer << in.rdbuf();
