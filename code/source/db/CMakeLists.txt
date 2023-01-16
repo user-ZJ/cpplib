@@ -11,6 +11,6 @@ include_directories(
 # 		)
 
 
-add_library(dbwrapper STATIC RedisWrapper.cpp MongoDBWrapper.cpp)
-target_link_libraries(dbwrapper PocoRedis PocoMongoDB PocoNet PocoFoundation utils)
+add_library(dbwrapper STATIC RedisWrapper.cpp MongoDBWrapper.cpp MYSQLWrapper.cpp)
+target_link_libraries(dbwrapper PocoRedis PocoMongoDB PocoDataMySQL PocoData PocoNet PocoFoundation mysqlclient utils)
 

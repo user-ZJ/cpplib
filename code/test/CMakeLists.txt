@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(test)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 
 include_directories(
@@ -20,7 +20,7 @@ target_link_libraries(ctensor_test utils)
 
 
 add_executable(audio_test audio_test.cpp)
-target_link_libraries(audio_test opuswrapper sox vadwrapper utils)
+target_link_libraries(audio_test opuswrapper sox sonic vadwrapper utils)
 
 add_executable(redis_test redis_test.cpp)
 target_link_libraries(redis_test dbwrapper)
@@ -70,3 +70,10 @@ target_link_libraries(omp_test utils)
 
 add_executable(fvad_test fvad_test.cpp)
 target_link_libraries(fvad_test vadwrapper sox utils)
+
+add_executable(mysql_test mysql_test.cpp)
+target_link_libraries(mysql_test dbwrapper glog gflags)
+
+
+add_executable(just_test just_test.cpp)
+target_link_libraries(just_test utils)

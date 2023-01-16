@@ -4,11 +4,12 @@
 #include <vector>
 #include <limits>
 #include "vad/FVadWrapper.h"
-#include "utils/sox-util.h"
+#include "utils/audio-util.h"
 #include "utils/file-util.h"
 #include "utils/logging.h"
 #include "utils/flags.h"
 #include "opus/OpusWrapper.h"
+
 
 
 using namespace BASE_NAMESPACE;
@@ -20,6 +21,7 @@ int main(int argc, char *argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);  //初始化 glog
   google::SetStderrLogging(google::GLOG_ERROR);
+  google::InstallFailureSignalHandler();
   if (argc < 2) {
     LOG(INFO) << "usage: audio_test audio_path" << std::endl;
     exit(1);
@@ -39,6 +41,9 @@ int main(int argc, char *argv[]) {
   auto wav_buff = SoxUtil::instance().Mp3ToWav(mp3);
   write_to_file("out1.wav",wav_buff);
 
+  auto sonic_out = SonicUtil::process(info,data,1.5,0.5);
+  SoxUtil::instance().Write2File(info,sonic_out,"sonic_out.wav");
+
 
   std::vector<unsigned char> opus_buff;
   res = OpusEncode(data,info.sample_rate,opus_buff);
@@ -47,6 +52,4 @@ int main(int argc, char *argv[]) {
   // res = OpusDecode(opus_buff,info.sample_rate,opus_decoded);
   // LOG(INFO)<<"opus_decoded:"<<opus_decoded.size();
   // SoxUtil::instance().Write2File(info,opus_decoded,"opus_decoded.wav");
-  
-  return 0;
 }

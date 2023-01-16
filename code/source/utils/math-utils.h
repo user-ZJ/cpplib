@@ -1,6 +1,8 @@
 #pragma once
 #include <cmath>
 
+namespace BASE_NAMESPACE {
+
 inline double Log(double x) { return log(x); }                                                                                                                                                        
 inline float Log(float x) { return logf(x); }
 
@@ -104,5 +106,39 @@ inline float RandGauss(struct RandomState *state = NULL) {
                             cosf(2 * M_PI * RandUniform(state)));
 }
 
+inline float cosine_similarity_vectors(const std::vector<float> &A, const std::vector<float> &B)
+{
+    double mul = 0.0;
+    double d_a = 0.0;
+    double d_b = 0.0 ;
 
+    if (A.size() != B.size())
+    {
+        return 0.0;
+    }
+
+    // Prevent Division by zero
+    if (A.size() < 1)
+    {
+        return 0.0;
+    }
+
+    auto B_iter = B.begin();
+    auto A_iter = A.begin();
+    for( ; A_iter != A.end(); A_iter++ , B_iter++ )
+    {
+        mul += *A_iter * *B_iter;
+        d_a += *A_iter * *A_iter;
+        d_b += *B_iter * *B_iter;
+    }
+
+    if (d_a == 0.0f || d_b == 0.0f)
+    {
+        return 0.0;
+    }
+
+    return mul / (std::sqrt(d_a) * std::sqrt(d_b));
+}
+
+}
 

@@ -22,6 +22,8 @@
 #include <utility>
 #include <vector>
 
+namespace BASE_NAMESPACE {
+
 template <typename T>
 class BlockingQueue {
  public:
@@ -128,6 +130,6 @@ class BlockingQueue {
 
 };
 
-
+}
 
 #endif  // UTILS_BLOCKING_QUEUE_H_

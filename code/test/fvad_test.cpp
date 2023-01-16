@@ -4,7 +4,7 @@
 #include <vector>
 #include <limits>
 #include "vad/FVadWrapper.h"
-#include "utils/sox-util.h"
+#include "utils/audio-util.h"
 #include "utils/file-util.h"
 #include "utils/logging.h"
 #include "utils/flags.h"
