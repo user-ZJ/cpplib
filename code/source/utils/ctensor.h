@@ -54,7 +54,7 @@ class CTensor {
   uint64_t byteSize() const;
   std::vector<T> vector();
   // dump data to file,only for debug
-  void dump2File(const char *filename);
+  void dump2File(const char *filename) const;
 
  private:
   std::shared_ptr<T> data_;
@@ -240,7 +240,7 @@ std::vector<T> CTensor<T, I>::vector() {
   return out;
 }
 template <typename T, typename I>
-void CTensor<T, I>::dump2File(const char *filename) {
+void CTensor<T, I>::dump2File(const char *filename) const{
   std::ofstream out(filename);
   if (out.is_open()) {
     // shapes
