@@ -38,8 +38,14 @@ class MYSQLWrapper {
  public:
   static MYSQLWrapper &instance();
   void dbInfo(Session session);
-  int connect(const std::string &host, int port, const std::string &database, const std::string &user,
-              const std::string &password);
+  int connect();
+  void test();
+
+  struct Person{
+    std::string name;
+    std::string address;
+    int age;
+  };
 
  private:
   MYSQLWrapper();

@@ -24,26 +24,7 @@ using Poco::NamedTuple;
 
 
 
-int testconnect(const std::string &host, int port,
-                          const std::string &database, const std::string &user,
-                          const std::string &password) {
 
-  std::string dbConnString =
-      "host=" + host + ";port=" + std::to_string(port) + ";user=" + user +
-      ";password=" + password + ";db=" + database +
-      ";compress=true;auto-reconnect=true;secure-auth=true;protocol=tcp";
-//   dbConnString = "host=10.12.51.68;port=3306;user=root;password=root;compress=true;auto-reconnect=true;protocol=tcp";
-  LOG(INFO) << "dbConnString:" << dbConnString;
-  try {
-    std::string key = "mysql";
-    auto  session=new Session(key, dbConnString);
-  } catch (ConnectionFailedException &ex) {
-    LOG(ERROR) << ex.displayText();
-  } catch (NotFoundException &ex) {
-    LOG(ERROR) << ex.displayText();
-  }
-  return 0;
-}
 
 
 using namespace BASE_NAMESPACE;
@@ -56,7 +37,8 @@ int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]);  //初始化 glog
   google::SetStderrLogging(google::GLOG_ERROR);
   
-  MYSQLWrapper::instance().connect("10.12.51.68",3306,"voice_print","root","root");
+  MYSQLWrapper::instance().connect();
+  MYSQLWrapper::instance().test();
   
   return 0;
 }
