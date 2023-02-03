@@ -34,12 +34,12 @@ int main(int argc, char *argv[]) {
   res = SoxUtil::instance().GetData(argv[1],data);
   LOG(INFO)<<"size:"<<data.size()<<std::endl;
   auto wav = SoxUtil::instance().ProcessWav(info,data,24000,/*volume*/1.0,/*speed*/0.5);
-  write_to_file("out.wav",wav);
+  writeBinaryFile("out.wav",wav);
   auto mp3 = SoxUtil::instance().Wav2Mp3(wav);
-  write_to_file("out.mp3",mp3);
+  writeBinaryFile("out.mp3",mp3);
 
   auto wav_buff = SoxUtil::instance().Mp3ToWav(mp3);
-  write_to_file("out1.wav",wav_buff);
+  writeBinaryFile("out1.wav",wav_buff);
 
   auto sonic_out = SonicUtil::process(info,data,1.5,0.5);
   SoxUtil::instance().Write2File(info,sonic_out,"sonic_out.wav");

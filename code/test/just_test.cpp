@@ -9,37 +9,98 @@
 #include <type_traits>
 #include <vector>
 
-class Target {
+template <typename Comparable>
+class BinaryHeap {
  public:
-  virtual void Request() {
-    std::cout << "普通请求" << std::endl;
+  explicit BinaryHeap(int capacity = 100);
+  explicit BinaryHeap(const std::vector<Comparable> &items);
+  bool isEmpty() const {
+    return currentSize == 0;
   }
-  virtual ~Target() = default;
-};
-
-class Adaptee {
- public:
-  void SpecificRequest() {
-    std::cout << "特殊请求" << std::endl;
+  const Comparable &findMin() const {
+    return array[currentSize];
   }
-};
-
-class Adapter : public Target {
- public:
-  Adapter(Adaptee *ad){
-    adaptee = ad;
-  }
-  virtual void Request() override{
-    adaptee->SpecificRequest();
+  void insert(const Comparable &x);
+  void deleteMin();
+  // 最小值保存到minItem，并删除最小值
+  void deleteMin(Comparable &minItem);
+  void makeEmpty() {
+    currentSize = 0;
   }
 
  private:
-  Adaptee *adaptee;
+  int currentSize;
+  std::vector<Comparable> array;
+  void buildHeap();
+  void percolateDown(int hole);
 };
 
+template <typename Comparable>
+BinaryHeap<Comparable>::BinaryHeap(int capacity) {
+  currentSize = 0;
+  array.resize(capacity);
+}
+
+template <typename Comparable>
+BinaryHeap<Comparable>::BinaryHeap(const std::vector<Comparable> &items) {
+  currentSize = items.size();
+  array.resize(items.size()+100);
+  for(auto &cmp:items){
+    array[++currentSize] = cmp;
+  }
+  buildHeap();
+}
+
+template <typename Comparable>
+void BinaryHeap<Comparable>::insert(const Comparable &x) {
+  if (currentSize == array.size() - 1) array.resize(array.size() * 2);
+  // percolate up
+  int hole = ++currentSize;
+  for (; hole > 1 && x < array[hole / 2]; hole /= 2) {
+    array[hole] = array[hole / 2];
+  }
+  array[hole] = x;
+}
+
+template <typename Comparable>
+void BinaryHeap<Comparable>::deleteMin() {
+  if (isEmpty()) return;
+  array[1] = array(currentSize--);
+  percolateDown(1);
+}
+
+template <typename Comparable>
+void BinaryHeap<Comparable>::deleteMin(Comparable &minItem) {
+  if (isEmpty()) return;
+  minItem = array[1];
+  array[1] = array(currentSize--);
+  percolateDown(1);
+}
+
+template <typename Comparable>
+void BinaryHeap<Comparable>::percolateDown(int hole) {
+  int child;
+  Comparable tmp = array[hole];
+  for (; hole * 2 < currentSize; hole = child) {
+    child = hole * 2;
+    if (child != currentSize && array[child] > array[child + 1]) { child++; }
+    if (array[child] < tmp) {
+      array[hole] = array[child];
+    } else {
+      break;
+    }
+  }
+  array[hole] = tmp;
+}
+
+template <typename Comparable>
+void BinaryHeap<Comparable>::buildHeap(){
+  for(int i=currentSize/2;i>=1;i--)
+    percolateDown(i);
+}
+
 int main(int argc, char *argv[]) {
-  Adaptee *adaptee = new Adaptee(); 
-  Target *target = new Adapter(adaptee);
-  target->Request();
+  std::vector<int> arr{5,8,1,6,2,5};
+  BinaryHeap hp(arr);
   return 0;
 }

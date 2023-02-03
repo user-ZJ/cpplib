@@ -91,7 +91,7 @@ void form() {
 
     std::string teststr = "测试文件文本";
     std::vector<char> buf(teststr.begin(), teststr.end());
-    BASE_NAMESPACE::write_to_file("text.txt", buf);
+    BASE_NAMESPACE::writeBinaryFile("text.txt", buf);
 
     Poco::Net::HTMLForm form;
     form.setEncoding(Poco::Net::HTMLForm::ENCODING_MULTIPART);  //没有文件时设置为ENCODING_URL

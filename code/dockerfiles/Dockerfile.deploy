@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get -y install software-properties-common && \
     add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt-get update && \
-    apt-get -y --no-install-recommends install locales gcc-10 g++-10 libsox-dev libsonic-dev vim less tzdata && \
+    apt-get -y --no-install-recommends install locales gcc-10 g++-10 libsox-dev libsonic-dev pkg-config vim less tzdata && \
     update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10 && \
     rm /etc/localtime && ln -snf /usr/share/zoneinfo/$TimeZone /etc/localtime && \
     apt-get clean

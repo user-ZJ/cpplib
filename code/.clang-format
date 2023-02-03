@@ -28,10 +28,10 @@ AlignTrailingComments: true
 
 # 如果函数调用或带括号的初始化列表不适合全部在一行时
 # 允许将所有参数放到下一行，即使BinPackArguments为false
-AllowAllArgumentsOnNextLine: true
+# AllowAllArgumentsOnNextLine: true
 
 # 允许构造函数的初始化参数放在下一行
-AllowAllConstructorInitializersOnNextLine: true
+# AllowAllConstructorInitializersOnNextLine: true
 
 # 允许函数声明的所有参数在放在下一行
 AllowAllParametersOfDeclarationOnNextLine: true

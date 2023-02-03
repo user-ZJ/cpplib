@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     LOG(ERROR)<<"unsupport command:"<<command;
     return 1;
   }
-  write_to_file(argv[3],out_str);
+  writeBinaryFile(argv[3],out_str);
 
   return 0;
 }
