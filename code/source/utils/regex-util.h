@@ -31,6 +31,7 @@ static const std::string ZHPunct =
 static const std::string ENPunct =
   R"([\.\?!,;:'"\(\)\[\]\{\}<>/\-\\$@`~#%^\*_\+=\|])";         // 英文标点.?!,;:'"(){}<>/-\$@`~#%^+=|
 static const std::string ZHWord = R"([\u4e00-\u9fa5])";        // 中文汉字
+static const std::string ZHTWord = R"([\u3400-\u4dbf])";        // 中文繁体
 static const std::string ENWord = R"([a-zA-Z][A-Za-z_\-']*)";  // 英文单词
 
 inline xpressive::wsregex to_wregex(const std::wstring &patt) {
