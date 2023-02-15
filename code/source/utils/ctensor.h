@@ -37,6 +37,10 @@ class CTensor {
   CTensor &operator=(const CTensor &t);
   // 移动赋值构造函数
   CTensor &operator=(CTensor &&t) noexcept;
+
+  template <typename TS, typename IS>
+  CTensor &copyFrom(const CTensor<TS, IS> &t);
+
   ~CTensor();
   // 调整tensor大小，会重新分配内存，保证内存连续
   void resize(const std::vector<I> shapes);
@@ -151,6 +155,22 @@ CTensor<T, I> &CTensor<T, I>::operator=(CTensor &&t) noexcept {
 }
 
 template <typename T, typename I>
+template <typename TS, typename IS>
+CTensor<T, I> &CTensor<T, I>::copyFrom(const CTensor<TS, IS> &t) {
+  shapes_.resize(t.shapes().size());
+  for (int i = 0; i < t.shapes().size(); i++)
+    shapes_[i] = static_cast<I>(t.shapes()[i]);
+  strides_.resize(t.strides().size());
+  for (int i = 0; i < t.strides().size(); i++)
+    strides_[i] = static_cast<I>(t.strides()[i]);
+  size_ = t.size();
+  data_.reset(new T[size_]);
+  for (int i = 0; i < size(); i++)
+    *(data_.get() + i) = static_cast<T>(*(t.data() + i));
+  return *this;
+}
+
+template <typename T, typename I>
 CTensor<T, I>::~CTensor() {}
 // 调整tensor大小，会重新分配内存，保证内存连续
 template <typename T, typename I>
@@ -240,7 +260,7 @@ std::vector<T> CTensor<T, I>::vector() {
   return out;
 }
 template <typename T, typename I>
-void CTensor<T, I>::dump2File(const char *filename) const{
+void CTensor<T, I>::dump2File(const char *filename) const {
   std::ofstream out(filename);
   if (out.is_open()) {
     // shapes

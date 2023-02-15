@@ -29,4 +29,14 @@ int main(int argc, char *argv[]) {
   std::cout<<"size:"<<t2.size()<<std::endl;
   std::cout<<"byte size:"<<t2.byteSize()<<std::endl;
   std::cout<<"ctensor at:"<<t2.at({1,2,3,4})<<std::endl;
+  t2.at({0,0,0,0}) = 1.6;
+  t2.at({0,0,0,2}) = 2.999999999999999999999999999999999;
+  t2.at({0,0,0,3}) = 2.4;
+
+  CTensorii t3;
+  t3.copyFrom(t2);
+
+  t2.dump2File("t2.txt");
+  t3.dump2File("t3.txt");
+
 }
