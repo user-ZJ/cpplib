@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+
+project(ModernCpp)
+
+set(CMAKE_CXX_STANDARD 20)
+
+add_subdirectory(1_module1)
+add_subdirectory(2_module2)
+add_subdirectory(3_PImpl)
+add_subdirectory(4_module3)
+add_subdirectory(5_unique_ptr)
+add_subdirectory(6_shared_ptr)
+add_subdirectory(7_newdelete)
+add_subdirectory(8_lambda)
+add_subdirectory(9_template)
+add_subdirectory(10_type)
+add_subdirectory(11_policy_traits)
+add_subdirectory(12_concept)
+add_subdirectory(13_oo_design)
+add_subdirectory(14_compile)
+add_subdirectory(15_coroutine)
