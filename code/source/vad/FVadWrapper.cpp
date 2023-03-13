@@ -10,23 +10,26 @@
 #include "utils/string-util.h"
 #include <numeric>
 
+#define MAX_DURATION 180  //使用vad断句，每个句子最长180s
+
 namespace BASE_NAMESPACE {
 
-int FVadWrapper::Init(const std::string &path) {
+struct vad_deleter {
+  void operator()(Fvad *vad) {
+    if (vad) fvad_free(vad);
+  }
+};
+
+FVadWrapper::FVadWrapper() {
   mode = 1;
   frame_ms = 20;  // duration is 20ms
   num_padding = 10;
-  is_init = false;
-  vad.reset(fvad_new(), vad_deleter());
-  if (vad && fvad_set_mode(vad.get(), mode) == 0) {
-    is_init = true;
-    return 0;
-  } else
-    return -1;
 }
 
 std::vector<std::pair<size_t, size_t>> FVadWrapper::SplitAudio(const std::vector<int16_t> &audio, int sample_rate) {
   LOG(INFO) << "fvad recive " << audio.size() << " samples with sample_rate " << sample_rate;
+  std::shared_ptr<Fvad> vad;
+  vad.reset(fvad_new(), vad_deleter());
   std::vector<std::pair<size_t, size_t>> results;
   if (!is_init) {
     LOG(ERROR) << "error! please init FVadWrapper first";
@@ -94,6 +97,8 @@ std::vector<std::pair<size_t, size_t>> FVadWrapper::SplitAudio(const std::vector
 std::vector<int16_t> FVadWrapper::RemoveSilence(const std::vector<int16_t> &audio, int sample_rate) {
   std::vector<int16_t> results;
   LOG(INFO) << "fvad recive " << audio.size() << " samples with sample_rate " << sample_rate;
+  std::shared_ptr<Fvad> vad;
+  vad.reset(fvad_new(), vad_deleter());
   if (!is_init) {
     LOG(ERROR) << "error! please init FVadWrapper first";
     return results;
@@ -112,10 +117,8 @@ std::vector<int16_t> FVadWrapper::RemoveSilence(const std::vector<int16_t> &audi
     is_voice.push_back(vadres);
     offset += framelen;
   }
-  LOG(INFO)<<printCollection(is_voice);
   // 使用滑动窗口对静音结果做一次平滑
   smooth_window(is_voice);
-  LOG(INFO)<<printCollection(is_voice);
   for(long i=0;i<is_voice.size();i++){
     if(is_voice[i])
       results.insert(results.end(),audio.begin()+framelen*i,audio.begin()+framelen*(i+1));

@@ -54,13 +54,14 @@ option(USE_MNN "whether to build MNN" OFF)
 option(USE_TFLITE "whether to build tflite" OFF)
 option(USE_ONNXRUNTIME "whether to build ONNXRUNTIME" ON)
 # 设置所有编译出的库为静态库
-set(BUILD_SHARED_LIBS OFF)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "global variable")
 
 include(FetchContent)
 include(ExternalProject)
 set(FETCHCONTENT_QUIET off)
-# set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/depends)
-set(FETCHCONTENT_BASE_DIR $ENV{HOME}/fc_base)
+# set(fc_base $ENV{HOME}/fc_base CACHE STRING "global variable")
+set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fc_base)
+set(FETCHCONTENT_BASE_DIR ${fc_base})
 #set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/fc_base)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -79,6 +80,7 @@ include_directories(
     # 3rdparty/glog/include
     3rdparty/poco/include 
     3rdparty/fvad/include
+    3rdparty/rnnoise/include
     3rdparty/opus/include  
 )
 link_directories(
@@ -86,6 +88,7 @@ link_directories(
     # 3rdparty/glog/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/poco/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/fvad/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
+    3rdparty/rnnoise/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/opus/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
 )
 
@@ -157,6 +160,7 @@ add_subdirectory(source/web)
 # add_subdirectory(source/grpc)
 add_subdirectory(source/db)
 add_subdirectory(source/vad)
+add_subdirectory(source/remove_noise)
 add_subdirectory(source/opus)
 add_subdirectory(source/crypto)
 add_subdirectory(source/bin)

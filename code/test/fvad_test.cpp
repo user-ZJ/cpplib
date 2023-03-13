@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
   }
   int res;
   FVadWrapper fvad;
-  fvad.Init("");
   WavInfo info;
   res = SoxUtil::instance().GetWavInfo(argv[1],info);
   LOG(INFO)<<info.sample_rate<<" "<<info.channel<<" "<<info.sample_num<<" "<<info.precision<<std::endl;

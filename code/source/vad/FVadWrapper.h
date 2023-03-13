@@ -6,23 +6,17 @@
  * 使用fvad作为静音检测工具
  */
 #pragma once
-#include "IVad.h"
 #include <fvad.h>
 #include <memory>
-
+#include <vector>
 
 namespace BASE_NAMESPACE {
 
-struct vad_deleter {
-  void operator()(Fvad *vad) {
-    if (vad) fvad_free(vad);
-  }
-};
 
-class FVadWrapper : public IVad {
+
+class FVadWrapper {
  public:
-  // 初始化Vad.
-  int Init(const std::string &path);
+  FVadWrapper();
   // 切分语音为语音段
   // 返回的语音区间为左闭右开的集合,如[0,10)
   std::vector<std::pair<size_t, size_t>> SplitAudio(const std::vector<int16_t> &audio, int sample_rate);
@@ -31,7 +25,6 @@ class FVadWrapper : public IVad {
 
  private:
   void smooth_window(std::vector<int> &is_voice);
-  std::shared_ptr<Fvad> vad;
   int mode;         // vad模式
   int frame_ms;     // 每帧长度
   int num_padding;  // 平滑窗口帧数

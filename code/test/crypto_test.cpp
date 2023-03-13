@@ -1,109 +1,38 @@
-#include "cryptlib.h"
-#include "rijndael.h"
-#include "modes.h"
-#include "files.h"
-#include "osrng.h"
-#include "hex.h"
-#include "utils/base64-util.h"
-
+#include "crypto/RSACryptoWrapper.h"
+#include "crypto/AESCryptoWrapper.h"
+#include "utils/logging.h"
+#include "utils/flags.h"
 #include <iostream>
 #include <string>
+#include <tuple>
 
-// 参考：https://cryptopp.com/wiki/Advanced_Encryption_Standard
 
 using namespace BASE_NAMESPACE;
 using namespace std;
 
-int main(int argc, char* argv[])
-{
-    using namespace CryptoPP;
+int main(int argc, char *argv[]) {
+  FLAGS_log_dir = ".";
+  google::EnableLogCleaner(30);  // keep your logs for 30 days
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  google::InitGoogleLogging(argv[0]);  //初始化 glog
+  google::SetStderrLogging(google::GLOG_ERROR);
+  std::string msg("Test this sign message");
+  std::string privKey, pubKey;
+  std::tie(privKey, pubKey) = GenRSAKey();
+  std::string hexsign = SignSha256(msg, pubKey,privKey);
+  LOG(INFO) << "hexsign:" << hexsign;
+  bool verify = VerifySha256(msg, hexsign, pubKey);
+  LOG(INFO) << "verify:" << verify;
 
-    std::string mkey = "38Wyyw/x08EOErI7Ru5nhw==";
-    std::string miv = "irGysWnGg/MoWkCq+jYOYQ==";
+  std::string enc = RSACipherEncrypt(msg,pubKey);
+  std::string dec = RSACipherDecrypt(enc,privKey);
+  LOG(INFO)<<"dec:"<<dec;
 
-    AutoSeededRandomPool prng;
-    // HexEncoder encoder(new FileSink(std::cout));
-
-    SecByteBlock key(AES::DEFAULT_KEYLENGTH);
-    SecByteBlock iv(AES::BLOCKSIZE);
-
-    // prng.GenerateBlock(key, key.size());
-    // prng.GenerateBlock(iv, iv.size());
-    memcpy(key.data(),base64_decode(mkey).c_str(),key.size());
-    memcpy(iv.data(),base64_decode(miv).c_str(),iv.size());
-
-    // for(int i=0;i<key.size();i++)
-    //     std::cout<<(int)*(key.data()+i)<<std::endl;
-
-    // std::string skey;
-    // HexEncoder sencoder(new StringSink(skey));
-    // sencoder.Put(key, key.size());
-    // std::cout<<"skey"<<skey<<std::endl;
-
-    std::string plain = "CBC Mode Test";
-    std::string cipher, recovered;
-
-    std::cout << "plain text: " << plain << std::endl;
-
-    /*********************************\
-    \*********************************/
-
-    try
-    {
-        CBC_Mode< AES >::Encryption e;
-        e.SetKeyWithIV(key, key.size(), iv);
-
-        StringSource s(plain, true, 
-            new StreamTransformationFilter(e,
-                new StringSink(cipher)
-            ) // StreamTransformationFilter
-        ); // StringSource
-    }
-    catch(const Exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-        exit(1);
-    }
-
-    /*********************************\
-    \*********************************/
-
-    std::cout << "key: "<<base64_encode(key, key.size())<<std::endl;
-    // encoder.Put(key, key.size());
-    // encoder.MessageEnd();
-    std::cout << std::endl;
-
-    std::cout << "iv: "<<base64_encode(iv, iv.size())<<std::endl;
-    // encoder.Put(iv, iv.size());
-    // encoder.MessageEnd();
-    std::cout << std::endl;
-
-    std::cout << "cipher text: "<<base64_encode((const byte*)&cipher[0], cipher.size());
-    // encoder.Put((const byte*)&cipher[0], cipher.size());
-    // encoder.MessageEnd();
-    std::cout << std::endl;
-    
-    /*********************************\
-    \*********************************/
-
-    try
-    {
-        CBC_Mode< AES >::Decryption d;
-        d.SetKeyWithIV(key, key.size(), iv);
-
-        StringSource s(cipher, true, 
-            new StreamTransformationFilter(d,
-                new StringSink(recovered)
-            ) // StreamTransformationFilter
-        ); // StringSource
-
-        std::cout << "recovered text: " << recovered << std::endl;
-    }
-    catch(const Exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-        exit(1);
-    }
-
-    return 0;
+  ////////////////////////////////////////
+  std::string hexkey,hexiv;
+  std::tie(hexkey,hexiv) = GenAESKey();
+  enc = AESCipherEncrypt(msg,hexkey,hexiv);
+  dec = AESCipherDecrypt(enc,hexkey,hexiv);
+  LOG(INFO)<<"dec:"<<dec;
+  return 0;
 }

@@ -35,18 +35,24 @@ class SoxUtil {
   int GetWavInfo(const std::vector<char> &buff, WavInfo &info);
   // 获取音频数据，成功返回0
   int GetData(const std::string &filename, std::vector<int16_t> &out);
+  int GetData(const std::string &filename, std::vector<float> &out);
   int GetData(const std::string &filename, std::vector<double> &out);
   int GetData(const std::vector<char> &buff, std::vector<int16_t> &out);
+  int GetData(const std::vector<char> &buff, std::vector<float> &out);
   int GetData(const std::vector<char> &buff, std::vector<double> &out);
   // 将音频写入buff
   std::vector<char> Write2Buff(const WavInfo &info, const std::vector<sox_sample_t> &data);
+  std::vector<char> Write2Buff(const WavInfo &info, const std::vector<float> &data);
   std::vector<char> Write2Buff(const WavInfo &info, const std::vector<double> &data);
   std::vector<char> Write2Buff(const WavInfo &info, const std::vector<int16_t> &data);
   // 将音频写入文件
   int Write2File(const WavInfo &info, const std::vector<sox_sample_t> &data, const char *filepath);
+  int Write2File(const WavInfo &info, const std::vector<float> &data, const char *filepath);
   int Write2File(const WavInfo &info, const std::vector<double> &data, const char *filepath);
   int Write2File(const WavInfo &info, const std::vector<int16_t> &data, const char *filepath);
   // 处理音频，采样率，语速，音量
+  std::vector<char> ProcessWav(const WavInfo &info, const std::vector<float> &data, const int sample_rate,
+                               const float volume, const float speed);
   std::vector<char> ProcessWav(const WavInfo &info, const std::vector<double> &data, const int sample_rate,
                                const float volume, const float speed);
   std::vector<char> ProcessWav(const WavInfo &info, const std::vector<int16_t> &data, const int sample_rate,

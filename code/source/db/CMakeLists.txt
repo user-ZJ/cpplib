@@ -9,8 +9,8 @@ include_directories(
 # link_directories(
 # 	/home/dmai/code/poco-1.11.1-all/build/lib
 # 		)
+aux_source_directory(. SOURCE_LIST)
 
-
-add_library(dbwrapper STATIC RedisWrapper.cpp MongoDBWrapper.cpp MYSQLWrapper.cpp)
+add_library(dbwrapper STATIC ${SOURCE_LIST})
 target_link_libraries(dbwrapper PocoRedis PocoMongoDB PocoDataMySQL PocoData PocoNet PocoFoundation mysqlclient utils)
 

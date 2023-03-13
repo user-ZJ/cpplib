@@ -37,8 +37,7 @@ int main(int argc, char *argv[]) {
   google::InitGoogleLogging(argv[0]);  //初始化 glog
   google::SetStderrLogging(google::GLOG_ERROR);
   
-  MYSQLWrapper::instance().connect();
-  MYSQLWrapper::instance().test();
+  MYSQLWrapper::instance();
   
   return 0;
 }

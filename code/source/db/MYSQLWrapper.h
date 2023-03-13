@@ -1,4 +1,3 @@
-// 参考https://docs.pocoproject.org/current/00200-DataUserManual.html
 // sudo apt install libmysqlclient-dev
 #include "Poco/Data/DataException.h"
 #include "Poco/Data/LOB.h"
@@ -14,6 +13,7 @@
 #include "Poco/Nullable.h"
 #include "Poco/String.h"
 #include "Poco/Tuple.h"
+#include "VPFeatHandler.h"
 #include <iostream>
 
 using namespace Poco::Data;
@@ -37,15 +37,16 @@ namespace BASE_NAMESPACE {
 class MYSQLWrapper {
  public:
   static MYSQLWrapper &instance();
-  void dbInfo(Session session);
-  int connect();
-  void test();
-
-  struct Person{
-    std::string name;
-    std::string address;
-    int age;
-  };
+  void dbInfo(Session &&session);
+  int connect(const std::string &host, int port, const std::string &database, const std::string &user,
+              const std::string &password);
+  std::set<std::string> getTables();
+  void dropTable(const std::string &tableName);
+  void createVPTable(const std::string &tableName);
+  int insertFeat(const std::string &tableName, const VPFeat &vpfeat);
+  int updateFeat(const std::string &tableName, const VPFeat &vpfeat);
+  VPFeat queryFeat(const std::string &tableName, const std::string &spk_id);
+  void delFeat(const std::string &tableName, const std::string &spk_id);
 
  private:
   MYSQLWrapper();

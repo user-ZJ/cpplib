@@ -35,11 +35,8 @@ add_executable(threadpool_test threadpool_test.cpp)
 target_link_libraries(threadpool_test utils pthread)
 
 
-# add_executable(crypto_test crypto_test.cpp)
-# target_link_libraries(crypto_test cryptopp.a pthread)
-
-add_executable(crypto_test1 crypto_test1.cpp)
-target_link_libraries(crypto_test1 crypto_wrapper)
+add_executable(crypto_test crypto_test.cpp)
+target_link_libraries(crypto_test crypto_wrapper)
 
 add_executable(string_util_test string_util_test.cpp)
 target_link_libraries(string_util_test utils)
@@ -70,6 +67,9 @@ target_link_libraries(omp_test utils)
 
 add_executable(fvad_test fvad_test.cpp)
 target_link_libraries(fvad_test vadwrapper sox utils)
+
+add_executable(rnnoise_test rnnoise_test.cpp)
+target_link_libraries(rnnoise_test  remove_noise sox utils)
 
 add_executable(mysql_test mysql_test.cpp)
 target_link_libraries(mysql_test dbwrapper glog gflags)

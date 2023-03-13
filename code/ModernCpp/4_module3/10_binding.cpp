@@ -19,7 +19,7 @@ f2(w1);//OK
 // f3(w1);//ERROR!
 // f4(w1);//ERROR!
 
-const Widget w2;
+const Widget w2; 
 // f1(w2);//ERROR
 f2(w2);//OK
 // f3(w2);//ERROR!

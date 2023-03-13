@@ -79,6 +79,14 @@ int SoxUtil::GetData(const std::string &filename, std::vector<int16_t> &out) {
   return 0;
 }
 
+int SoxUtil::GetData(const std::string &filename, std::vector<float> &out){
+  std::vector<double> o;
+  int res = GetData(filename,o);
+  out.resize(o.size());
+  std::copy_n(o.begin(),o.size(),out.begin());
+  return res;
+}
+
 int SoxUtil::GetData(const std::string &filename, std::vector<double> &out) {
   out.clear();
   sox_format_t *in = sox_open_read(filename.c_str(), NULL, NULL, NULL);
@@ -131,6 +139,14 @@ int SoxUtil::GetData(const std::vector<char> &buff, std::vector<int16_t> &out) {
   return 0;
 }
 
+int SoxUtil::GetData(const std::vector<char> &buff, std::vector<float> &out){
+  std::vector<double> o;
+  int res = GetData(buff,o);
+  out.resize(o.size());
+  std::copy_n(o.begin(),o.size(),out.begin());
+  return res;
+}
+
 int SoxUtil::GetData(const std::vector<char> &buff, std::vector<double> &out) {
   out.clear();
   sox_format_t *in = sox_open_mem_read(const_cast<char *>(buff.data()), buff.size(), NULL, NULL, NULL);
@@ -181,6 +197,14 @@ std::vector<char> SoxUtil::Write2Buff(const WavInfo &info, const std::vector<sox
   }
 }
 
+std::vector<char> SoxUtil::Write2Buff(const WavInfo &info, const std::vector<float> &data) {
+  std::vector<sox_sample_t> audio_data(data.size());
+  for (int i = 0; i < data.size(); i++) {
+    audio_data[i] = SOX_SIGNED_16BIT_TO_SAMPLE(data[i] * (std::numeric_limits<int16_t>::max() + 1.0), );
+  }
+  return Write2Buff(info, audio_data);
+}
+
 std::vector<char> SoxUtil::Write2Buff(const WavInfo &info, const std::vector<double> &data) {
   std::vector<sox_sample_t> audio_data(data.size());
   for (int i = 0; i < data.size(); i++) {
@@ -219,6 +243,14 @@ int SoxUtil::Write2File(const WavInfo &info, const std::vector<sox_sample_t> &da
   }
 }
 
+int SoxUtil::Write2File(const WavInfo &info, const std::vector<float> &data, const char *filepath) {
+  std::vector<sox_sample_t> audio_data(data.size());
+  for (int i = 0; i < data.size(); i++) {
+    audio_data[i] = SOX_SIGNED_16BIT_TO_SAMPLE(data[i] * (std::numeric_limits<int16_t>::max() + 1.0), );
+  }
+  return Write2File(info, audio_data, filepath);
+}
+
 int SoxUtil::Write2File(const WavInfo &info, const std::vector<double> &data, const char *filepath) {
   std::vector<sox_sample_t> audio_data(data.size());
   for (int i = 0; i < data.size(); i++) {
@@ -233,6 +265,15 @@ int SoxUtil::Write2File(const WavInfo &info, const std::vector<int16_t> &data, c
     audio_data[i] = SOX_SIGNED_16BIT_TO_SAMPLE(data[i], );
   }
   return Write2File(info, audio_data, filepath);
+}
+
+std::vector<char> SoxUtil::ProcessWav(const WavInfo &info, const std::vector<float> &data, const int sample_rate,
+                                      const float volume, const float speed) {
+  std::vector<sox_sample_t> audio_data(data.size());
+  for (int i = 0; i < data.size(); i++) {
+    audio_data[i] = SOX_SIGNED_16BIT_TO_SAMPLE(data[i] * (std::numeric_limits<int16_t>::max() + 1.0), );
+  }
+  return ProcessWav(info, audio_data, sample_rate, volume, speed);
 }
 
 std::vector<char> SoxUtil::ProcessWav(const WavInfo &info, const std::vector<double> &data, const int sample_rate,

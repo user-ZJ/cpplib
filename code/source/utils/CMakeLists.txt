@@ -11,7 +11,8 @@ include_directories(
 # 		)
 
 
-add_library(utils STATIC audio-util.cpp)
-target_link_libraries(utils glog gflags_nothreads sox sonic pthread)
+add_library(${PROJECT_NAME} STATIC audio-util.cpp)
+target_link_libraries(${PROJECT_NAME} glog gflags_nothreads sox sonic pthread)
 #target_link_libraries(utils glog gflags sox pthread)
+
 

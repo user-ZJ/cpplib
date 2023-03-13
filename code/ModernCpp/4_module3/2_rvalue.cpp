@@ -9,6 +9,7 @@ void process(int& data);
 
 void process(int&& data)
 {
+    // 进函数后data是个左值
     cout<<"right value ref"<<endl;
     process(data); 
 }

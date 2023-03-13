@@ -6,6 +6,12 @@
 
 using namespace BASE_NAMESPACE;
 
+int foo(int i) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "Task " << i << " completed" << std::endl;
+    return i*i;
+}
+
 int main() {
 
   ThreadPool pool(4);
@@ -21,7 +27,16 @@ int main() {
   }
 
   for (auto &&result : results)
-    std::cout << result.get() << ' ';
+    std::cout << result.get() << "\n";
+  std::cout << std::endl;
+
+  results.clear();
+  for (int i = 0; i < 8; ++i) {
+    results.emplace_back(pool.enqueue(foo,i));
+  }
+
+  for (auto &&result : results)
+    std::cout << "result:"<<result.get() << "\n";
   std::cout << std::endl;
 
   return 0;
