@@ -1,120 +1,68 @@
-#include <cassert>
-#include <cstddef>
-#include <cstring>
+#include "utils/AudioFeature.h"
+#include "utils/audio-util.h"
+#include <complex>
 #include <iostream>
-#include <limits>
-#include <memory>
-#include <mutex>
+#include <torch/torch.h>
+#include "utils/logging.h"
+#include "utils/flags.h"
+#include "utils/string-util.h"
+#include <iostream>
 #include <string>
-#include <type_traits>
+#include <cassert>
 #include <vector>
+#include <limits>
+#include "vad/FVadWrapper.h"
+#include "utils/audio-util.h"
+#include "utils/file-util.h"
+#include "utils/logging.h"
+#include "utils/flags.h"
+#include "opus/OpusWrapper.h"
+#include "utils/AudioFeature.h"
+#include "utils/string-util.h"
 
-template <typename Comparable>
-class BinaryHeap {
- public:
-  explicit BinaryHeap(int capacity = 100);
-  explicit BinaryHeap(const std::vector<Comparable> &items);
-  bool isEmpty() const {
-    return currentSize == 0;
-  }
-  const Comparable &findMin() const {
-    return array[currentSize];
-  }
-  void insert(const Comparable &x);
-  void deleteMin();
-  // 最小值保存到minItem，并删除最小值
-  void deleteMin(Comparable &minItem);
-  void makeEmpty() {
-    currentSize = 0;
-  }
-
- private:
-  int currentSize;
-  std::vector<Comparable> array;
-  void buildHeap();
-  void percolateDown(int hole);
-};
-
-template <typename Comparable>
-BinaryHeap<Comparable>::BinaryHeap(int capacity) {
-  currentSize = 0;
-  array.resize(capacity);
-}
-
-template <typename Comparable>
-BinaryHeap<Comparable>::BinaryHeap(const std::vector<Comparable> &items) {
-  currentSize = items.size();
-  array.resize(items.size()+100);
-  for(auto &cmp:items){
-    array[++currentSize] = cmp;
-  }
-  buildHeap();
-}
-
-template <typename Comparable>
-void BinaryHeap<Comparable>::insert(const Comparable &x) {
-  if (currentSize == array.size() - 1) array.resize(array.size() * 2);
-  // percolate up
-  int hole = ++currentSize;
-  for (; hole > 1 && x < array[hole / 2]; hole /= 2) {
-    array[hole] = array[hole / 2];
-  }
-  array[hole] = x;
-}
-
-template <typename Comparable>
-void BinaryHeap<Comparable>::deleteMin() {
-  if (isEmpty()) return;
-  array[1] = array(currentSize--);
-  percolateDown(1);
-}
-
-template <typename Comparable>
-void BinaryHeap<Comparable>::deleteMin(Comparable &minItem) {
-  if (isEmpty()) return;
-  minItem = array[1];
-  array[1] = array(currentSize--);
-  percolateDown(1);
-}
-
-template <typename Comparable>
-void BinaryHeap<Comparable>::percolateDown(int hole) {
-  int child;
-  Comparable tmp = array[hole];
-  for (; hole * 2 < currentSize; hole = child) {
-    child = hole * 2;
-    if (child != currentSize && array[child] > array[child + 1]) { child++; }
-    if (array[child] < tmp) {
-      array[hole] = array[child];
-    } else {
-      break;
-    }
-  }
-  array[hole] = tmp;
-}
-
-template <typename Comparable>
-void BinaryHeap<Comparable>::buildHeap(){
-  for(int i=currentSize/2;i>=1;i--)
-    percolateDown(i);
-}
-
-class Test{};
+using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
-  int i;
-  const std::type_info &info1 = typeid(i);
-  std::cout<<info1.name()<<std::endl;
+  google::EnableLogCleaner(30);  // keep your logs for 30 days
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  google::InitGoogleLogging(argv[0]);  //初始化 glog
+  google::SetStderrLogging(google::GLOG_ERROR);
+  google::InstallFailureSignalHandler();
 
-  double j;
-  const std::type_info &info2 = typeid(j);
-  std::cout<<info2.name()<<std::endl;
 
-  Test t;
-  const std::type_info &info3 = typeid(t);
-  std::cout<<info3.name()<<std::endl;
+  std::vector<float> paded{4., 4., 3., 2., 1., 2., 3., 4., 4., 3., 2., 1., 2., 3., 4., 4.};
 
-  Test *t1;
-  const std::type_info &info4 = typeid(t1);
-  std::cout<<info4.name()<<std::endl;
+  // 输入信号
+  //   torch::Tensor input = torch::rand({1, 1000});
+  torch::Tensor input = torch::from_blob(paded.data(), at::IntArrayRef({1, 16}), torch::kFloat);
+  std::cout << input << std::endl;
+
+  std::vector<float> fwindow{0.5, 0.5, 0.5, 0.5};
+  torch::Tensor window = torch::from_blob(fwindow.data(), at::IntArrayRef({4}), torch::kFloat);
+  std::cout << input << std::endl;
+
+  // 窗口大小
+  int window_size = 4;
+
+  // 窗口类型
+  torch::Tensor window1 = torch::hann_window(400);
+  std::cout << window1 << std::endl;
+
+  // 重叠大小
+  int hop_size = 2;
+
+  // FFT大小
+  int fft_size = 8;
+
+  // 计算STFT
+  torch::Tensor stft = torch::stft(input, fft_size, hop_size, window_size, window, false, false, true);
+  std::cout << stft << std::endl;
+  auto stft_accessor = stft.accessor<c10::complex<float>, 3>();
+  for (int i = 0; i < stft.size(1); i++) {
+    for (int j = 0; j < stft.size(2); j++) {
+      std::cout << stft_accessor[0][i][j].real() << "+" << stft_accessor[0][i][j].imag() << "i ";
+    }
+    std::cout << std::endl;
+  }
+  return 0;
 }

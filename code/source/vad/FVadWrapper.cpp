@@ -31,10 +31,6 @@ std::vector<std::pair<size_t, size_t>> FVadWrapper::SplitAudio(const std::vector
   std::shared_ptr<Fvad> vad;
   vad.reset(fvad_new(), vad_deleter());
   std::vector<std::pair<size_t, size_t>> results;
-  if (!is_init) {
-    LOG(ERROR) << "error! please init FVadWrapper first";
-    return results;
-  }
   if (fvad_set_sample_rate(vad.get(), sample_rate) < 0) {
     LOG(ERROR) << "invalid sample rate:" << sample_rate;
     return results;
@@ -99,10 +95,6 @@ std::vector<int16_t> FVadWrapper::RemoveSilence(const std::vector<int16_t> &audi
   LOG(INFO) << "fvad recive " << audio.size() << " samples with sample_rate " << sample_rate;
   std::shared_ptr<Fvad> vad;
   vad.reset(fvad_new(), vad_deleter());
-  if (!is_init) {
-    LOG(ERROR) << "error! please init FVadWrapper first";
-    return results;
-  }
   if (fvad_set_sample_rate(vad.get(), sample_rate) < 0) {
     LOG(ERROR) << "invalid sample rate:" << sample_rate;
     return results;

@@ -1,2 +1,5 @@
 docs/_build
 docs/.vscode
+.vscode
+build
+code/fc_base

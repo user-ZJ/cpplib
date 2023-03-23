@@ -28,7 +28,6 @@ class FVadWrapper {
   int mode;         // vad模式
   int frame_ms;     // 每帧长度
   int num_padding;  // 平滑窗口帧数
-  bool is_init;
 };
 
 };  // namespace BASE_NAMESPACE

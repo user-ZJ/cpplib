@@ -18,6 +18,7 @@ RUN locale-gen zh_CN && \
 ENV LANG zh_CN.UTF-8
 ENV LC_ALL zh_CN.UTF-8
 ENV LANGUAGE zh_CN.UTF-8
+
 RUN ulimit -c unlimited
 RUN echo "kernel.core_pattern = core.%e.%p.%t">/etc/sysctl.conf
 RUN sysctl -p

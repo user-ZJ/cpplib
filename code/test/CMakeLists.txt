@@ -6,11 +6,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 include_directories(
 	../source
+	/data/code/libtorch/include/
+	/data/code/libtorch/include/torch/csrc/api/include
 		 )
 link_directories(
+	/data/code/libtorch/lib/
 		)
 
-
+set(Torch_DIR /data/code/libtorch/share/cmake/Torch)
+find_package(Torch REQUIRED)
 
 add_executable(path_util_test path_test.cpp)
 target_link_libraries(path_util_test utils)
@@ -20,7 +24,7 @@ target_link_libraries(ctensor_test utils)
 
 
 add_executable(audio_test audio_test.cpp)
-target_link_libraries(audio_test opuswrapper sox sonic vadwrapper utils)
+target_link_libraries(audio_test opuswrapper sox sonic vadwrapper utils glog gflags ${TORCH_LIBRARIES})
 
 add_executable(redis_test redis_test.cpp)
 target_link_libraries(redis_test dbwrapper)
@@ -75,5 +79,6 @@ add_executable(mysql_test mysql_test.cpp)
 target_link_libraries(mysql_test dbwrapper glog gflags)
 
 
+message(STATUS "libtorch libs:" ${TORCH_LIBRARIES})
 add_executable(just_test just_test.cpp)
-target_link_libraries(just_test utils)
+target_link_libraries(just_test opuswrapper sox sonic vadwrapper utils ${TORCH_LIBRARIES})

@@ -9,7 +9,9 @@
 #include "utils/logging.h"
 #include "utils/flags.h"
 #include "opus/OpusWrapper.h"
-
+#include "utils/AudioFeature.h"
+#include "utils/string-util.h"
+#include <torch/torch.h>
 
 
 using namespace BASE_NAMESPACE;
@@ -32,6 +34,7 @@ int main(int argc, char *argv[]) {
   LOG(INFO)<<info.sample_rate<<" "<<info.channel<<" "<<info.sample_num<<" "<<info.precision<<std::endl;
   std::vector<short> data;
   res = SoxUtil::instance().GetData(argv[1],data);
+  writeTextFile("data.txt",data);
   LOG(INFO)<<"size:"<<data.size()<<std::endl;
   auto wav = SoxUtil::instance().ProcessWav(info,data,24000,/*volume*/1.0,/*speed*/0.5);
   writeBinaryFile("out.wav",wav);
@@ -52,4 +55,24 @@ int main(int argc, char *argv[]) {
   // res = OpusDecode(opus_buff,info.sample_rate,opus_decoded);
   // LOG(INFO)<<"opus_decoded:"<<opus_decoded.size();
   // SoxUtil::instance().Write2File(info,opus_decoded,"opus_decoded.wav");
+
+  std::vector<float> fdata;
+  res = SoxUtil::instance().GetData(argv[1],fdata);
+  // LOG(INFO)<<printCollection(fdata);
+
+  auto window = HannWindow(400);
+  LOG(INFO)<<window.size();
+
+  int N_FFT = 400,HOP_LENGTH=160;
+
+  torch::Tensor window1 = torch::hann_window(N_FFT);
+
+  std::vector<float> filters;
+  readTextFile("filters.txt",filters);
+  LOG(INFO)<<"filters.size:"<<filters.size();
+
+
+
+  
+  
 }

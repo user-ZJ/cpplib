@@ -30,7 +30,8 @@ class CTensor {
   // 支持initializer_list初始化
   explicit CTensor(const std::initializer_list<I> &shapes);
   // 拷贝构造函数
-  CTensor(const CTensor &t);
+  template <typename TS, typename IS>
+  CTensor(const CTensor<TS, IS> &t);
   // 移动构造函数
   CTensor(CTensor &&t) noexcept;
   // 赋值构造函数
@@ -38,8 +39,8 @@ class CTensor {
   // 移动赋值构造函数
   CTensor &operator=(CTensor &&t) noexcept;
 
-  template <typename TS, typename IS>
-  CTensor &copyFrom(const CTensor<TS, IS> &t);
+  // template <typename TS, typename IS>
+  // CTensor &copyFrom(const CTensor<TS, IS> &t);
 
   ~CTensor();
   // 调整tensor大小，会重新分配内存，保证内存连续
@@ -110,12 +111,23 @@ CTensor<T, I>::CTensor(const std::initializer_list<I> &shapes) {
 
 // 拷贝构造函数
 template <typename T, typename I>
-CTensor<T, I>::CTensor(const CTensor &t) {
-  shapes_ = t.shapes_;
-  strides_ = t.strides_;
-  size_ = t.size_;
+template <typename TS, typename IS>
+CTensor<T, I>::CTensor(const CTensor<TS,IS> &t) {
+  // shapes_ = t.shapes_;
+  // strides_ = t.strides_;
+  // size_ = t.size_;
+  // data_.reset(new T[size_]);
+  // ::memcpy(data_.get(), t.data_.get(), size_ * sizeof(T));
+  shapes_.resize(t.shapes().size());
+  for (int i = 0; i < t.shapes().size(); i++)
+    shapes_[i] = static_cast<I>(t.shapes()[i]);
+  strides_.resize(t.strides().size());
+  for (int i = 0; i < t.strides().size(); i++)
+    strides_[i] = static_cast<I>(t.strides()[i]);
+  size_ = t.size();
   data_.reset(new T[size_]);
-  ::memcpy(data_.get(), t.data_.get(), size_ * sizeof(T));
+  for (int i = 0; i < size(); i++)
+    *(data_.get() + i) = static_cast<T>(*(t.data() + i));
 }
 
 // 移动构造函数
@@ -146,7 +158,7 @@ template <typename T, typename I>
 CTensor<T, I> &CTensor<T, I>::operator=(CTensor &&t) noexcept {
   if (this == &t) return *this;
   // copy & swap
-  CTensor temp{t};
+  CTensor temp{std::move(t)};
   std::swap(shapes_, temp.shapes_);
   std::swap(strides_, temp.strides_);
   std::swap(size_, temp.size_);
@@ -154,21 +166,21 @@ CTensor<T, I> &CTensor<T, I>::operator=(CTensor &&t) noexcept {
   return *this;
 }
 
-template <typename T, typename I>
-template <typename TS, typename IS>
-CTensor<T, I> &CTensor<T, I>::copyFrom(const CTensor<TS, IS> &t) {
-  shapes_.resize(t.shapes().size());
-  for (int i = 0; i < t.shapes().size(); i++)
-    shapes_[i] = static_cast<I>(t.shapes()[i]);
-  strides_.resize(t.strides().size());
-  for (int i = 0; i < t.strides().size(); i++)
-    strides_[i] = static_cast<I>(t.strides()[i]);
-  size_ = t.size();
-  data_.reset(new T[size_]);
-  for (int i = 0; i < size(); i++)
-    *(data_.get() + i) = static_cast<T>(*(t.data() + i));
-  return *this;
-}
+// template <typename T, typename I>
+// template <typename TS, typename IS>
+// CTensor<T, I> &CTensor<T, I>::copyFrom(const CTensor<TS, IS> &t) {
+//   shapes_.resize(t.shapes().size());
+//   for (int i = 0; i < t.shapes().size(); i++)
+//     shapes_[i] = static_cast<I>(t.shapes()[i]);
+//   strides_.resize(t.strides().size());
+//   for (int i = 0; i < t.strides().size(); i++)
+//     strides_[i] = static_cast<I>(t.strides()[i]);
+//   size_ = t.size();
+//   data_.reset(new T[size_]);
+//   for (int i = 0; i < size(); i++)
+//     *(data_.get() + i) = static_cast<T>(*(t.data() + i));
+//   return *this;
+// }
 
 template <typename T, typename I>
 CTensor<T, I>::~CTensor() {}

@@ -60,9 +60,9 @@ include(FetchContent)
 include(ExternalProject)
 set(FETCHCONTENT_QUIET off)
 # set(fc_base $ENV{HOME}/fc_base CACHE STRING "global variable")
-set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fc_base)
-set(FETCHCONTENT_BASE_DIR ${fc_base})
-#set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/fc_base)
+# set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fc_base)
+# set(FETCHCONTENT_BASE_DIR ${fc_base})
+set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/fc_base)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 

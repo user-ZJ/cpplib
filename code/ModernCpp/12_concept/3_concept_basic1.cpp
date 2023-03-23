@@ -17,7 +17,6 @@ T add(T a, T b)
     return a+b;
 }
 
-
 template<typename T> 
 requires (!IsPointer<T>)
 T add_concept(T a, T b)

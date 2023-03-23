@@ -10,8 +10,9 @@ include_directories(
 # 	/home/dmai/code/poco-1.11.1-all/build/lib
 # 		)
 
+aux_source_directory(. CPP_LIST)
 
-add_library(${PROJECT_NAME} STATIC audio-util.cpp)
+add_library(${PROJECT_NAME} STATIC ${CPP_LIST})
 target_link_libraries(${PROJECT_NAME} glog gflags_nothreads sox sonic pthread)
 #target_link_libraries(utils glog gflags sox pthread)
 
