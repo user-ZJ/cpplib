@@ -6,6 +6,8 @@
 #include <sstream>
 
 
+// apt-get install libgflags-dev
+
 namespace BASE_NAMESPACE {
 
 

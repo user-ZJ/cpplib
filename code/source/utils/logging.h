@@ -8,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 
+// apt-get install libgoogle-glog-dev
+
 // using namespace google;
 
 namespace BASE_NAMESPACE {

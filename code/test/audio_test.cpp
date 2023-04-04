@@ -11,14 +11,13 @@
 #include "opus/OpusWrapper.h"
 #include "utils/AudioFeature.h"
 #include "utils/string-util.h"
-#include <torch/torch.h>
 
 
 using namespace BASE_NAMESPACE;
 
 
 int main(int argc, char *argv[]) {
-  FLAGS_log_dir = ".";
+  // FLAGS_log_dir = ".";
   google::EnableLogCleaner(30);  // keep your logs for 30 days
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);  //初始化 glog
@@ -48,10 +47,10 @@ int main(int argc, char *argv[]) {
   SoxUtil::instance().Write2File(info,sonic_out,"sonic_out.wav");
 
 
-  std::vector<unsigned char> opus_buff;
-  res = OpusEncode(data,info.sample_rate,opus_buff);
-  LOG(INFO)<<"opus_buff:"<<opus_buff.size();
-  std::vector<short> opus_decoded;
+  // std::vector<unsigned char> opus_buff;
+  // res = OpusEncode(data,info.sample_rate,opus_buff);
+  // LOG(INFO)<<"opus_buff:"<<opus_buff.size();
+  // std::vector<short> opus_decoded;
   // res = OpusDecode(opus_buff,info.sample_rate,opus_decoded);
   // LOG(INFO)<<"opus_decoded:"<<opus_decoded.size();
   // SoxUtil::instance().Write2File(info,opus_decoded,"opus_decoded.wav");
@@ -64,8 +63,6 @@ int main(int argc, char *argv[]) {
   LOG(INFO)<<window.size();
 
   int N_FFT = 400,HOP_LENGTH=160;
-
-  torch::Tensor window1 = torch::hann_window(N_FFT);
 
   std::vector<float> filters;
   readTextFile("filters.txt",filters);

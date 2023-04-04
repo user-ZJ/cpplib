@@ -1,68 +1,64 @@
-#include "utils/AudioFeature.h"
-#include "utils/audio-util.h"
-#include <complex>
-#include <iostream>
-#include <torch/torch.h>
-#include "utils/logging.h"
-#include "utils/flags.h"
-#include "utils/string-util.h"
-#include <iostream>
-#include <string>
-#include <cassert>
-#include <vector>
-#include <limits>
-#include "vad/FVadWrapper.h"
-#include "utils/audio-util.h"
-#include "utils/file-util.h"
-#include "utils/logging.h"
-#include "utils/flags.h"
 #include "opus/OpusWrapper.h"
 #include "utils/AudioFeature.h"
+#include "utils/audio-util.h"
+#include "utils/file-util.h"
+#include "utils/flags.h"
+#include "utils/logging.h"
 #include "utils/string-util.h"
+#include "vad/FVadWrapper.h"
+#include <cassert>
+#include <complex>
+#include <iostream>
+#include <limits>
+#include <string>
+#include <torch/torch.h>
+#include <vector>
 
 using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
-  google::EnableLogCleaner(30);  // keep your logs for 30 days
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-  google::InitGoogleLogging(argv[0]);  //初始化 glog
-  google::SetStderrLogging(google::GLOG_ERROR);
-  google::InstallFailureSignalHandler();
-
-
   std::vector<float> paded{4., 4., 3., 2., 1., 2., 3., 4., 4., 3., 2., 1., 2., 3., 4., 4.};
+  
 
   // 输入信号
-  //   torch::Tensor input = torch::rand({1, 1000});
-  torch::Tensor input = torch::from_blob(paded.data(), at::IntArrayRef({1, 16}), torch::kFloat);
-  std::cout << input << std::endl;
-
-  std::vector<float> fwindow{0.5, 0.5, 0.5, 0.5};
-  torch::Tensor window = torch::from_blob(fwindow.data(), at::IntArrayRef({4}), torch::kFloat);
-  std::cout << input << std::endl;
+  torch::Tensor input = torch::full({1, 800}, 0.5);
+//   std::cout<<input<<std::endl;
 
   // 窗口大小
-  int window_size = 4;
+  int window_size = 400;
+  // 重叠大小
+  int hop_size = 160;
+  // FFT大小
+  int fft_size = 400;
 
   // 窗口类型
-  torch::Tensor window1 = torch::hann_window(400);
-  std::cout << window1 << std::endl;
-
-  // 重叠大小
-  int hop_size = 2;
-
-  // FFT大小
-  int fft_size = 8;
+  torch::Tensor window = torch::hann_window(fft_size);
 
   // 计算STFT
   torch::Tensor stft = torch::stft(input, fft_size, hop_size, window_size, window, false, false, true);
-  std::cout << stft << std::endl;
-  auto stft_accessor = stft.accessor<c10::complex<float>, 3>();
-  for (int i = 0; i < stft.size(1); i++) {
-    for (int j = 0; j < stft.size(2); j++) {
-      std::cout << stft_accessor[0][i][j].real() << "+" << stft_accessor[0][i][j].imag() << "i ";
-    }
-    std::cout << std::endl;
+  for (int i = 0; i < stft.sizes().size(); i++) {
+    std::cout << stft.sizes()[i] << "x";
   }
+  std::cout << std::endl;
+  auto stft1 = torch::slice(stft, 1, 0, fft_size / 2 + 1);
+  stft1 = torch::abs(torch::slice(stft1, 2, 0, stft.sizes()[2] - 1));
+  auto magnitudes = torch::mul(stft1, stft1);
+  
+  torch::Tensor filters = torch::ones({80, 201});
+
+  auto mel_spec = torch::matmul(filters, magnitudes);
+  std::cout<<mel_spec<<std::endl;
+  auto log_spec = torch::log10(torch::clamp(mel_spec, 1e-10));
+  
+  log_spec = torch::maximum(log_spec, torch::max(log_spec) - 8.0);
+  log_spec = (log_spec + 4.0) / 4.0;
+  for (int i = 0; i < log_spec.sizes().size(); i++) {
+    std::cout << log_spec.sizes()[i] << "x";
+  }
+  std::cout << std::endl;
+  std::cout << log_spec << std::endl;
+  log_spec = log_spec.transpose(2,1).contiguous();
+  std::cout << log_spec << std::endl;
+
   return 0;
 }

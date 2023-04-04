@@ -1,0 +1,1 @@
+onnx模型下载路径：https://github.com/wenet-e2e/wespeaker/blob/master/docs/pretrained.md

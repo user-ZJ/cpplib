@@ -11,6 +11,6 @@ include_directories(
 # 		)
 aux_source_directory(. SOURCE_LIST)
 
-add_library(dbwrapper STATIC ${SOURCE_LIST})
-target_link_libraries(dbwrapper PocoRedis PocoMongoDB PocoDataMySQL PocoData PocoNet PocoFoundation mysqlclient utils)
+add_library(dbwrapper SHARED ${SOURCE_LIST})
+target_link_libraries(dbwrapper PocoRedis PocoMongoDB PocoDataMySQL PocoData PocoNet PocoFoundation mysqlclient myutil)
 

@@ -2,3 +2,4 @@ build*
 .cache
 .vscode
 depends
+code/trt/build

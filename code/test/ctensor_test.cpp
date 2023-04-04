@@ -37,6 +37,9 @@ int main(int argc, char *argv[]) {
 
   CTensorll t4=t2;
   t4 = t2;
+  std::vector<CTensorfl> vc;
+  vc.emplace_back(t3);
+  vc.emplace_back(t4);
 
   t2.dump2File("t2.txt");
   t3.dump2File("t3.txt");
