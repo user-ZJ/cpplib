@@ -7,11 +7,11 @@
 
 #ifndef BASE_REGEX_UTIL_H_
 #define BASE_REGEX_UTIL_H_
-#include "utils/string-util.h"
 #include "utils/logging.h"
+#include "utils/string-util.h"
 #include <boost/xpressive/xpressive.hpp>
 #include <string>
-#include <unordered_map>
+
 
 namespace xpressive = boost::xpressive;
 
@@ -32,39 +32,33 @@ static const std::string ZHPunct =
 static const std::string ENPunct =
   R"([\.\?!,;:'"\(\)\[\]\{\}<>/\-\\$@`~#%^\*_\+=\|])";         // 英文标点.?!,;:'"(){}<>/-\$@`~#%^+=|
 static const std::string ZHWord = R"([\u4e00-\u9fa5])";        // 中文汉字
-static const std::string ZHTWord = R"([\u3400-\u4dbf])";        // 中文繁体
+static const std::string ZHTWord = R"([\u3400-\u4dbf])";       // 中文繁体
 static const std::string ENWord = R"([a-zA-Z][A-Za-z_\-']*)";  // 英文单词
 
 inline xpressive::wsregex to_wregex(const std::wstring &patt) {
   static xpressive::wsregex_compiler wcompiler;
-  static std::unordered_map<size_t, xpressive::wsregex> wreg_cache;
   xpressive::wsregex my_regex;
-  try{
+  try {
     my_regex = wcompiler.compile(patt);
-  }catch(...){
-    LOG(ERROR)<<"compile regex error:"<<to_string(patt);
+  }
+  catch (...) {
+    LOG(ERROR) << "compile regex error:" << to_string(patt);
     return xpressive::wsregex();
   }
-  static std::hash<std::string> wh;
-  size_t key = wh(to_string(patt));
-  if (wreg_cache.count(key) == 0) { wreg_cache[key] = my_regex; }
-  return wreg_cache[key];
+  return my_regex;
 }
 
 inline xpressive::sregex to_regex(const std::string &patt) {
   static xpressive::sregex_compiler compiler;
-  static std::unordered_map<size_t, xpressive::sregex> reg_cache;
   xpressive::sregex my_regex;
-  try{
+  try {
     my_regex = compiler.compile(patt);
-  }catch(...){
-    LOG(ERROR)<<"compile regex error:"<<patt;
+  }
+  catch (...) {
+    LOG(ERROR) << "compile regex error:" << patt;
     return xpressive::sregex();
   }
-  static std::hash<std::string> h;
-  size_t key = h(patt);
-  if (reg_cache.count(key) == 0) { reg_cache[key] = my_regex; }
-  return reg_cache[key];
+  return my_regex;
 }
 
 inline bool match(const std::string &s, const std::string &patt, std::vector<std::string> *tuple = nullptr) {
@@ -75,8 +69,7 @@ inline bool match(const std::string &s, const std::string &patt, std::vector<std
    *  tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    *  @return bool 是否完全匹配
    */
-  if(s.empty() or patt.empty())
-    return false;
+  if (s.empty() or patt.empty()) return false;
   if (tuple != nullptr) tuple->clear();
   xpressive::sregex sre = to_regex(patt);
   xpressive::smatch m;
@@ -97,8 +90,7 @@ inline bool match(const std::wstring &s, const std::wstring &patt, std::vector<s
    *  tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    *  @return bool 是否完全匹配
    */
-  if(s.empty() or patt.empty())
-    return false;
+  if (s.empty() or patt.empty()) return false;
   if (tuple != nullptr) tuple->clear();
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsmatch m;
@@ -120,8 +112,7 @@ inline bool search(const std::string &s, const std::string &patt, std::vector<st
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
-  if(s.empty() or patt.empty())
-    return false;
+  if (s.empty() or patt.empty()) return false;
   if (tuple != nullptr) tuple->clear();
   xpressive::sregex sre = to_regex(patt);
   xpressive::smatch m;
@@ -147,8 +138,7 @@ inline bool search(const std::wstring &s, const std::wstring &patt, std::vector<
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
-  if(s.empty() or patt.empty())
-    return false;
+  if (s.empty() or patt.empty()) return false;
   if (tuple != nullptr) tuple->clear();
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsmatch m;
@@ -175,8 +165,7 @@ inline bool searchAll(const std::string &s, const std::string &patt,
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
-  if(s.empty() or patt.empty())
-    return false;
+  if (s.empty() or patt.empty()) return false;
   if (tuple != nullptr) tuple->clear();
   if (prefix != nullptr) prefix->clear();
   if (suffix != nullptr) suffix->clear();
@@ -209,8 +198,7 @@ inline bool searchAll(const std::wstring &s, const std::wstring &patt,
    * tuple 正则匹配返回的元组，null时表示不获取元组返回结果
    * @return bool 是否找到匹配的文本段
    */
-  if(s.empty() or patt.empty())
-    return false;
+  if (s.empty() or patt.empty()) return false;
   if (tuple != nullptr) tuple->clear();
   if (prefix != nullptr) prefix->clear();
   if (suffix != nullptr) suffix->clear();
@@ -241,8 +229,7 @@ inline std::string replace(const std::string &s, const std::string &patt, const 
    * @param repl 替换的字符串，支持$n的方式使用分组匹配结果
    * @return 替换后的字符串
    */
-  if(s.empty() or patt.empty())
-    return s;
+  if (s.empty() or patt.empty()) return s;
   xpressive::sregex sre = to_regex(patt);
   return xpressive::regex_replace(s, sre, repl, xpressive::regex_constants::format_first_only);
 }
@@ -255,8 +242,7 @@ inline std::wstring replace(const std::wstring &s, const std::wstring &patt, con
    * @param repl 替换的字符串，支持$n的方式使用分组匹配结果
    * @return 替换后的字符串
    */
-  if(s.empty() or patt.empty())
-    return s;
+  if (s.empty() or patt.empty()) return s;
   xpressive::wsregex sre = to_wregex(patt);
   return xpressive::regex_replace(s, sre, repl, xpressive::regex_constants::format_first_only);
 }
@@ -271,8 +257,7 @@ inline std::string replaceLambda(const std::string &s, const std::string &patt, 
    * [](const xpressive::smatch &m) -> std::string { return m[1].str() + "name=" + m[2].str(); }
    * @return 替换后的字符串
    */
-  if(s.empty() or patt.empty())
-    return s;
+  if (s.empty() or patt.empty()) return s;
   xpressive::sregex sre = to_regex(patt);
   return xpressive::regex_replace(s, sre, lambda, xpressive::regex_constants::format_first_only);
 }
@@ -284,11 +269,10 @@ inline std::wstring replaceLambda(const std::wstring &s, const std::wstring &pat
    * @param s 原始字符串
    * @param patt 正则表达式的raw string
    * @param lambda 替换的字符串的lambda表达式,如：
-   * [](const xpressive::smatch &m) -> std::string { return m[1].str() + "name=" + m[2].str(); }
+   * [](const xpressive::wsmatch &m) -> std::wstring { return m[1].str() + "name=" + m[2].str(); }
    * @return 替换后的字符串
    */
-  if(s.empty() or patt.empty())
-    return s;
+  if (s.empty() or patt.empty()) return s;
   xpressive::wsregex sre = to_wregex(patt);
   return xpressive::regex_replace(s, sre, lambda, xpressive::regex_constants::format_first_only);
 }
@@ -301,8 +285,7 @@ inline std::string replaceAll(const std::string &s, const std::string &patt, con
    * @param repl 替换的字符串，支持$n的方式使用分组匹配结果
    * @return 替换后的字符串
    */
-  if(s.empty() or patt.empty())
-    return s;
+  if (s.empty() or patt.empty()) return s;
   xpressive::sregex sre = to_regex(patt);
   return xpressive::regex_replace(s, sre, repl);
 }
@@ -315,8 +298,7 @@ inline std::wstring replaceAll(const std::wstring &s, const std::wstring &patt, 
    * @param repl 替换的字符串，支持$n的方式使用分组匹配结果
    * @return 替换后的字符串
    */
-  if(s.empty() or patt.empty())
-    return s;
+  if (s.empty() or patt.empty()) return s;
   xpressive::wsregex sre = to_wregex(patt);
   return xpressive::regex_replace(s, sre, repl);
 }
@@ -331,8 +313,7 @@ inline std::string replaceAllLambda(const std::string &s, const std::string &pat
    * [](const xpressive::smatch &m) -> std::string { return m[1].str() + "name=" + m[2].str(); }
    * @return 替换后的字符串
    */
-  if(s.empty() or patt.empty())
-    return s;
+  if (s.empty() or patt.empty()) return s;
   xpressive::sregex sre = to_regex(patt);
   return xpressive::regex_replace(s, sre, lambda);
 }
@@ -344,11 +325,10 @@ inline std::wstring replaceAllLambda(const std::wstring &s, const std::wstring &
    * @param s 原始字符串
    * @param patt 正则表达式的raw string
    * @param lambda 替换的字符串的lambda表达式,如：
-   * [](const xpressive::smatch &m) -> std::string { return m[1].str() + "name=" + m[2].str(); }
+   * [](const xpressive::wsmatch &m) -> std::wstring { return m[1].str() + "name=" + m[2].str(); }
    * @return 替换后的字符串
    */
-  if(s.empty() or patt.empty())
-    return s;
+  if (s.empty() or patt.empty()) return s;
   xpressive::wsregex sre = to_wregex(patt);
   return xpressive::regex_replace(s, sre, lambda);
 }
@@ -392,8 +372,7 @@ inline std::vector<std::string> split(const std::string &s, const std::string &p
    * @param patt 正则表达式的raw string
    * @return 分割后的字符串数组
    */
-  if(patt.empty())
-    return {s};
+  if (patt.empty()) return {s};
   std::vector<std::string> result;
   xpressive::sregex sre = to_regex(patt);
   xpressive::sregex_token_iterator begin(s.begin(), s.end(), sre, -1), end;
@@ -410,8 +389,7 @@ inline std::vector<std::wstring> split(const std::wstring &s, const std::wstring
    * @param patt 正则表达式的raw string
    * @return 分割后的字符串数组
    */
-  if(patt.empty())
-    return {s};
+  if (patt.empty()) return {s};
   std::vector<std::wstring> result;
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsregex_token_iterator begin(s.begin(), s.end(), sre, -1), end;
@@ -428,8 +406,7 @@ inline std::vector<std::string> token(const std::string &s, const std::string &p
    * @param patt 正则表达式的raw string
    * @return 提取的字符串数组
    */
-  if(patt.empty())
-    return {};
+  if (patt.empty()) return {};
   std::vector<std::string> result;
   xpressive::sregex sre = to_regex(patt);
   xpressive::sregex_token_iterator begin(s.begin(), s.end(), sre), end;
@@ -447,8 +424,7 @@ inline std::vector<std::wstring> token(const std::wstring &s,
    * @param patt 正则表达式的raw string
    * @return 提取的字符串数组
    */
-  if(patt.empty())
-    return {};
+  if (patt.empty()) return {};
   std::vector<std::wstring> result;
   xpressive::wsregex sre = to_wregex(patt);
   xpressive::wsregex_token_iterator begin(s.begin(), s.end(), sre), end;

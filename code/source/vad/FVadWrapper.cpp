@@ -22,7 +22,7 @@ struct vad_deleter {
 
 FVadWrapper::FVadWrapper() {
   mode = 1;
-  frame_ms = 20;  // duration is 20ms
+  frame_ms = 30;  // duration is 20ms
   num_padding = 10;
 }
 
@@ -31,6 +31,8 @@ std::vector<std::pair<size_t, size_t>> FVadWrapper::SplitAudio(const std::vector
   std::shared_ptr<Fvad> vad;
   vad.reset(fvad_new(), vad_deleter());
   std::vector<std::pair<size_t, size_t>> results;
+  if(audio.empty())
+    return results;
   if (fvad_set_sample_rate(vad.get(), sample_rate) < 0) {
     LOG(ERROR) << "invalid sample rate:" << sample_rate;
     return results;

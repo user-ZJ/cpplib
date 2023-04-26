@@ -75,6 +75,7 @@ include(libtorch)
 include(rapidjson)
 include(eigen)
 include(poco)
+include(onnx)
 
 
 include_directories(

@@ -10,6 +10,6 @@ link_directories(
 )
 
 
-add_library(vadwrapper FVadWrapper.cpp)
-target_link_libraries(vadwrapper fvad myutil)
+add_library(vadwrapper FVadWrapper.cpp SileroVadWrapper.cpp)
+target_link_libraries(vadwrapper fvad onnxruntime myutil)
 

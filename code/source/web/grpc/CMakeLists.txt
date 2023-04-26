@@ -54,4 +54,6 @@ include_directories(${GENS_DIR})
 
 add_executable(calculator_server calculator_server.cpp ${GENS_SRCS})
 target_link_libraries(calculator_server gRPC::grpc++ gRPC::grpc++_reflection ${PROTOBUF_LIBRARIES})
-# target_link_libraries(calculator_server gRPC::grpc++ gRPC::grpc++_reflection protobuf)
+
+add_executable(calculator_client calculator_client.cpp ${GENS_SRCS})
+target_link_libraries(calculator_client gRPC::grpc++ gRPC::grpc++_reflection ${PROTOBUF_LIBRARIES})

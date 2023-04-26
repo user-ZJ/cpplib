@@ -1,64 +1,78 @@
-#include "opus/OpusWrapper.h"
-#include "utils/AudioFeature.h"
-#include "utils/audio-util.h"
 #include "utils/file-util.h"
 #include "utils/flags.h"
 #include "utils/logging.h"
 #include "utils/string-util.h"
-#include "vad/FVadWrapper.h"
 #include <cassert>
 #include <complex>
 #include <iostream>
 #include <limits>
 #include <string>
-#include <torch/torch.h>
+#include <unordered_set>
 #include <vector>
 
 using namespace BASE_NAMESPACE;
+using namespace std;
+
+void permute(const vector<int> &nums, vector<vector<int>> &res, vector<int> &path, unordered_set<int> &used,
+             std::vector<int> &last, std::vector<std::pair<int, int>> &limits) {
+  if (path.size() == nums.size()) {
+    res.push_back(path);
+    return;
+  }
+  for (int i = 0; i < nums.size(); i++) {
+    if (used.count(i) || (i > 0 && nums[i] == nums[i - 1] && !used.count(i - 1))) continue;
+    // 添加限制条件
+    if (last[nums[i] - 1] <= path.size()) continue;
+    bool bk = false;
+    for (const auto &l : limits) {
+      if (nums[i] == l.first and std::find(path.begin(), path.end(), l.second) != path.end()) {
+        bk = true;
+        break;
+      }
+    }
+    if (bk) continue;
+    used.insert(i);
+    path.push_back(nums[i]);
+    permute(nums, res, path, used,last, limits);
+    path.pop_back();
+    used.erase(i);
+  }
+}
+
+vector<vector<int>> permute(vector<int> &nums, std::vector<int> &last, std::vector<std::pair<int, int>> &limits) {
+  vector<vector<int>> res;
+  vector<int> path;
+  unordered_set<int> used;
+  permute(nums, res, path, used, last, limits);
+  return res;
+}
+// std::vector<std::vector<int>> permute(std::vector<int> &nums) {
+//   std::vector<std::vector<int>> res;
+//   std::sort(nums.begin(), nums.end());  // 排序，方便去重
+//   permute(nums, res, 0);
+//   return res;
+// }
 
 int main(int argc, char *argv[]) {
-  std::vector<float> paded{4., 4., 3., 2., 1., 2., 3., 4., 4., 3., 2., 1., 2., 3., 4., 4.};
-  
+  google::EnableLogCleaner(30);  // keep your logs for 30 days
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
+  google::InitGoogleLogging(argv[0]);  //初始化 glog
+  google::SetStderrLogging(google::GLOG_ERROR);
+  google::InstallFailureSignalHandler();
+  std::vector<int> last{4, 5, 2, 5, 4};
+  std::vector<std::pair<int, int>> limits = {{1, 2}, {3, 2}, {5, 1}, {3, 4}, {3, 1}};
+  std::vector<int> p{1, 2, 3, 4, 5};
 
-  // 输入信号
-  torch::Tensor input = torch::full({1, 800}, 0.5);
-//   std::cout<<input<<std::endl;
-
-  // 窗口大小
-  int window_size = 400;
-  // 重叠大小
-  int hop_size = 160;
-  // FFT大小
-  int fft_size = 400;
-
-  // 窗口类型
-  torch::Tensor window = torch::hann_window(fft_size);
-
-  // 计算STFT
-  torch::Tensor stft = torch::stft(input, fft_size, hop_size, window_size, window, false, false, true);
-  for (int i = 0; i < stft.sizes().size(); i++) {
-    std::cout << stft.sizes()[i] << "x";
+  // 计算所有可能输出路径
+  auto res = permute(p,last,limits);
+  std::vector<int> mincheck(p.size(),p.size());
+  for (int i = 0; i < res.size(); i++) {
+    LOG(INFO) << printCollection(res[i]);
+    for(int j=0;j<res[i].size();j++)
+      mincheck[res[i][j]-1] = std::min(mincheck[res[i][j]-1],j+1);
   }
-  std::cout << std::endl;
-  auto stft1 = torch::slice(stft, 1, 0, fft_size / 2 + 1);
-  stft1 = torch::abs(torch::slice(stft1, 2, 0, stft.sizes()[2] - 1));
-  auto magnitudes = torch::mul(stft1, stft1);
-  
-  torch::Tensor filters = torch::ones({80, 201});
-
-  auto mel_spec = torch::matmul(filters, magnitudes);
-  std::cout<<mel_spec<<std::endl;
-  auto log_spec = torch::log10(torch::clamp(mel_spec, 1e-10));
-  
-  log_spec = torch::maximum(log_spec, torch::max(log_spec) - 8.0);
-  log_spec = (log_spec + 4.0) / 4.0;
-  for (int i = 0; i < log_spec.sizes().size(); i++) {
-    std::cout << log_spec.sizes()[i] << "x";
-  }
-  std::cout << std::endl;
-  std::cout << log_spec << std::endl;
-  log_spec = log_spec.transpose(2,1).contiguous();
-  std::cout << log_spec << std::endl;
+  LOG(INFO) << res.size();
+  LOG(INFO)<<printCollection(mincheck);
 
   return 0;
 }

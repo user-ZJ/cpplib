@@ -69,8 +69,8 @@ target_link_libraries(omp_test myutil)
 
 
 
-add_executable(fvad_test fvad_test.cpp)
-target_link_libraries(fvad_test vadwrapper sox myutil)
+add_executable(vad_test vad_test.cpp)
+target_link_libraries(vad_test vadwrapper sox myutil)
 
 add_executable(rnnoise_test rnnoise_test.cpp)
 target_link_libraries(rnnoise_test  remove_noise sox myutil)
@@ -79,6 +79,6 @@ add_executable(mysql_test mysql_test.cpp)
 target_link_libraries(mysql_test dbwrapper glog gflags)
 
 
-message(STATUS "libtorch libs:" ${TORCH_LIBRARIES})
+
 add_executable(just_test just_test.cpp)
-target_link_libraries(just_test myutil c10 torch_cpu torch)
+target_link_libraries(just_test myutil)

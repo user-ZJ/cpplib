@@ -1,7 +1,7 @@
 #include "NvInfer.h"
 #include "NvOnnxConfig.h"
 #include "NvOnnxParser.h"
-#include "TRTLogging.h"
+#include "trt_util.h"
 #include <algorithm>
 #include <atomic>
 #include <cassert>
@@ -22,99 +22,7 @@
 #include <vector>
 
 using namespace nvinfer1;
-
-void checkCudaErrors(cudaError_t err) {
-  if (err != cudaSuccess) throw std::runtime_error(cudaGetErrorName(err));
-}
-
-struct StreamDeleter {
-  void operator()(cudaStream_t *stream) {
-    if (stream) {
-      cudaStreamDestroy(*stream);
-      delete stream;
-    }
-  }
-};
-
-template <typename T>
-struct TrtDeleter {
-  void operator()(T *p) const noexcept {
-    delete p;
-  }
-};
-
-template <typename T>
-struct CuMemDeleter {
-  void operator()(T *p) noexcept {
-    checkCudaErrors(cudaFree(p));
-  }
-};
-
-// struct InferDeleter
-// {
-//     template <typename T>
-//     void operator()(T* obj) const
-//     {
-//         delete obj;
-//     }
-// };
-
-template <typename T, template <typename> class DeleterType = TrtDeleter>
-using UniqPtr = std::unique_ptr<T, DeleterType<T>>;
-
-template <typename T>
-UniqPtr<T, CuMemDeleter> mallocCudaMem(size_t nbElems) {
-  T *ptr = nullptr;
-  checkCudaErrors(cudaMalloc((void **)&ptr, sizeof(T) * nbElems));
-  return UniqPtr<T, CuMemDeleter>{ptr};
-}
-
-std::unique_ptr<cudaStream_t, StreamDeleter> makeCudaStream(int flags = cudaStreamDefault) {
-  // cudaStream_t stream;
-  // checkCudaErrors(cudaStreamCreateWithFlags(&stream, flags));
-  // return std::unique_ptr<cudaStream_t, StreamDeleter>{ stream };
-  std::unique_ptr<cudaStream_t, StreamDeleter> pStream(new cudaStream_t);
-  if (cudaStreamCreateWithFlags(pStream.get(), flags) != cudaSuccess) { pStream.reset(nullptr); }
-  return pStream;
-}
-
-inline void enableDLA(nvinfer1::IBuilder *builder, nvinfer1::IBuilderConfig *config, int useDLACore,
-                      bool allowGPUFallback = true) {
-  if (useDLACore >= 0) {
-    if (builder->getNbDLACores() == 0) {
-      std::cerr << "Trying to use DLA core " << useDLACore << " on a platform that doesn't have any DLA cores"
-                << std::endl;
-      assert("Error: use DLA core on a platfrom that doesn't have any DLA cores" && false);
-    }
-    if (allowGPUFallback) { config->setFlag(nvinfer1::BuilderFlag::kGPU_FALLBACK); }
-    if (!config->getFlag(nvinfer1::BuilderFlag::kINT8)) {
-      // User has not requested INT8 Mode.
-      // By default run in FP16 mode. FP32 mode is not permitted.
-      config->setFlag(nvinfer1::BuilderFlag::kFP16);
-    }
-    config->setDefaultDeviceType(nvinfer1::DeviceType::kDLA);
-    config->setDLACore(useDLACore);
-  }
-}
-
-nvinfer1::Dims toDims(std::vector<int32_t> const &vec) {
-  int32_t limit = static_cast<int32_t>(nvinfer1::Dims::MAX_DIMS);
-  if (static_cast<int32_t>(vec.size()) > limit) {
-    std::cerr << "Vector too long, only first 8 elements are used in dimension." << std::endl;
-  }
-  // Pick first nvinfer1::Dims::MAX_DIMS elements
-  nvinfer1::Dims dims{std::min(static_cast<int32_t>(vec.size()), limit), {}};
-  std::copy_n(vec.begin(), dims.nbDims, std::begin(dims.d));
-  return dims;
-}
-
-int elemSize(DataType dataType) {
-  switch (dataType) {
-  case DataType::kFLOAT: return 4;
-  case DataType::kHALF: return 2;
-  default: throw std::runtime_error("invalid data type");
-  }
-}
+using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
   // 获取显卡型号
