@@ -9,7 +9,6 @@ set(BASE_NAMESPACE zack)
 set(CMAKE_CXX_STANDARD 17)
 
 message(STATUS "opration system is ${CMAKE_SYSTEM_NAME}")
-#${CMAKE_SYSTEM_NAME} "Windows", "Linux","Android" or "Darwin"
 if(CMAKE_SYSTEM_NAME MATCHES "Android")
     set(TARGET_ARCH ${ANDROID_ABI})
     if(CMAKE_ANDROID_ARCH_ABI MATCHES "armeabi-v7a")
@@ -27,27 +26,13 @@ endif()
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG)
-    if(MSVC)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DEBUG")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DEBUG")
-        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-        add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-    else()
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -Wfatal-errors")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors")
-        # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors -Wall -Wextra -Werror -Wconversion -Wshadow")
-    endif()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -Wfatal-errors")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors -Wall -Wextra -Werror -Wconversion -Wshadow")
 else()
-    if (MSVC)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /O2")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2")
-        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-        add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-    else()
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors")
-        # -DNDEBUG 禁用assert
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors")
-    endif()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors")
+    # -DNDEBUG 禁用assert
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors")
 endif()
 
 option(USE_MNN "whether to build MNN" OFF)
@@ -77,6 +62,8 @@ include(eigen)
 include(poco)
 include(onnx)
 
+execute_process(COMMAND unzip -n ${CMAKE_SOURCE_DIR}/3rdparty/grpc_ubuntu20_install.zip -d ${CMAKE_BINARY_DIR}/grpc)
+
 
 include_directories(
     source
@@ -103,7 +90,7 @@ link_directories(
 # 		)
 add_subdirectory(source/utils)
 add_subdirectory(source/web)
-# add_subdirectory(source/grpc)
+add_subdirectory(source/grpc)
 add_subdirectory(source/db)
 add_subdirectory(source/vad)
 add_subdirectory(source/remove_noise)

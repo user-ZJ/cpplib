@@ -15,8 +15,9 @@ int WebServer::start() {
   try {
     LOG(INFO) << "websocet listen at " << _port << " port";
     HTTPServerParams *pParams = new HTTPServerParams;
-    pParams->setMaxQueued(100);
-    pParams->setMaxThreads(std::thread::hardware_concurrency());
+    int n = std::thread::hardware_concurrency();
+    pParams->setMaxQueued(n);
+    pParams->setMaxThreads(n);
 
     // set-up a server socket
     // ServerSocket svs(_port);
@@ -24,7 +25,7 @@ int WebServer::start() {
     Poco::Net::SocketAddress address(wildcardAddr, _port);
     ServerSocket svs;
     svs.bind(address, true, false);  // 地址可重用，端口不可重用
-    svs.listen(64);
+    svs.listen(n);
     // set-up a HTTPServer instance
     HTTPServer srv(new RequestHandlerFactory, svs, pParams);
     // start the HTTPServer
