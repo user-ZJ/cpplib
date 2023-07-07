@@ -23,6 +23,8 @@ void HTTPJsonHandler::handleRequest(HTTPServerRequest &request, HTTPServerRespon
 
     response.setChunkedTransferEncoding(true);
     response.setContentType("application/json");
+    // 设置返回头，必须在response.send()前
+    response.set("status","2000");
 
     std::ostream &ostr = response.send();
 

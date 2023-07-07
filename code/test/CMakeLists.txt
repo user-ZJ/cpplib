@@ -6,15 +6,15 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 include_directories(
 	../source
-	/data/code/libtorch/include/
-	/data/code/libtorch/include/torch/csrc/api/include
+	# /data/code/libtorch/include/
+	# /data/code/libtorch/include/torch/csrc/api/include
 		 )
 link_directories(
-	/home/dmai/code/pytorch/build_libtorch/build/lib
+	# /home/dmai/code/pytorch/build_libtorch/build/lib
 		)
 
-set(Torch_DIR /data/code/libtorch/share/cmake/Torch)
-find_package(Torch REQUIRED)
+# set(Torch_DIR /data/code/libtorch/share/cmake/Torch)
+# find_package(Torch REQUIRED)
 
 add_executable(path_util_test path_test.cpp)
 target_link_libraries(path_util_test myutil)

@@ -1,0 +1,44 @@
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+project(mycuda)
+
+set(CMAKE_CXX_STANDARD 17)
+
+message(STATUS "opration system is ${CMAKE_SYSTEM_NAME}")
+if(CMAKE_SYSTEM_NAME MATCHES "Android")
+    set(TARGET_ARCH ${ANDROID_ABI})
+    if(CMAKE_ANDROID_ARCH_ABI MATCHES "armeabi-v7a")
+    elseif(CMAKE_ANDROID_ARCH_ABI MATCHES "arm64-v8a")
+    endif()
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    if(ARCH_32)
+        set(TARGET_ARCH x86)
+    else()
+        set(TARGET_ARCH x64)
+    endif()
+else()
+    message(FATAL_ERROR "not support system ${CMAKE_SYSTEM_NAME}")
+endif()
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+    add_definitions(-DDEBUG)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -Wfatal-errors")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors")
+    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fPIC -Wfatal-errors -Wall -Wextra -Werror -Wconversion -Wshadow")
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -fPIC -Wfatal-errors")
+    # -DNDEBUG 禁用assert
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wfatal-errors")
+endif()
+
+find_package(CUDA REQUIRED)
+
+# 设置CUDA的编译选项
+# set(CUDA_NVCC_FLAGS "-arch=sm_61")
+
+cuda_add_executable(test test.cu mykernel.cu)
+target_link_libraries(test ${CUDA_LIBRARIES})
+
+
+
+
+

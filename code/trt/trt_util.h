@@ -3,6 +3,7 @@
 #include "NvInfer.h"
 #include "NvOnnxConfig.h"
 #include "NvOnnxParser.h"
+#include "NvInferPlugin.h"
 #include <cuda_runtime_api.h>
 #include <iostream>
 #include <numeric>
@@ -53,7 +54,8 @@ struct StreamDeleter {
 template <typename T>
 struct TrtDeleter {
   void operator()(T *p) noexcept {
-    p->destroy();
+    // p->destroy();
+    delete p;
   }
 };
 
@@ -78,7 +80,7 @@ inline UniqPtr<T, CuMemDeleter> mallocCudaMem(size_t nbElems) {
   return UniqPtr<T, CuMemDeleter>{ptr};
 }
 
-inline std::unique_ptr<cudaStream_t, StreamDeleter> makeCudaStream(int flags = cudaStreamDefault) {
+inline std::unique_ptr<cudaStream_t, StreamDeleter> makeCudaStream(int flags = cudaStreamNonBlocking) {
   // cudaStream_t stream;
   // checkCudaErrors(cudaStreamCreateWithFlags(&stream, flags));
   // return std::unique_ptr<cudaStream_t, StreamDeleter>{ stream };
@@ -192,6 +194,7 @@ inline std::string GetDeviceName() {
 class TRTInstance {
  public:
   TRTInstance(const std::vector<char> &modelBuff) {
+    initLibNvInferPlugins(&gLogger, "");
     engine.reset(runtime->deserializeCudaEngine(modelBuff.data(), modelBuff.size()));
     assert((engine != nullptr) && "create engine error");
     std::cout << "create engine success"<<std::endl;

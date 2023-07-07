@@ -19,5 +19,5 @@ set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
 
 
 cuda_add_executable(trt_demo trt_demo.cpp)
-target_link_libraries(trt_demo nvinfer nvparsers nvonnxparser)
+target_link_libraries(trt_demo nvinfer nvinfer_plugin nvparsers nvonnxparser)
 

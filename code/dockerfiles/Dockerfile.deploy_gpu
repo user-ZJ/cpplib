@@ -1,0 +1,23 @@
+#docker build -f dockerfiles/Dockerfile.deploy_gpu -t docker.dm-ai.cn/algorithm-research/zhanjie/deploy_gpu_ubuntu20.04:v1 --no-cache .
+FROM nvidia/cuda:11.3.0-cudnn8-runtime-ubuntu20.04
+MAINTAINER Docker zack <zackwilliam@docker.com>
+# 添加时区环境变量，亚洲，上海
+ENV TimeZone=Asia/Shanghai
+RUN chmod 1777 /tmp
+RUN apt-get update && \
+    apt-get -y install software-properties-common && \
+    add-apt-repository ppa:ubuntu-toolchain-r/test && \
+    apt-get update && \
+    apt-get -y --no-install-recommends install locales gcc-11 g++-11 libsox-dev libsonic-dev vim less tzdata && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 110 --slave /usr/bin/g++ g++ /usr/bin/g++-11 --slave /usr/bin/gcov gcov /usr/bin/gcov-11 && \
+    rm /etc/localtime && ln -snf /usr/share/zoneinfo/$TimeZone /etc/localtime && \
+    apt-get clean
+RUN dpkg-reconfigure -f noninteractive tzdata
+RUN locale-gen zh_CN && \
+    locale-gen zh_CN.utf8
+ENV LANG zh_CN.UTF-8
+ENV LC_ALL zh_CN.UTF-8
+ENV LANGUAGE zh_CN.UTF-8
+RUN ulimit -c unlimited
+RUN echo "kernel.core_pattern = core.%e.%p.%t">/etc/sysctl.conf
+RUN sysctl -p

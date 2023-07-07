@@ -16,12 +16,12 @@ namespace BASE_NAMESPACE {
 
 SileroVadWrapper::SileroVadWrapper(const std::string ModelPath, int Sample_rate, int frame_ms, float Threshold,
                                    int min_silence_duration_ms, int speech_pad_ms) {
-  Ort::Env &env = ONNXENV::getInstance();
+  auto env = ONNXENV::getInstance();
   Ort::SessionOptions session_options;
   session_options.SetIntraOpNumThreads(1);
   session_options.SetInterOpNumThreads(1);
   session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-  session = std::make_unique<Ort::Session>(env, ModelPath.c_str(), session_options);
+  session = std::make_unique<Ort::Session>(*env, ModelPath.c_str(), session_options);
 
   sample_rate = Sample_rate;
   sr_per_ms = sample_rate / 1000;

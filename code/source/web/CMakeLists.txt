@@ -11,10 +11,13 @@ link_directories(
 
 
 add_executable(http_client HTTPClient.cpp)
-target_link_libraries(http_client PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread glog gflags)
+add_dependencies(http_client Poco::Net Poco::Util Poco::XML Poco::JSON Poco::Foundation)
+target_link_libraries(http_client Poco::Net Poco::Util Poco::XML Poco::JSON Poco::Foundation pthread glog gflags)
 
 add_executable(websocket_client WebSocketClient.cpp)
-target_link_libraries(websocket_client PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread glog gflags)
+add_dependencies(websocket_client Poco::Net Poco::Util Poco::XML Poco::JSON Poco::Foundation)
+target_link_libraries(websocket_client Poco::Net Poco::Util Poco::XML Poco::JSON Poco::Foundation pthread glog gflags)
 
 add_executable(web_server_bin WebServerBin.cpp WebServer.cpp WebsocketHandler.cpp HttpGetHandler.cpp HttpJsonHandler.cpp HttpFormHandler.cpp HttpStreamHandler.cpp DefaultHandler.cpp)
-target_link_libraries(web_server_bin PocoNet PocoUtil PocoXML PocoJSON PocoFoundation pthread glog gflags)
+add_dependencies(web_server_bin Poco::Net Poco::Util Poco::XML Poco::JSON Poco::Foundation)
+target_link_libraries(web_server_bin Poco::Net Poco::Util Poco::XML Poco::JSON Poco::Foundation pthread glog gflags)

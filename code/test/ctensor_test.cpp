@@ -33,13 +33,13 @@ int main(int argc, char *argv[]) {
   t2.at({0,0,0,2}) = 2.999999999999999999999999999999999;
   t2.at({0,0,0,3}) = 2.4;
 
-  CTensorii t3(t2);
+  CTensorii t3;
 
-  CTensorll t4=t2;
-  t4 = t2;
-  std::vector<CTensorfl> vc;
-  vc.emplace_back(t3);
-  vc.emplace_back(t4);
+  // CTensorll t4=t2;
+  // t4 = t2;
+  // std::vector<CTensorfl> vc;
+  // vc.emplace_back(t3);
+  // vc.emplace_back(t4);
 
   t2.dump2File("t2.txt");
   t3.dump2File("t3.txt");
