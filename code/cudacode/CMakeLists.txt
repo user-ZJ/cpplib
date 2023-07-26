@@ -32,13 +32,25 @@ endif()
 
 find_package(CUDA REQUIRED)
 
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+link_directories(/usr/local/cuda/lib64)
+
 # 设置CUDA的编译选项
 # set(CUDA_NVCC_FLAGS "-arch=sm_61")
+
+add_subdirectory(layers)
 
 cuda_add_executable(test test.cu mykernel.cu)
 target_link_libraries(test ${CUDA_LIBRARIES})
 
 
+cuda_add_executable(cudnn_dropout cudnn_dropout.cpp)
+target_link_libraries(cudnn_dropout ${CUDA_LIBRARIES} cudnn)
+
+cuda_add_executable(cublas_gemm cublas_gemm.cpp)
+target_link_libraries(cublas_gemm ${CUDA_LIBRARIES} cublas)
 
 
-
+cuda_add_executable(cutest cutest.cpp)
+target_link_libraries(cutest culayer)
