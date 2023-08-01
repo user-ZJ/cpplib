@@ -122,6 +122,7 @@ inline nvinfer1::Dims toDims(std::vector<int32_t> const &vec) {
 inline int elemSize(DataType dataType) {
   switch (dataType) {
   case DataType::kFLOAT: return 4;
+  case DataType::kINT32: return 4;
   case DataType::kHALF: return 2;
   default: throw std::runtime_error("invalid data type");
   }

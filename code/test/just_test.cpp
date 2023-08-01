@@ -1,11 +1,15 @@
 #include <iostream>
-#include <random>
+#include <vector>
+
+template<typename T>
+T& at(const std::initializer_list<int>& indexs) {
+    static T a=0;
+    return a;
+}
 
 int main() {
-  enum DataType { INT, FLOAT, DOUBLE, CHAR };
-  static const int ARRAY_SIZE[DataType::CHAR + 1] = {
-    [DataType::INT] = 4, [DataType::FLOAT] = 4, [DataType::DOUBLE] = 8, [DataType::CHAR] = 1};
-  for (auto &v : ARRAY_SIZE)
-    std::cout << v << " ";
-  return 0;
+    int arr[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int& result1 = at<int>({0}); // 调用模板函数，返回arr[0]
+    float& result1 = at<float>({0}); // 调用模板函数，返回arr[0]
+    return 0;
 }

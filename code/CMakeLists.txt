@@ -38,11 +38,15 @@ endif()
 option(USE_MNN "whether to build MNN" OFF)
 option(USE_TFLITE "whether to build tflite" OFF)
 option(USE_ONNXRUNTIME "whether to build ONNXRUNTIME" ON)
+
+
+set(CMAKE_VERBOSE_MAKEFILE on)
+
 # 设置所有编译出的库为静态库
 # set(BUILD_SHARED_LIBS ON CACHE BOOL "global variable")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib_static)
 
 include(FetchContent)
 include(ExternalProject)

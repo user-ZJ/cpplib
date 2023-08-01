@@ -36,8 +36,10 @@ find_package(CUDA REQUIRED)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(/usr/local/cuda/lib64)
 
-# 设置CUDA的编译选项
-# set(CUDA_NVCC_FLAGS "-arch=sm_61")
+enable_language(CUDA)
+
+# 设置所需的计算能力
+set(CMAKE_CUDA_ARCHITECTURES "61;75")
 
 add_subdirectory(layers)
 

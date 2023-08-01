@@ -31,7 +31,7 @@ AlignTrailingComments: true
 # AllowAllArgumentsOnNextLine: true
 
 # 允许构造函数的初始化参数放在下一行
-# AllowAllConstructorInitializersOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
 
 # 允许函数声明的所有参数在放在下一行
 AllowAllParametersOfDeclarationOnNextLine: true

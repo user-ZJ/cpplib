@@ -45,6 +45,8 @@ class Layer {
   std::vector<int> output_shapes_;
   int input_num_;
   int output_num_;
+  TensorDescriptorRAII input_desc_raii_;
+  TensorDescriptorRAII output_desc_raii_;
 };
 
 }  // namespace CUDA_NAMESPACE

@@ -6,11 +6,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 include_directories(
 	../source
-	# /data/code/libtorch/include/
-	# /data/code/libtorch/include/torch/csrc/api/include
+	/usr/local/cuda/include
 		 )
 link_directories(
-	# /home/dmai/code/pytorch/build_libtorch/build/lib
+	/usr/local/cuda/lib64
 		)
 
 # set(Torch_DIR /data/code/libtorch/share/cmake/Torch)
@@ -20,7 +19,7 @@ add_executable(path_util_test path_test.cpp)
 target_link_libraries(path_util_test myutil)
 
 add_executable(ctensor_test ctensor_test.cpp)
-target_link_libraries(ctensor_test myutil)
+target_link_libraries(ctensor_test myutil cudart cudnn)
 
 
 add_executable(audio_test audio_test.cpp)

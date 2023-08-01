@@ -1,5 +1,5 @@
 #docker build -f dockerfiles/Dockerfile.build_cuda -t build-cuda:v1 --no-cache .
-FROM nvidia/cuda:11.3.0-devel-ubuntu20.04
+FROM nvidia/cuda:11.0.3-cudnn8-runtime-ubuntu20.04
 MAINTAINER Docker zack <zackwilliam@docker.com>
 # 添加时区环境变量，亚洲，上海
 ENV TimeZone=Asia/Shanghai

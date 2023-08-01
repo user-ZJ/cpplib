@@ -14,6 +14,8 @@
 
 namespace CUDA_NAMESPACE {
 
+
+
 /****************************************************************
  * Layer definition                                             *
  ****************************************************************/
@@ -31,5 +33,9 @@ std::vector<int> Layer::get_output_shape() {
 std::vector<int> Layer::get_input_shape() {
   return output_shapes_;
 }
+
+
+
+
 
 }  // namespace CUDA_NAMESPACE

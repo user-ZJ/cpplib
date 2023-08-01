@@ -19,6 +19,7 @@
 
 namespace BASE_NAMESPACE {
 
+
 // 用于传递给不同框架的数据结构
 // ctensor始终有数据的所有权,且数据始终是连续的
 template <typename T, typename I>
@@ -59,6 +60,8 @@ class CTensor {
   std::vector<T> vector();
   // dump data to file,only for debug
   void dump2File(const char *filename) const;
+  int writeFile(const char *filename) const;
+  int readFile(const char *filename);
 
  private:
   std::shared_ptr<T> data_;
@@ -116,16 +119,6 @@ CTensor<T, I>::CTensor(const CTensor &t) {
   size_ = t.size_;
   data_.reset(new T[size_]);
   ::memcpy(data_.get(), t.data_.get(), size_ * sizeof(T));
-  // shapes_.resize(t.shapes().size());
-  // for (int i = 0; i < t.shapes().size(); i++)
-  //   shapes_[i] = static_cast<I>(t.shapes()[i]);
-  // strides_.resize(t.strides().size());
-  // for (int i = 0; i < t.strides().size(); i++)
-  //   strides_[i] = static_cast<I>(t.strides()[i]);
-  // size_ = t.size();
-  // data_.reset(new T[size_]);
-  // for (int i = 0; i < size(); i++)
-  //   *(data_.get() + i) = static_cast<T>(*(t.data() + i));
 }
 
 // 移动构造函数
@@ -302,6 +295,22 @@ void CTensor<T, I>::dump2File(const char *filename) const {
     out << "\n";
     out.close();
   }
+}
+
+template <typename T, typename I>
+int CTensor<T, I>::writeFile(const char *filename) const{
+  std::ofstream out(filename, std::ios::out|std::ios::binary);
+  out.write((char*)data_.get(),size_*sizeof(T));
+  out.close();
+  return 0;
+}
+
+template <typename T, typename I>
+int CTensor<T, I>::readFile(const char *filename){
+  std::ifstream in(filename, std::ios::in | std::ios::binary);
+  in.read((char*)data_.get(), size_*sizeof(T));
+  in.close();
+  return 0;
 }
 
 typedef CTensor<float, int64_t> CTensorfl;
