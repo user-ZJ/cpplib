@@ -4,8 +4,8 @@
  * @Last Modified by: zack
  * @Last Modified time: 2022-09-21 15:21:49
  */
-#ifndef BASE_CTENSOR_UTIL_H_
-#define BASE_CTENSOR_UTIL_H_
+#ifndef BASE_NDTensor_UTIL_H_
+#define BASE_NDTensor_UTIL_H_
 #include <algorithm>
 #include <assert.h>
 #include <cstring>
@@ -17,7 +17,7 @@
 #include <utility>
 #include <vector>
 
-namespace CUDA_NAMESPACE {
+namespace BASE_NAMESPACE {
 
 enum class DataType { HALF, FLOAT, DOUBLE, INT8, INT16, INT32, INT64 };
 
@@ -35,24 +35,24 @@ int GetElementSize(DataType type) {
 }
 
 // 用于传递给不同框架的数据结构
-// ctensor始终有数据的所有权,且数据始终是连续的
-class CTensor {
+// NDTensor始终有数据的所有权,且数据始终是连续的
+class NDTensor {
  public:
-  CTensor();
+  NDTensor();
   // 支持vector初始化
-  explicit CTensor(const std::vector<int> &shapes,DataType data_type = DataType::FLOAT);
+  explicit NDTensor(const std::vector<int> &shapes,DataType data_type = DataType::FLOAT);
   // 支持initializer_list初始化
-  explicit CTensor(const std::initializer_list<int> &shapes,DataType data_type = DataType::FLOAT);
+  explicit NDTensor(const std::initializer_list<int> &shapes,DataType data_type = DataType::FLOAT);
   // 拷贝构造函数
-  CTensor(const CTensor &t);
+  NDTensor(const NDTensor &t);
   // 移动构造函数
-  CTensor(CTensor &&t) noexcept;
+  NDTensor(NDTensor &&t) noexcept;
   // 赋值构造函数
-  CTensor &operator=(const CTensor &t);
+  NDTensor &operator=(const NDTensor &t);
   // 移动赋值构造函数
-  CTensor &operator=(CTensor &&t) noexcept;
+  NDTensor &operator=(NDTensor &&t) noexcept;
 
-  ~CTensor();
+  ~NDTensor();
   // 调整tensor大小，会重新分配内存，保证内存连续
   void resize(const std::vector<int> shapes);
   void resize(const std::initializer_list<int> &shapes);
@@ -63,8 +63,10 @@ class CTensor {
   T &at(const std::initializer_list<int> &indexs,T *p=nullptr);
   template <typename T>
   const T &at(const std::initializer_list<int> &indexs,T *p=nullptr) const;
-  void *data();
-  void *data() const;
+  template <typename T>
+  T *data();
+  template <typename T>
+  T *data() const;
   std::vector<int> shapes() const;
   std::vector<int> strides() const;
   uint64_t size() const;
@@ -85,7 +87,7 @@ class CTensor {
 };
 
 
-CTensor::CTensor() {
+NDTensor::NDTensor() {
   data_ = nullptr;
   data_type_ = DataType::FLOAT;
   size_ = 0;
@@ -94,7 +96,7 @@ CTensor::CTensor() {
 }
 
 
-CTensor::CTensor(const std::vector<int> &shapes,DataType data_type) {
+NDTensor::NDTensor(const std::vector<int> &shapes,DataType data_type) {
   assert(shapes.size() > 0);
   shapes_ = shapes;
   strides_.resize(shapes.size());
@@ -113,7 +115,7 @@ CTensor::CTensor(const std::vector<int> &shapes,DataType data_type) {
 
 // 支持initializer_list初始化
 
-CTensor::CTensor(const std::initializer_list<int> &shapes,DataType data_type) {
+NDTensor::NDTensor(const std::initializer_list<int> &shapes,DataType data_type) {
   assert(shapes.size() > 0);
   shapes_ = shapes;
   strides_.resize(shapes.size());
@@ -132,7 +134,7 @@ CTensor::CTensor(const std::initializer_list<int> &shapes,DataType data_type) {
 
 // 拷贝构造函数
 
-CTensor::CTensor(const CTensor &t) {
+NDTensor::NDTensor(const NDTensor &t) {
   shapes_ = t.shapes_;
   strides_ = t.strides_;
   size_ = t.size_;
@@ -144,7 +146,7 @@ CTensor::CTensor(const CTensor &t) {
 
 // 移动构造函数
 
-CTensor::CTensor(CTensor &&t) noexcept {
+NDTensor::NDTensor(NDTensor &&t) noexcept {
   shapes_ = t.shapes_;
   strides_ = t.strides_;
   size_ = t.size_;
@@ -156,10 +158,10 @@ CTensor::CTensor(CTensor &&t) noexcept {
 
 // 赋值构造函数
 
-CTensor &CTensor::operator=(const CTensor &t) {
+NDTensor &NDTensor::operator=(const NDTensor &t) {
   if (this == &t) return *this;
   // copy & swap
-  CTensor temp{t};
+  NDTensor temp{t};
   std::swap(shapes_, temp.shapes_);
   std::swap(strides_, temp.strides_);
   std::swap(size_, temp.size_);
@@ -171,10 +173,10 @@ CTensor &CTensor::operator=(const CTensor &t) {
 
 // 移动赋值构造函数
 
-CTensor &CTensor::operator=(CTensor &&t) noexcept {
+NDTensor &NDTensor::operator=(NDTensor &&t) noexcept {
   if (this == &t) return *this;
   // copy & swap
-  CTensor temp{std::move(t)};
+  NDTensor temp{std::move(t)};
   std::swap(shapes_, temp.shapes_);
   std::swap(strides_, temp.strides_);
   std::swap(size_, temp.size_);
@@ -185,14 +187,14 @@ CTensor &CTensor::operator=(CTensor &&t) noexcept {
 }
 
 
-CTensor::~CTensor() {
+NDTensor::~NDTensor() {
   if(data_) free(data_);
 }
 // 调整tensor大小，会重新分配内存，保证内存连续
 
-void CTensor::resize(const std::vector<int> shapes) {
+void NDTensor::resize(const std::vector<int> shapes) {
   if (shapes == shapes_) return;
-  CTensor newTensor(shapes);
+  NDTensor newTensor(shapes);
   std::swap(size_, newTensor.size_);
   std::swap(byte_size_, newTensor.byte_size_);
   std::swap(data_type_, newTensor.data_type_);
@@ -202,8 +204,8 @@ void CTensor::resize(const std::vector<int> shapes) {
 }
 
 
-void CTensor::resize(const std::initializer_list<int> &shapes) {
-  CTensor newTensor(shapes);
+void NDTensor::resize(const std::initializer_list<int> &shapes) {
+  NDTensor newTensor(shapes);
   std::swap(size_, newTensor.size_);
   std::swap(byte_size_, newTensor.byte_size_);
   std::swap(data_type_, newTensor.data_type_);
@@ -214,7 +216,7 @@ void CTensor::resize(const std::initializer_list<int> &shapes) {
 
 // 清除数据
 
-void CTensor::clear() {
+void NDTensor::clear() {
   shapes_.clear();
   strides_.clear();
   size_ = 0;
@@ -225,9 +227,9 @@ void CTensor::clear() {
 
 // 访问数据
 template <typename T>
-T &CTensor::at(const std::initializer_list<int> &indexs,T *p) {
+T &NDTensor::at(const std::initializer_list<int> &indexs,T *p) {
   assert(indexs.size() == shapes_.size());
-  char *ptr = static_cast(char*)data_;
+  char *ptr = static_cast<char*>(data_);
   int i = 0;
   for (auto d : indexs) {
     assert(d < shapes_[i]);  // 检查是否越界，防止踩内存
@@ -237,9 +239,9 @@ T &CTensor::at(const std::initializer_list<int> &indexs,T *p) {
 }
 
 template <typename T>
-const T &CTensor::at(const std::initializer_list<int> &indexs,T *p) const {
+const T &NDTensor::at(const std::initializer_list<int> &indexs,T *p) const {
   assert(indexs.size() == shapes_.size());
-  char *ptr = static_cast(char*)data_;
+  char *ptr = static_cast<char*>(data_);
   int i = 0;
   for (auto d : indexs) {
     ptr += d * strides_[i++]*GetElementSize(data_type_);
@@ -247,37 +249,37 @@ const T &CTensor::at(const std::initializer_list<int> &indexs,T *p) const {
   return *ptr;
 }
 
+template <typename T>
+T *NDTensor::data() {
+  return static_cast<T *>(data_);
+}
 
-void *CTensor::data() {
-  return data_;
+template <typename T>
+T *NDTensor::data() const {
+  return static_cast<T *>(data_);
 }
 
 
-void *CTensor::data() const {
-  return data_;
-}
-
-
-std::vector<int> CTensor::shapes() const {
+std::vector<int> NDTensor::shapes() const {
   return shapes_;
 }
 
 
-std::vector<int> CTensor::strides() const {
+std::vector<int> NDTensor::strides() const {
   return strides_;
 }
 
 
-uint64_t CTensor::size() const {
+uint64_t NDTensor::size() const {
   return size_;
 }
 
-uint64_t CTensor::byteSize() const {
+uint64_t NDTensor::byteSize() const {
   return byte_size_;
 }
 
 template <typename T>
-void CTensor::dump2File(const char *filename) const {
+void NDTensor::dump2File(const char *filename) const {
   std::ofstream out(filename);
   if (out.is_open()) {
     // shapes
@@ -312,7 +314,7 @@ void CTensor::dump2File(const char *filename) const {
 }
 
 
-int CTensor::writeFile(const char *filename) const{
+int NDTensor::writeFile(const char *filename) const{
   std::ofstream out(filename, std::ios::out|std::ios::binary);
   out.write((char*)data_,byte_size_);
   out.close();
@@ -320,7 +322,7 @@ int CTensor::writeFile(const char *filename) const{
 }
 
 
-int CTensor::readFile(const char *filename){
+int NDTensor::readFile(const char *filename){
   std::ifstream in(filename, std::ios::in | std::ios::binary);
   in.read((char*)data_, byte_size_);
   in.close();

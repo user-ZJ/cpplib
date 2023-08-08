@@ -1,15 +1,15 @@
 #include <iostream>
 #include <vector>
+#include "utils/NDTensor.h"
 
-template<typename T>
-T& at(const std::initializer_list<int>& indexs) {
-    static T a=0;
-    return a;
-}
+using namespace BASE_NAMESPACE;
 
 int main() {
     int arr[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    int& result1 = at<int>({0}); // 调用模板函数，返回arr[0]
-    float& result1 = at<float>({0}); // 调用模板函数，返回arr[0]
+    NDTensor t({1,2,4,3});
+    std::cout<<t.at<float>({0,0,0,0})<<std::endl;
+    std::cout<<t.at<int>({0,0,0,0})<<std::endl;
+    std::cout<<t.data<float>()<<std::endl;
+    std::cout<<t.data<int>()<<std::endl;
     return 0;
 }

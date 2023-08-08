@@ -38,13 +38,27 @@ link_directories(/usr/local/cuda/lib64)
 
 enable_language(CUDA)
 
+# 设置 NVCC 编译选项
+# set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -m64 -lineinfo --resource-usage")
+
+
 # 设置所需的计算能力
 set(CMAKE_CUDA_ARCHITECTURES "61;75")
+
 
 add_subdirectory(layers)
 
 cuda_add_executable(test test.cu mykernel.cu)
 target_link_libraries(test ${CUDA_LIBRARIES})
+# target_compile_options(test  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+#                         -m64 -lineinfo --resource-usage 
+#                         -gencode arch=compute_52,code=sm_52 
+#                         -gencode arch=compute_60,code=sm_60 
+#                         -gencode arch=compute_61,code=sm_61 
+#                         -gencode arch=compute_70,code=sm_70 
+#                         -gencode arch=compute_75,code=sm_75 
+#                         -gencode arch=compute_80,code=sm_80
+#                        >)
 
 
 cuda_add_executable(cudnn_dropout cudnn_dropout.cpp)
