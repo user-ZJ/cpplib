@@ -38,9 +38,9 @@ Conv2D::~Conv2D() {
   cudnnDestroyConvolutionDescriptor(conv_desc_);
 }
 
-CuTensor Conv2D::set_workspace(CudaContext &context, CuTensor *input, CuTensor *output) {
-  auto input_desc_ = input->tensor_desc();
-  auto output_desc_ = output->tensor_desc();
+NDTensor Conv2D::set_workspace(CudaContext &context, NDTensor *input, NDTensor *output) {
+  auto input_desc = createTensorDesc(input->shapes());
+  auto output_desc = createTensorDesc(output->shapes());
   size_t temp_size = 0;
   size_t workspace_size=0;
 
@@ -50,17 +50,17 @@ CuTensor Conv2D::set_workspace(CudaContext &context, CuTensor *input, CuTensor *
   int algo_max_count;
   int returnedAlgoCount = 0;
   checkCudnnErrors(cudnnGetConvolutionForwardAlgorithmMaxCount(context.cudnn(), &algo_max_count));
-  checkCudnnErrors(cudnnGetConvolutionForwardAlgorithm_v7(context.cudnn(), input_desc_, filter_desc_, conv_desc_,
-                                                          output_desc_, algo_max_count, &returnedAlgoCount,
+  checkCudnnErrors(cudnnGetConvolutionForwardAlgorithm_v7(context.cudnn(), input_desc.tensor_desc_, filter_desc_, conv_desc_,
+                                                          output_desc.tensor_desc_, algo_max_count, &returnedAlgoCount,
                                                           &fwd_algo_perf_results[0]));
   // shoose the fastest algorithm
   conv_fwd_algo_ = fwd_algo_perf_results[0].algo;
 
-  checkCudnnErrors(cudnnGetConvolutionForwardWorkspaceSize(context.cudnn(), input_desc_, filter_desc_, conv_desc_,
-                                                           output_desc_, conv_fwd_algo_, &temp_size));
+  checkCudnnErrors(cudnnGetConvolutionForwardWorkspaceSize(context.cudnn(), input_desc.tensor_desc_, filter_desc_, conv_desc_,
+                                                           output_desc.tensor_desc_, conv_fwd_algo_, &temp_size));
   workspace_size = std::max(workspace_size, temp_size);
 
-  return CuTensor({1,(int)workspace_size},DataType::INT8);
+  return NDTensor({1,(int)workspace_size},DataType::INT8);
 }
 
 void Conv2D::fwd_initialize(const std::vector<int> &inputShape) {
@@ -71,25 +71,25 @@ void Conv2D::fwd_initialize(const std::vector<int> &inputShape) {
     checkCudnnErrors(cudnnSetFilter4dDescriptor(filter_desc_, CUDNN_DATA_FLOAT, CUDNN_TENSOR_NCHW, out_channels_,
                                                 channel, kernel_size_, kernel_size_));
 
-    weights_ptr_ = new CuTensor({out_channels_, channel, kernel_size_, kernel_size_});
-    biases_ptr_ = new CuTensor({1, out_channels_});  // bias size
+    weights_ptr_ = new NDTensor({out_channels_, channel, kernel_size_, kernel_size_});
+    biases_ptr_ = new NDTensor({1, out_channels_});  // bias size
     weights_.reset(weights_ptr_);
     biases_.reset(biases_ptr_);
   }
 }
 
-int Conv2D::forward(CudaContext &context, CuTensor *input, CuTensor *output) {
+int Conv2D::forward(CudaContext &context, NDTensor *input, NDTensor *output) {
   //   LOG(INFO) << "Conv2D::forward\n";
-  CuTensor workspace = set_workspace(context,input,output);
-  auto bias_desc_ = biases_->tensor_desc();
-  auto input_desc_ = input->tensor_desc();
-  auto output_desc_ = output->tensor_desc();
-  checkCudnnErrors(cudnnConvolutionForward(context.cudnn(), &context.one, input_desc_, input->data(), filter_desc_,
-                                           weights_->data(), conv_desc_, conv_fwd_algo_, workspace.data(), workspace.byteSize(),
-                                           &context.zero, output_desc_, output->data()));
+  NDTensor workspace = set_workspace(context,input,output);
+  auto bias_desc = createTensorDesc(biases_->shapes());
+  auto input_desc = createTensorDesc(input->shapes());
+  auto output_desc = createTensorDesc(output->shapes());
+  checkCudnnErrors(cudnnConvolutionForward(context.cudnn(), &context.one, input_desc.tensor_desc_, input->data<float>(), filter_desc_,
+                                           weights_->data<float>(), conv_desc_, conv_fwd_algo_, workspace.data<float>(), workspace.byteSize(),
+                                           &context.zero, output_desc.tensor_desc_, output->data<float>()));
 
-  checkCudnnErrors(cudnnAddTensor(context.cudnn(), &context.one, bias_desc_, biases_->data(), &context.one,
-                                  output_desc_, output->data()));
+  checkCudnnErrors(cudnnAddTensor(context.cudnn(), &context.one, bias_desc.tensor_desc_, biases_->data<float>(), &context.one,
+                                  output_desc.tensor_desc_, output->data<float>()));
   return 0;
 }
 

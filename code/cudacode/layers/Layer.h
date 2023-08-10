@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "base/cutensor.h"
+#include "base/NDTensor.h"
 #include "base/cuhelper.h"
 
 namespace CUDA_NAMESPACE {
@@ -17,7 +17,7 @@ class Layer {
   Layer();
   virtual ~Layer();
 
-  virtual int forward(CudaContext &context,CuTensor *input,CuTensor *output) = 0;
+  virtual int forward(CudaContext &context,NDTensor *input,NDTensor *output) = 0;
   // 设置输入维度，计算输出维度
   virtual int set_input_shape(const std::vector<int> &shape) = 0;
   virtual int load_parameter() = 0;

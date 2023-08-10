@@ -15,7 +15,7 @@ class Pooling : public Layer {
   Pooling(std::string name, int kernel_size, int padding, int stride, cudnnPoolingMode_t mode);
   virtual ~Pooling();
 
-  virtual int forward(CudaContext &context, CuTensor *input, CuTensor *output) override;
+  virtual int forward(CudaContext &context, NDTensor *input, NDTensor *output) override;
 
   virtual int set_input_shape(const std::vector<int> &inputShape) override;
 

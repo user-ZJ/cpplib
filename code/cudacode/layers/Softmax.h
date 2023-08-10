@@ -16,7 +16,7 @@ class Softmax : public Layer {
   Softmax(std::string name);
   virtual ~Softmax();
 
-  virtual int forward(CudaContext &context,CuTensor *input,CuTensor *output) override;
+  virtual int forward(CudaContext &context,NDTensor *input,NDTensor *output) override;
 
   virtual int set_input_shape(const std::vector<int> &inputShape) override;
 

@@ -27,14 +27,14 @@ Softmax::~Softmax() {
 void Softmax::fwd_initialize(const std::vector<int> &inputShape) {
 }
 
-int Softmax::forward(CudaContext &context, CuTensor *input, CuTensor *output) {
+int Softmax::forward(CudaContext &context, NDTensor *input, NDTensor *output) {
   //   LOG(INFO) << "Softmax::forward\n";
-  auto input_desc_ = input->tensor_desc();
-  auto output_desc_ = output->tensor_desc();
+  auto input_desc = createTensorDesc(input->shapes());
+  auto output_desc = createTensorDesc(output->shapes());
   checkCudnnErrors(
 		cudnnSoftmaxForward(context.cudnn(), CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_CHANNEL,
-			&context.one,  input_desc_,  input->data(),
-			&context.zero, output_desc_, output->data()));
+			&context.one,  input_desc.tensor_desc_,  input->data<float>(),
+			&context.zero, output_desc.tensor_desc_, output->data<float>()));
   return 0;
 }
 

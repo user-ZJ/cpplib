@@ -41,7 +41,7 @@ void Dropout::fwd_initialize(const std::vector<int> &inputShapes) {
   
 }
 
-int Dropout::forward(CudaContext &context,CuTensor *input,CuTensor *output) {
+int Dropout::forward(CudaContext &context,NDTensor *input,NDTensor *output) {
   //   LOG(INFO) << "Dropout::forward\n";
   cudnnDropoutGetStatesSize(context.cudnn(), &dropout_state_size);
   cudnnDropoutGetReserveSpaceSize(tensor_desc_, &dropout_reserve_size);
@@ -50,9 +50,9 @@ int Dropout::forward(CudaContext &context,CuTensor *input,CuTensor *output) {
   cudaMalloc(&dropout_reserve_space, dropout_reserve_size);
   cudnnSetDropoutDescriptor(dropout_descriptor, context.cudnn(), dropRatio, states, dropout_state_size,
                             /*Seed*/ time(NULL));
-  auto input_desc_ = input->tensor_desc();
-  auto output_desc_ = output->tensor_desc();
-  cudnnDropoutForward(context.cudnn(), dropout_descriptor, input_desc_, input->data(), output_desc_, output->data(),
+  auto input_desc =createTensorDesc(input->shapes());
+  auto output_desc = createTensorDesc(output->shapes());
+  cudnnDropoutForward(context.cudnn(), dropout_descriptor, input_desc.tensor_desc_, input->data<float>(), output_desc.tensor_desc_, output->data<float>(),
                       dropout_reserve_space, dropout_reserve_size);
   return 0;
 }

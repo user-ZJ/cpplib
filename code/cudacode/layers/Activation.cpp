@@ -33,12 +33,12 @@ Activation::~Activation() {
 void Activation::fwd_initialize(const std::vector<int> &inputShape) {
 }
 
-int Activation::forward(CudaContext &context, CuTensor *input, CuTensor *output) {
+int Activation::forward(CudaContext &context, NDTensor *input, NDTensor *output) {
   //   LOG(INFO) << "Activation::forward\n";
-  auto input_desc_ = input->tensor_desc();
-  auto output_desc_ = output->tensor_desc();
-  cudnnActivationForward(context.cudnn(), act_desc_, &context.one, input_desc_, input->data(), &context.zero,
-                         output_desc_, output->data());
+  auto input_desc = createTensorDesc(input->shapes());
+  auto output_desc = createTensorDesc(output->shapes());
+  cudnnActivationForward(context.cudnn(), act_desc_, &context.one, input_desc.tensor_desc_, input->data<float>(), &context.zero,
+                         output_desc.tensor_desc_, output->data<float>());
   return 0;
 }
 

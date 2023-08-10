@@ -19,7 +19,7 @@ class Conv2D : public Layer {
   Conv2D(std::string name, int out_channels, int kernel_size, int stride = 1, int padding = 0, int dilation = 1);
   virtual ~Conv2D();
 
-  virtual int forward(CudaContext &context, CuTensor *input, CuTensor *output) override;
+  virtual int forward(CudaContext &context, NDTensor *input, NDTensor *output) override;
 
   virtual int set_input_shape(const std::vector<int> &inputShape) override;
 
@@ -32,10 +32,10 @@ class Conv2D : public Layer {
     return 0;
   }
 
-  std::unique_ptr<CuTensor> weights_; /* w */
-  std::unique_ptr<CuTensor> biases_;  /* b */
-  CuTensor *weights_ptr_;
-  CuTensor *biases_ptr_;
+  std::unique_ptr<NDTensor> weights_; /* w */
+  std::unique_ptr<NDTensor> biases_;  /* b */
+  NDTensor *weights_ptr_;
+  NDTensor *biases_ptr_;
 
   int out_channels_;
   int kernel_size_;
@@ -50,7 +50,7 @@ class Conv2D : public Layer {
 
   // size_t workspace_size_ = 0;
   // void *d_workspace_ = nullptr;
-  CuTensor set_workspace(CudaContext &context,CuTensor *input, CuTensor *output);
+  NDTensor set_workspace(CudaContext &context,NDTensor *input, NDTensor *output);
 };
 
 }  // namespace CUDA_NAMESPACE

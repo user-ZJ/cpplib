@@ -11,6 +11,25 @@ namespace CUDA_NAMESPACE {
 #define BLOCK_DIM_1D 512
 #define BLOCK_DIM 16
 
+struct StreamDeleter {
+  void operator()(cudaStream_t *stream) {
+    if (stream) {
+      cudaStreamDestroy(*stream);
+      delete stream;
+    }
+  }
+};
+
+template <typename T>
+struct CuMemDeleter {
+  void operator()(T *p) noexcept {
+    cudaFree(p);
+  }
+};
+
+template <typename T, template <typename> class DeleterType = CuMemDeleter>
+using UniqPtr = std::unique_ptr<T, DeleterType<T>>;
+
 /* CUDA API error return checker */
 #ifndef checkCudaErrors
 #define checkCudaErrors(err)                                                                                           \
@@ -23,6 +42,22 @@ namespace CUDA_NAMESPACE {
     }                                                                                                                  \
   }
 #endif
+
+template <typename T>
+inline UniqPtr<T, CuMemDeleter> mallocCudaMem(size_t nbElems) {
+  T *ptr = nullptr;
+  checkCudaErrors(cudaMalloc((void **)&ptr, sizeof(T) * nbElems));
+  return UniqPtr<T, CuMemDeleter>{ptr};
+}
+
+inline std::unique_ptr<cudaStream_t, StreamDeleter> makeCudaStream(int flags = cudaStreamNonBlocking) {
+  // cudaStream_t stream;
+  // checkCudaErrors(cudaStreamCreateWithFlags(&stream, flags));
+  // return std::unique_ptr<cudaStream_t, StreamDeleter>{ stream };
+  std::unique_ptr<cudaStream_t, StreamDeleter> pStream(new cudaStream_t);
+  if (cudaStreamCreateWithFlags(pStream.get(), flags) != cudaSuccess) { pStream.reset(nullptr); }
+  return pStream;
+}
 
 static const char *_cublasGetErrorEnum(cublasStatus_t error) {
   switch (error) {
@@ -140,12 +175,6 @@ class CudaContext {
   cudnnHandle_t _cudnn_handle;
 };
 
-template <typename T>
-struct CuMemDeleter {
-  void operator()(T *p) noexcept {
-    checkCudaErrors(cudaFree(p));
-  }
-};
 
 class TensorDescriptorRAII {
  public:
@@ -158,26 +187,36 @@ class TensorDescriptorRAII {
     if (tensor_desc_) checkCudnnErrors(cudnnDestroyTensorDescriptor(tensor_desc_));
   }
   // 深拷贝
-  TensorDescriptorRAII(const TensorDescriptorRAII &t){
-    if (!tensor_desc_) 
-      cudnnCreateTensorDescriptor(&tensor_desc_);
+  TensorDescriptorRAII(const TensorDescriptorRAII &t) {
+    if (!tensor_desc_) cudnnCreateTensorDescriptor(&tensor_desc_);
   }
-  TensorDescriptorRAII &operator=(const TensorDescriptorRAII &t){
-    if(this==&t) return *this;
-    if(!tensor_desc_)
-      cudnnCreateTensorDescriptor(&tensor_desc_);
+  TensorDescriptorRAII &operator=(const TensorDescriptorRAII &t) {
+    if (this == &t) return *this;
+    if (!tensor_desc_) cudnnCreateTensorDescriptor(&tensor_desc_);
     return *this;
   }
-  TensorDescriptorRAII(TensorDescriptorRAII &&t){
+  TensorDescriptorRAII(TensorDescriptorRAII &&t) {
     tensor_desc_ = t.tensor_desc_;
     t.tensor_desc_ = nullptr;
   }
-  TensorDescriptorRAII &operator=(TensorDescriptorRAII &&t){
+  TensorDescriptorRAII &operator=(TensorDescriptorRAII &&t) {
     tensor_desc_ = t.tensor_desc_;
     t.tensor_desc_ = nullptr;
     return *this;
   }
 };
+
+inline TensorDescriptorRAII createTensorDesc(const std::vector<int> &shape) {
+  TensorDescriptorRAII tensor_desc_raii;
+  if (shape.size() <= 4) {
+    std::array<int, 4> nchw{1, 1, 1, 1};
+    for (int i = 0; i < shape.size(); i++)
+      nchw[i] = shape[i];
+    cudnnSetTensor4dDescriptor(tensor_desc_raii.tensor_desc_, CUDNN_TENSOR_NCHW, CUDNN_DATA_FLOAT, nchw[0], nchw[1],
+                               nchw[2], nchw[3]);
+  }
+  return tensor_desc_raii;
+}
 
 }  // namespace CUDA_NAMESPACE
 

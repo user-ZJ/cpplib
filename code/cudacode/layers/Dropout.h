@@ -13,7 +13,7 @@ class Dropout : public Layer {
  public:
   Dropout(const std::string name, float ratio);
   virtual ~Dropout();
-  virtual int forward(CudaContext &context,CuTensor *input,CuTensor *output) override;
+  virtual int forward(CudaContext &context,NDTensor *input,NDTensor *output) override;
   virtual int set_input_shape(const std::vector<int> &inputShape) override;
   virtual void fwd_initialize(const std::vector<int> &inputShape) override;
   virtual int load_parameter() override;

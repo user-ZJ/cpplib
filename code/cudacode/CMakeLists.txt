@@ -32,6 +32,8 @@ endif()
 
 find_package(CUDA REQUIRED)
 
+add_definitions(-DUSE_CUDA=1)
+
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(/usr/local/cuda/lib64)
@@ -68,5 +70,5 @@ cuda_add_executable(cublas_gemm cublas_gemm.cpp)
 target_link_libraries(cublas_gemm ${CUDA_LIBRARIES} cublas)
 
 
-cuda_add_executable(cutest cutest.cpp)
+cuda_add_executable(cutest cutest.cu)
 target_link_libraries(cutest culayer)

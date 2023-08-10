@@ -31,13 +31,13 @@ Pooling::~Pooling() {
 
 void Pooling::fwd_initialize(const std::vector<int> &inputShape) {}
 
-int Pooling::forward(CudaContext &context, CuTensor *input, CuTensor *output) {
+int Pooling::forward(CudaContext &context, NDTensor *input, NDTensor *output) {
   //   LOG(INFO) << "Pooling::forward\n";
-  auto input_desc_ = input->tensor_desc();
-  auto output_desc_ = output->tensor_desc();
+  auto input_desc = createTensorDesc(input->shapes());
+  auto output_desc = createTensorDesc(output->shapes());
   cudnnPoolingForward(context.cudnn(), pool_desc_,
-		&context.one,   input_desc_,  input->data(),
-		&context.zero,  output_desc_, output->data());
+		&context.one,   input_desc.tensor_desc_,  input->data<float>(),
+		&context.zero,  output_desc.tensor_desc_, output->data<float>());
   return 0;
 }
 
