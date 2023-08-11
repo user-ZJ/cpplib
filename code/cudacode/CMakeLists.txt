@@ -34,8 +34,13 @@ find_package(CUDA REQUIRED)
 
 add_definitions(-DUSE_CUDA=1)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+include_directories(
+    /usr/local/cuda/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 link_directories(/usr/local/cuda/lib64)
 
 enable_language(CUDA)
@@ -72,3 +77,7 @@ target_link_libraries(cublas_gemm ${CUDA_LIBRARIES} cublas)
 
 cuda_add_executable(cutest cutest.cu)
 target_link_libraries(cutest culayer)
+
+
+add_subdirectory(base)
+add_subdirectory(unittest)

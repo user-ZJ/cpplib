@@ -154,8 +154,8 @@ class CudaContext {
     checkCudnnErrors(cudnnCreate(&_cudnn_handle));
   }
   ~CudaContext() {
-    cublasDestroy(_cublas_handle);
-    checkCudnnErrors(cudnnDestroy(_cudnn_handle));
+    checkCublasErrors(cublasDestroy(_cublas_handle));
+    // checkCudnnErrors(cudnnDestroy(_cudnn_handle));
   }
 
   cublasHandle_t cublas() {

@@ -65,7 +65,7 @@ int Dropout::set_input_shape(const std::vector<int> &inputShapes) {
   return 0;
 }
 
-int Dropout::load_parameter() {
+int Dropout::load_parameter(const std::vector<char> &buff) {
   return 0;
 }
 int Dropout::save_parameter() {

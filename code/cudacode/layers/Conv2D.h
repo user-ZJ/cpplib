@@ -25,7 +25,7 @@ class Conv2D : public Layer {
 
  private:
   void fwd_initialize(const std::vector<int> &inputShape);
-  virtual int load_parameter() {
+  virtual int load_parameter(const std::vector<char> &buff) {
     return 0;
   }
   virtual int save_parameter() {

@@ -14,8 +14,8 @@ link_directories(/usr/local/cuda/lib64)
 # set(CUDA_NVCC_FLAGS "-arch=sm_61")
 
 
-aux_source_directory(. LAYER_SRC_LIST)
-message("LAYER_SRC_LIST ${LAYER_SRC_LIST}")
+aux_source_directory(. BASE_SRC_LIST)
 
-cuda_add_library(culayer STATIC ${LAYER_SRC_LIST})
-target_link_libraries(culayer ${CUDA_LIBRARIES} cudnn cublas cubase)
+
+add_library(cubase STATIC ${BASE_SRC_LIST})
+target_link_libraries(cubase ${CUDA_LIBRARIES} cudnn cublas)

@@ -19,7 +19,7 @@ namespace CUDA_NAMESPACE {
 /****************************************************************
  * Layer definition                                             *
  ****************************************************************/
-Layer::Layer() : freeze_(false), batch_size_(0),input_num_(0),output_num_(0) {}
+Layer::Layer() : freeze_(false), batch_size_(1) {}
 
 Layer::~Layer() {}
 

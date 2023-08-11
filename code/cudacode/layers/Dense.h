@@ -17,6 +17,8 @@ class Dense : public Layer {
 
   virtual int forward(CudaContext &context,NDTensor *input,NDTensor *output) override;
   virtual int set_input_shape(const std::vector<int> &inputShape) override;
+  virtual int load_parameter(const std::vector<char> &buff);
+  virtual int save_parameter();
 
  private:
   virtual void fwd_initialize(const std::vector<int> &inputShape) override;
@@ -27,8 +29,7 @@ class Dense : public Layer {
   std::unique_ptr<NDTensor> biases_;  /* b */
   NDTensor *weights_ptr_;
   NDTensor *biases_ptr_;
-  virtual int load_parameter();
-  virtual int save_parameter();
+  
   float *d_one_vec = nullptr;
 };
 

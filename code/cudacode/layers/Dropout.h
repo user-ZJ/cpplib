@@ -16,7 +16,7 @@ class Dropout : public Layer {
   virtual int forward(CudaContext &context,NDTensor *input,NDTensor *output) override;
   virtual int set_input_shape(const std::vector<int> &inputShape) override;
   virtual void fwd_initialize(const std::vector<int> &inputShape) override;
-  virtual int load_parameter() override;
+  virtual int load_parameter(const std::vector<char> &buff) override;
   virtual int save_parameter() override;
 
  private:
