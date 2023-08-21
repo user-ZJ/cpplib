@@ -5,13 +5,13 @@ namespace CUDA_NAMESPACE {
 
 NDTensor::NDTensor() :
   host_data_(nullptr), device_data_(nullptr), data_type_(DataType::FLOAT), device_type_(DeviceType::CPU), size_(0) {
-    std::cout<<"default construct"<<std::endl;
+    // std::cout<<"default construct"<<std::endl;
 }
 
 NDTensor::NDTensor(const std::vector<int> &shapes, DataType data_type, DeviceType device_type) :
   data_type_(data_type), device_type_(device_type) {
   assert(shapes.size() > 0);
-  std::cout<<"vector construct"<<std::endl;
+//   std::cout<<"vector construct"<<std::endl;
   shapes_ = shapes;
   strides_.resize(shapes.size());
   size_ = shapes_[0];
@@ -39,7 +39,7 @@ NDTensor::NDTensor(const std::vector<int> &shapes, DataType data_type, DeviceTyp
 
 NDTensor::NDTensor(const std::initializer_list<int> &shapes, DataType data_type, DeviceType device_type) :
   data_type_(data_type), device_type_(device_type) {
-  std::cout<<"ini list construct"<<std::endl;
+//   std::cout<<"ini list construct"<<std::endl;
   assert(shapes.size() > 0);
   shapes_ = shapes;
   strides_.resize(shapes.size());
@@ -67,7 +67,7 @@ NDTensor::NDTensor(const std::initializer_list<int> &shapes, DataType data_type,
 // 拷贝构造函数
 
 NDTensor::NDTensor(const NDTensor &t) {
-  std::cout<<"copy construct"<<std::endl;
+//   std::cout<<"copy construct"<<std::endl;
   shapes_ = t.shapes_;
   strides_ = t.strides_;
   size_ = t.size_;
@@ -91,7 +91,7 @@ NDTensor::NDTensor(const NDTensor &t) {
 // 移动构造函数
 
 NDTensor::NDTensor(NDTensor &&t) noexcept {
-  std::cout<<"move construct"<<std::endl;
+//   std::cout<<"move construct"<<std::endl;
   shapes_ = t.shapes_;
   strides_ = t.strides_;
   size_ = t.size_;
@@ -114,7 +114,7 @@ NDTensor::NDTensor(NDTensor &&t) noexcept {
 // 赋值构造函数
 
 NDTensor &NDTensor::operator=(const NDTensor &t) {
-  std::cout<<"copy sign"<<std::endl;
+//   std::cout<<"copy sign"<<std::endl;
   if (this == &t) return *this;
   // copy & swap
   NDTensor temp{t};
@@ -123,6 +123,7 @@ NDTensor &NDTensor::operator=(const NDTensor &t) {
   std::swap(size_, temp.size_);
   std::swap(byte_size_, temp.byte_size_);
   std::swap(data_type_, temp.data_type_);
+  std::swap(device_type_,temp.device_type_);
   uniq_host_data_.swap(temp.uniq_host_data_);
   std::swap(host_data_, temp.host_data_);
 #ifdef USE_CUDA
@@ -135,7 +136,7 @@ NDTensor &NDTensor::operator=(const NDTensor &t) {
 // 移动赋值构造函数
 
 NDTensor &NDTensor::operator=(NDTensor &&t) noexcept {
-  std::cout<<"move sign"<<std::endl;
+//   std::cout<<"move sign"<<std::endl;
   if (this == &t) return *this;
   // copy & swap
   NDTensor temp{std::move(t)};
@@ -144,6 +145,7 @@ NDTensor &NDTensor::operator=(NDTensor &&t) noexcept {
   std::swap(size_, temp.size_);
   std::swap(byte_size_, temp.byte_size_);
   std::swap(data_type_, temp.data_type_);
+  std::swap(device_type_,temp.device_type_);
   uniq_host_data_.swap(temp.uniq_host_data_);
   std::swap(host_data_, temp.host_data_);
 #ifdef USE_CUDA
@@ -154,7 +156,7 @@ NDTensor &NDTensor::operator=(NDTensor &&t) noexcept {
 }
 
 NDTensor::~NDTensor() {
-  std::cout<<"deconstruct"<<std::endl;
+//   std::cout<<"deconstruct"<<std::endl;
 }
 // 调整tensor大小，会重新分配内存，保证内存连续
 

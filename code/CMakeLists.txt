@@ -40,7 +40,7 @@ option(USE_TFLITE "whether to build tflite" OFF)
 option(USE_ONNXRUNTIME "whether to build ONNXRUNTIME" ON)
 
 
-set(CMAKE_VERBOSE_MAKEFILE on)
+# set(CMAKE_VERBOSE_MAKEFILE on)
 
 # 设置所有编译出的库为静态库
 # set(BUILD_SHARED_LIBS ON CACHE BOOL "global variable")

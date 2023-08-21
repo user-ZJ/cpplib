@@ -19,6 +19,9 @@ else()
     message(FATAL_ERROR "not support system ${CMAKE_SYSTEM_NAME}")
 endif()
 
+
+set(CUDA_NVCC_FLAGS "-G;-g")
+
 if(CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fPIC -Wfatal-errors")
@@ -42,6 +45,8 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 link_directories(/usr/local/cuda/lib64)
+
+set(CMAKE_VERBOSE_MAKEFILE on)
 
 enable_language(CUDA)
 
@@ -80,4 +85,5 @@ target_link_libraries(cutest culayer)
 
 
 add_subdirectory(base)
+add_subdirectory(kernels)
 add_subdirectory(unittest)

@@ -11,5 +11,11 @@ int main() {
     std::cout<<t.at<int>({0,0,0,0})<<std::endl;
     std::cout<<t.data<float>()<<std::endl;
     std::cout<<t.data<int>()<<std::endl;
+    int x = 5;
+    int y = 10;
+
+    assert(x == y && "x and y are not equal!");
+
+    std::cout << "Continuing after assert..." << std::endl;
     return 0;
 }
