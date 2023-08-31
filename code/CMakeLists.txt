@@ -54,13 +54,15 @@ set(FETCHCONTENT_QUIET off)
 # set(fc_base $ENV{HOME}/fc_base CACHE STRING "global variable")
 # set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fc_base)
 # set(FETCHCONTENT_BASE_DIR ${fc_base})
-set(FETCHCONTENT_BASE_DIR ${CMAKE_SOURCE_DIR}/fc_base)
+get_filename_component(fc_base "fc_base" REALPATH BASE_DIR "${CMAKE_SOURCE_DIR}")
+set(FETCHCONTENT_BASE_DIR ${fc_base})
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 
 include(glog)
 include(gflags)
+include(openfst)
 include(boost)
 # include(opencc)
 include(libtorch)
@@ -73,13 +75,18 @@ execute_process(COMMAND unzip -n ${CMAKE_SOURCE_DIR}/3rdparty/grpc_ubuntu20_inst
 
 
 include_directories(
+    /opt/intel/mkl/include
     source
+    source/kaldi
     3rdparty/poco/include 
     3rdparty/fvad/include
     3rdparty/rnnoise/include
     3rdparty/opus/include  
 )
 link_directories(
+    /usr/local/lib
+    /opt/intel/mkl/lib/intel64
+    /opt/intel/lib/intel64/
     # 3rdparty/poco/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/fvad/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/rnnoise/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
@@ -96,6 +103,7 @@ link_directories(
 #         pthread
 # 		)
 add_subdirectory(source/utils)
+add_subdirectory(source/kaldi)
 add_subdirectory(source/web)
 add_subdirectory(source/grpc)
 add_subdirectory(source/db)

@@ -6,6 +6,7 @@
 #include "feat/feature-mfcc.h"
 #include "feat/pitch-functions.h"
 #include "feat/wave-reader.h"
+#include "feat/online-feature.h"
 
 namespace kaldi {
 

@@ -5,6 +5,7 @@
 #include <limits>
 #include "vad/FVadWrapper.h"
 #include "vad/SileroVadWrapper.h"
+#include "vad/aliVadWrapper.h"
 #include "utils/audio-util.h"
 #include "utils/file-util.h"
 #include "utils/logging.h"
@@ -25,25 +26,34 @@ int main(int argc, char *argv[]) {
     LOG(INFO) << "usage: audio_test audio_path" << std::endl;
     exit(1);
   }
-  int res;
-  FVadWrapper fvad;
-  WavInfo info;
-  res = SoxUtil::instance().GetWavInfo(argv[1],info);
-  LOG(INFO)<<info.sample_rate<<" "<<info.channel<<" "<<info.sample_num<<" "<<info.precision<<std::endl;
-  std::vector<int16_t> data;
-  res = SoxUtil::instance().GetData(argv[1],data);
-  LOG(INFO)<<"size:"<<data.size()<<std::endl;
-  std::vector<int16_t> processed = fvad.RemoveSilence(data,info.sample_rate);
-  auto segments = fvad.SplitAudio(data,info.sample_rate);
-  info.sample_num = processed.size();
-  SoxUtil::instance().Write2File(info,processed,"out.wav");
-  for(auto &seg:segments)
-    LOG(INFO)<<seg.first*1.0/info.sample_rate<<" "<<seg.second*1.0/info.sample_rate;
+  // int res;
+  // FVadWrapper fvad;
+  // WavInfo info;
+  // res = SoxUtil::instance().GetWavInfo(argv[1],info);
+  // LOG(INFO)<<info.sample_rate<<" "<<info.channel<<" "<<info.sample_num<<" "<<info.precision<<std::endl;
+  // std::vector<int16_t> data;
+  // res = SoxUtil::instance().GetData(argv[1],data);
+  // LOG(INFO)<<"size:"<<data.size()<<std::endl;
+  // std::vector<int16_t> processed = fvad.RemoveSilence(data,info.sample_rate);
+  // auto segments = fvad.SplitAudio(data,info.sample_rate);
+  // info.sample_num = processed.size();
+  // SoxUtil::instance().Write2File(info,processed,"out.wav");
+  // for(auto &seg:segments)
+  //   LOG(INFO)<<seg.first*1.0/info.sample_rate<<" "<<seg.second*1.0/info.sample_rate;
 
 
-  SileroVadWrapper svad("../data/silero_vad.onnx");
-  segments = svad.SplitAudio(data,info.sample_rate);
-  for(auto &seg:segments)
-    LOG(INFO)<<seg.first*1.0/info.sample_rate<<" "<<seg.second*1.0/info.sample_rate;
+  // SileroVadWrapper svad("../data/silero_vad.onnx");
+  // segments = svad.SplitAudio(data,info.sample_rate);
+  // for(auto &seg:segments)
+  //   LOG(INFO)<<seg.first*1.0/info.sample_rate<<" "<<seg.second*1.0/info.sample_rate;
+
+  std::string audiofile = "/home/zack/tmp/1号视角-2.wav";
+  AliVadWrapper vad;
+  std::vector<int16_t> cached_audio;
+
+  SoxUtil::instance().GetData(audiofile, cached_audio);
+  auto segments = vad.OnlineSplitAudio(cached_audio);
+  for (auto &s : segments)
+    LOG(INFO) <<s.first<<" "<<s.second;
   return 0;
 }
