@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
   res = SoxUtil::instance().GetData(argv[1],data);
   writeTextFile("data.txt",data);
   LOG(INFO)<<"size:"<<data.size()<<std::endl;
+  google::FlushLogFiles(google::GLOG_INFO);
   auto wav = SoxUtil::instance().ProcessWav(info,data,24000,/*volume*/1.0,/*speed*/0.5);
   writeBinaryFile("out.wav",wav);
   auto mp3 = SoxUtil::instance().Wav2Mp3(wav);
