@@ -323,7 +323,7 @@ std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const int
     LOG(ERROR) << "read audio error";
     return {};
   }
-  std::vector<char> out_buff(static_cast<size_t>(buffer.size() / speed + 1), 0);
+  std::vector<char> out_buff(static_cast<size_t>(buffer.size() / speed *sample_rate/info.sample_rate + 1), 0);
   out = sox_open_mem_write(out_buff.data(), out_buff.size(), &out_signal, &out_encoding, "wav", NULL);
   if (out == nullptr) {
     LOG(ERROR) << "write audio buffer error";

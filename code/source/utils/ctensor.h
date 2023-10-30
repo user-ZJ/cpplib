@@ -16,6 +16,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <cmath>
 
 namespace BASE_NAMESPACE {
 
@@ -318,6 +319,27 @@ typedef CTensor<float, int32_t> CTensorfi;
 typedef CTensor<int64_t, int64_t> CTensorll;
 typedef CTensor<int32_t, int32_t> CTensorii;
 typedef CTensor<int32_t, int64_t> CTensoril;
+
+
+inline int adaptive_avg_pool1d(const CTensorfl &input,const int &output_size,CTensorfl *out){
+  // input NxLxC output Nxoutput_sizexC
+  auto input_shape = input.shapes();
+  int input_size = input_shape[1];
+  out->resize({input_shape[0],output_size,input_shape[2]});
+  auto start_index = [&input_size,&output_size](int curr_i){ return (int)(std::floor((curr_i *1.0* input_size) / output_size));};
+  auto end_index = [&input_size,&output_size](int curr_i){ return (int)(std::ceil(((curr_i+1) *1.0* input_size) / output_size));};
+  for(int j=0;j<input_shape[2];j++){
+    float sum=0;
+    int start=0,end=0;
+    for(int i=0;i<output_size;i++){
+      int window_start = start_index(i),window_end=end_index(i);
+      while(start<window_start) sum-=input.at({0,start++,j});
+      while(end<window_end) sum+=input.at({0,end++,j});
+      out->at({0,i,j}) = sum/(window_end-window_start);
+    }
+  }
+  return 0;
+}
 
 };  // namespace BASE_NAMESPACE
 

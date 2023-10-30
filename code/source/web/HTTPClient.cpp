@@ -43,6 +43,7 @@ using namespace BASE_NAMESPACE;
 void get() {
   try {
     std::string url = "http://localhost:9900/get";
+    url = "http://nls-meta.cn-shanghai.aliyuncs.com";
     std::string token = "xxxxx";
     URI uri(url);
     uri.addQueryParameter("token", token);

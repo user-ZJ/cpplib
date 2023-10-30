@@ -39,43 +39,65 @@ using Poco::Net::WebSocketException;
 
 using namespace BASE_NAMESPACE;
 
-static bool IsText(const int &flags) {
-  return flags == WebSocket::FRAME_TEXT;
-}
-
-static bool IsBinary(const int &flags) {
-  return flags == WebSocket::FRAME_BINARY;
-}
-
-static bool IsClose(const int &flags) {
-  return (flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_CLOSE;
-}
-
-static bool IsPing(const int &flags) {
-  return ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PING);
-}
-
-static bool IsPong(const int &flags) {
-  return ((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PONG);
-}
-
-class MessageHandler {
- public:
+class WSListener {
+public:
   void OnClose() {
     LOG(INFO) << "OnClose";
+    if (tgt_)
+      tgt_->shutdown();
   }
   void OnText(const std::string &text) {
     LOG(INFO) << "OnText" << text;
+    if (tgt_)
+      tgt_->sendFrame(text.c_str(), text.length(), WebSocket::FRAME_TEXT);
   }
   void OnBinary(const Poco::Buffer<char> &buffer) {
     LOG(INFO) << "OnBinary: receiver" << buffer.sizeBytes() << "bytes";
+    if (tgt_)
+      tgt_->sendFrame(buffer.begin(), buffer.sizeBytes(),
+                      WebSocket::FRAME_BINARY);
   }
 
-  void OnError() {
-    LOG(INFO) << "OnError";
+  void OnError() { LOG(INFO) << "OnError"; }
+  void OnPing() {
+    LOG(INFO) << "OnPing";
+    if (tgt_) {
+      tgt_->sendFrame(nullptr, 0, WebSocket::FRAME_OP_PING);
+    } else {
+      src_->sendFrame(nullptr, 0, Poco::Net::WebSocket::FRAME_OP_PONG);
+    }
+  }
+  void OnPong() {
+    LOG(INFO) << "OnPong";
+    if (tgt_)
+      tgt_->sendFrame(nullptr, 0, WebSocket::FRAME_OP_PONG);
   }
 
-  void operator()(std::shared_ptr<WebSocket> ws) {
+  void operator()(std::shared_ptr<WebSocket> ws,
+                  std::shared_ptr<WebSocket> other = nullptr) {
+    tgt_ = other;
+    src_ = ws;
+    auto IsBinary = [](const int &flags) -> bool {
+      return flags == Poco::Net::WebSocket::FRAME_BINARY;
+    };
+
+    auto IsClose = [](const int &flags) -> bool {
+      return (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) ==
+             Poco::Net::WebSocket::FRAME_OP_CLOSE;
+    };
+
+    auto IsPing = [](const int &flags) -> bool {
+      return ((flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) ==
+              Poco::Net::WebSocket::FRAME_OP_PING);
+    };
+
+    auto IsPong = [](const int &flags) -> bool {
+      return ((flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) ==
+              Poco::Net::WebSocket::FRAME_OP_PONG);
+    };
+    auto IsText = [](const int &flags) -> bool {
+      return flags == Poco::Net::WebSocket::FRAME_TEXT;
+    };
     try {
       Poco::Buffer<char> buffer(1024);
       int flags;
@@ -83,12 +105,12 @@ class MessageHandler {
       while (1) {
         buffer.resize(0);
         n = ws->receiveFrame(buffer, flags);
-        LOG(INFO) << Poco::format("recive data (length=%d, flags=0x%x).", n, unsigned(flags));
+        LOG(INFO) << Poco::format("recive data (length=%d, flags=0x%x).", n,
+                                  unsigned(flags));
         if (IsPing(flags)) {
-          LOG(INFO) << "on_ping";
-          ws->sendFrame(buffer.begin(), n, WebSocket::FRAME_OP_PONG);
+          OnPing();
         } else if (IsPong(flags)) {
-          LOG(INFO) << "on_pong";
+          OnPong();
         }
         if (n == 0 || IsClose(flags)) {
           OnClose();
@@ -99,24 +121,29 @@ class MessageHandler {
         } else if (IsBinary(flags)) {
           OnBinary(buffer);
         } else {
-          LOG(WARNING) << Poco::format("Unespect flags (length=%d, flags=0x%x).", n, unsigned(flags));
+          LOG(WARNING) << Poco::format(
+              "Unespect flags (length=%d, flags=0x%x).", n, unsigned(flags));
         }
       }
-    }
-    catch (WebSocketException &exc) {
+    } catch (WebSocketException &exc) {
       OnError();
-      LOG(ERROR) << "OnError: ERRORCODE:" << exc.code() << " MESSAGE:" << exc.message();
-    }
-    catch (std::exception &e) {
+      LOG(ERROR) << "OnError: ERRORCODE:" << exc.code()
+                 << " MESSAGE:" << exc.message();
+    } catch (std::exception &e) {
       OnError();
       LOG(ERROR) << "ws exception:" << e.what();
     }
   }
+
+private:
+  std::shared_ptr<WebSocket> tgt_;
+  std::shared_ptr<WebSocket> src_;
 };
+
 
 class WebSocketClient {
  public:
-  explicit WebSocketClient(std::string url, MessageHandler &handler) {
+  explicit WebSocketClient(std::string url, WSListener &listener,std::shared_ptr<Poco::Net::WebSocket> tgt = nullptr) {
     try {
       URI uri(url);
       session = std::make_shared<HTTPClientSession>(uri.getHost(), uri.getPort());
@@ -127,7 +154,7 @@ class WebSocketClient {
       request = std::make_shared<HTTPRequest>(HTTPRequest::HTTP_GET, path, HTTPMessage::HTTP_1_1);
       response = std::make_shared<HTTPResponse>();
       ws.reset(new WebSocket(*session, *request, *response));
-      message_handler = std::thread(std::ref(handler), ws);
+      message_handler = std::thread(std::ref(listener), ws,tgt);
     }
     catch (WebSocketException &exc) {
       LOG(ERROR) << "OnError: ERRORCODE:" << exc.code() << " MESSAGE:" << exc.message();
@@ -178,8 +205,8 @@ int main(int argc, char **argv) {
     obj.stringify(sbody);
     std::cout << "send body:" << sbody.str() << std::endl;
     std::string text = sbody.str();
-    MessageHandler handler;
-    WebSocketClient wsc(url,handler);
+    WSListener listener;
+    WebSocketClient wsc(url,listener);
     wsc.SendText(text);
   }
   catch (Exception &ex) {
