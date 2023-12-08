@@ -341,6 +341,30 @@ inline int adaptive_avg_pool1d(const CTensorfl &input,const int &output_size,CTe
   return 0;
 }
 
+inline int length_regulate(const CTensorfl &memories, const CTensorll &durs, CTensorfl *out) {
+  // memories: [1, T, *]
+  // durs: [1, T]
+  // CHECK_EQ(durs.shapes()[0], 1);
+  // CHECK_EQ(memories.shapes()[0], 1);
+  // CHECK_EQ(memories.shapes()[1], durs.shapes()[1]);
+  int64_t sum = 0;
+  for (int64_t i = 0; i < durs.shapes()[1]; i++) {
+    sum += durs.at({0, i});
+  }
+  out->resize({1, sum, memories.shapes()[2]});
+  int64_t repeat_size = memories.shapes()[2] * sizeof(float);
+  auto strides = out->strides();
+  int64_t s_index = 0, t_index = 0;
+  for (int64_t i = 0; i < durs.shapes()[1]; i++) {
+    s_index = i;
+    for (int64_t j = 0; j < durs.at({0, i}); j++) {  // repeat data
+      memcpy(out->data() + t_index * strides[1], memories.data() + s_index * strides[1], repeat_size);
+      t_index++;
+    }
+  }
+  return 0;
+}
+
 };  // namespace BASE_NAMESPACE
 
 #endif

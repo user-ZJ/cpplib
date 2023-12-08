@@ -81,3 +81,7 @@ target_link_libraries(mysql_test dbwrapper glog gflags)
 
 add_executable(just_test just_test.cpp)
 target_link_libraries(just_test crypto ssl myutil)
+
+
+add_executable(flatbuffers_test flatbuffers_test.cpp)
+target_link_libraries(flatbuffers_test flatbuffers)

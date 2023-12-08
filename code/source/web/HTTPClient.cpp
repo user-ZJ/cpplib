@@ -47,6 +47,7 @@ void get() {
     std::string token = "xxxxx";
     URI uri(url);
     uri.addQueryParameter("token", token);
+    // https则使用HTTPSClientSession，并链接NetSSL库
     HTTPClientSession session(uri.getHost(), uri.getPort());
 
     std::string path(uri.getPathAndQuery());

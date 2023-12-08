@@ -70,6 +70,7 @@ include(rapidjson)
 include(eigen)
 include(poco)
 include(onnx)
+include(flatbuffers)
 
 execute_process(COMMAND unzip -n ${CMAKE_SOURCE_DIR}/3rdparty/grpc_ubuntu20_install.zip -d ${CMAKE_BINARY_DIR}/grpc)
 

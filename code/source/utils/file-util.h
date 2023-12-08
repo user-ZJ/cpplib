@@ -8,17 +8,43 @@
 #define BASE_FILE_UTIL_H_
 
 #include "logging.h"
+#include <fcntl.h>
 #include <fstream>
 #include <sstream>
+#include <sys/mman.h>
 #include <sys/stat.h>
 
 namespace BASE_NAMESPACE {
+
+class MappedFile {
+ public:
+  MappedFile(const std::string &path) {
+    int fd = open(path.c_str(), O_RDONLY);
+    CHECK(fd > 0) << "cannot open file " << path << ": " << strerror(errno);
+
+    struct stat sb;
+    CHECK(fstat(fd, &sb) == 0) << strerror(errno);
+    size = sb.st_size;
+
+    data = (char *)mmap(nullptr, size, PROT_READ, MAP_SHARED, fd, 0);
+    CHECK(data != MAP_FAILED) << strerror(errno);
+
+    CHECK(close(fd) == 0) << strerror(errno);
+  }
+  ~MappedFile() {
+    CHECK(munmap(data, size) == 0) << strerror(errno);
+  }
+
+ public:
+  char *data;
+  size_t size;
+};
 
 // 读取文件，存储到buffer中
 inline std::vector<char> file_to_buff(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary | std::ios::ate);
   if (!in.good()) {
-    LOG(ERROR) << "file not exist:"<<std::string(path);
+    LOG(ERROR) << "file not exist:" << std::string(path);
     return {};
   }
   long size = in.tellg();
@@ -29,16 +55,16 @@ inline std::vector<char> file_to_buff(const char *path) {
   return buffer;
 }
 
-inline std::string file_to_str(const char *path){
+inline std::string file_to_str(const char *path) {
   auto buffer = file_to_buff(path);
-  return std::string(buffer.begin(),buffer.end()); 
+  return std::string(buffer.begin(), buffer.end());
 }
 
 inline std::stringstream file_to_ss(const char *path) {
   std::ifstream in(path, std::ios::in | std::ios::binary);
   std::stringstream buffer;
   if (!in.good()) {
-    LOG(ERROR) << "file not exist:"<<std::string(path);
+    LOG(ERROR) << "file not exist:" << std::string(path);
     return buffer;
   }
   buffer << in.rdbuf();
@@ -77,46 +103,45 @@ inline std::vector<std::string> get_file_lines(const char *path) {
 }
 
 template <typename T>
-inline int writeBinaryFile(const char *path,const std::vector<T> &buff){
-  LOG(INFO)<<"write "<<path;
-  std::ofstream out (path, std::ios::out|std::ios::binary);
-  out.write(buff.data(),buff.size()*sizeof(T));
+inline int writeBinaryFile(const char *path, const std::vector<T> &buff) {
+  LOG(INFO) << "write " << path;
+  std::ofstream out(path, std::ios::out | std::ios::binary);
+  out.write(buff.data(), buff.size() * sizeof(T));
   out.close();
   return 0;
 }
 
-inline int writeBinaryFile(const char *path,const std::string &msg){
-  LOG(INFO)<<"write "<<path;
-  std::ofstream out (path, std::ios::out|std::ios::binary);
-  out.write(msg.data(),msg.length());
+inline int writeBinaryFile(const char *path, const std::string &msg) {
+  LOG(INFO) << "write " << path;
+  std::ofstream out(path, std::ios::out | std::ios::binary);
+  out.write(msg.data(), msg.length());
   out.close();
   return 0;
 }
 
 template <typename T>
-inline int readBinaryFile(const char *path,std::vector<T> &data){
-  LOG(INFO)<<"read "<<path;
+inline int readBinaryFile(const char *path, std::vector<T> &data) {
+  LOG(INFO) << "read " << path;
   std::ifstream in(path, std::ios::in | std::ios::binary | std::ios::ate);
   if (!in.good()) {
-    LOG(ERROR) << "file not exist:"<<std::string(path);
+    LOG(ERROR) << "file not exist:" << std::string(path);
     return {};
   }
   long size = in.tellg();
   in.seekg(0, std::ios::beg);
-  data.resize(size/sizeof(T));
+  data.resize(size / sizeof(T));
   in.read(data.data(), size);
   in.close();
   return 0;
 }
 
 template <typename T>
-int writeTextFile(const char *path,const std::vector<T> &data, int seg=0) {
+int writeTextFile(const char *path, const std::vector<T> &data, int seg = 0) {
   std::ofstream out(path);
   if (out.is_open()) {
     for (int i = 0; i < data.size(); i++) {
       out << std::to_string(data[i]) << " ";
-      if (seg != 0 && (i + 1) % seg == 0)
-        out << "\n";
+      if (seg != 0 && (i + 1) % seg == 0) out << "\n";
     }
     out << "\n";
     out.close();
@@ -126,7 +151,7 @@ int writeTextFile(const char *path,const std::vector<T> &data, int seg=0) {
 }
 
 template <typename T>
-int writeTextFile(const char *path,const std::vector<std::vector<T>> &data) {
+int writeTextFile(const char *path, const std::vector<std::vector<T>> &data) {
   std::ofstream out(path);
   if (out.is_open()) {
     for (auto &vec : data) {
@@ -142,15 +167,14 @@ int writeTextFile(const char *path,const std::vector<std::vector<T>> &data) {
   return 1;
 }
 
-
 template <typename T>
-int readTextFile(std::string filepath,std::vector<T> &data) {
+int readTextFile(std::string filepath, std::vector<T> &data) {
   std::ifstream in(filepath.c_str());
   if (in.is_open()) {
     data.clear();
     std::string tt;
     float d;
-    while(in>>tt) {
+    while (in >> tt) {
       d = stof(tt);
       data.push_back(static_cast<T>(d));
     }

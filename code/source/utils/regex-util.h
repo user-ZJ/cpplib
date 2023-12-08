@@ -434,6 +434,32 @@ inline std::vector<std::wstring> token(const std::wstring &s,
   return result;
 }
 
+inline bool isZHPunct(const std::string &text){
+  std::wstring wtext = to_wstring(text);
+  return match(wtext,to_wstring(ZHPunct+"+"));
+}
+
+inline bool isENPunct(const std::string &text){
+  std::wstring wtext = to_wstring(text);
+  return match(wtext,to_wstring(ENPunct+"+"));
+}
+
+inline bool isPunct(const std::string &text){
+  return isENPunct(text) || isZHPunct(text);
+}
+
+inline bool isZHWord(const std::string &text){
+  std::wstring wtext = to_wstring(text);
+  bool is_zh_word = match(wtext,to_wstring(ZHWord+"+"));
+  bool is_zht_word = match(wtext,to_wstring(ZHTWord+"+"));
+  return is_zh_word || is_zht_word;
+}
+
+inline bool isENWord(const std::string &text){
+  std::wstring wtext = to_wstring(text);
+  return match(wtext,to_wstring(ENWord+"+"));
+}
+
 }}  // namespace BASE_NAMESPACE::REGEX
 
 #endif

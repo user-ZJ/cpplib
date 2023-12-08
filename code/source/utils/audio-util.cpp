@@ -302,13 +302,16 @@ std::vector<char> SoxUtil::ProcessWav(const WavInfo &info, const std::vector<sox
 
 std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const int sample_rate, const float volume,
                                       const float speed) {
+  auto buff = ProcessWav(buffer,"-1dB");
   sox_format_t *in, *out;
   WavInfo info;
-  int res = GetWavInfo(buffer, info);
+  int res = GetWavInfo(buff, info);
   if (res != 0) {
     LOG(ERROR) << "read audio error";
     return {};
   }
+  LOG(INFO)<<"input wavinfo:"<<info.sample_rate<<" "<<info.channel<<" "<<info.sample_num;
+  LOG(INFO)<<"tgt:"<<sample_rate<<" "<<volume<<" "<<speed;
   // effect
   sox_effects_chain_t *chain;
   sox_effect_t *e;
@@ -318,12 +321,12 @@ std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const int
   sox_encodinginfo_t out_encoding{SOX_ENCODING_SIGN2, 16,       0, sox_option_default, sox_option_default,
                                   sox_option_default, sox_false};
   sox_signalinfo_t out_signal = {static_cast<sox_rate_t>(sample_rate), 1, 16, tgt_sample_num, NULL};
-  in = sox_open_mem_read(const_cast<char *>(buffer.data()), buffer.size(), NULL, NULL, NULL);
+  in = sox_open_mem_read(const_cast<char *>(buff.data()), buff.size(), NULL, NULL, NULL);
   if (in == nullptr) {
     LOG(ERROR) << "read audio error";
     return {};
   }
-  std::vector<char> out_buff(static_cast<size_t>(buffer.size() / speed *sample_rate/info.sample_rate + 1), 0);
+  std::vector<char> out_buff(static_cast<size_t>(buff.size() / speed * sample_rate / info.sample_rate + 100), 0);
   out = sox_open_mem_write(out_buff.data(), out_buff.size(), &out_signal, &out_encoding, "wav", NULL);
   if (out == nullptr) {
     LOG(ERROR) << "write audio buffer error";
@@ -409,6 +412,82 @@ std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const int
     }
     free(e);
   }
+
+  e = sox_create_effect(sox_find_effect("output"));
+  args[0] = (char *)out;
+  if (sox_effect_options(e, 1, args) != SOX_SUCCESS) {
+    LOG(ERROR) << "creat effect option error";
+    return {};
+  }
+  if (sox_add_effect(chain, e, &interm_signal, &out->signal) != SOX_SUCCESS) {
+    LOG(ERROR) << "creat effect option error";
+    return {};
+  }
+  free(e);
+
+  sox_flow_effects(chain, NULL, NULL);
+  out_buff.resize(out->tell_off);
+  sox_delete_effects_chain(chain);
+  sox_close(out);
+  sox_close(in);
+
+  return out_buff;
+}
+
+std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const std::string vol) {
+  sox_format_t *in, *out;
+  WavInfo info;
+  int res = GetWavInfo(buffer, info);
+  if (res != 0) {
+    LOG(ERROR) << "read audio error";
+    return {};
+  }
+  // effect
+  sox_effects_chain_t *chain;
+  sox_effect_t *e;
+  char *args[10];
+  sox_signalinfo_t interm_signal; /* @ intermediate points in the chain. */
+  sox_encodinginfo_t out_encoding{SOX_ENCODING_SIGN2, 16,       0, sox_option_default, sox_option_default,
+                                  sox_option_default, sox_false};
+  sox_signalinfo_t out_signal = {static_cast<sox_rate_t>(info.sample_rate), info.channel, info.precision, info.sample_num, NULL};
+  in = sox_open_mem_read(const_cast<char *>(buffer.data()), buffer.size(), NULL, NULL, NULL);
+  if (in == nullptr) {
+    LOG(ERROR) << "read audio error";
+    return {};
+  }
+  std::vector<char> out_buff(buffer.size(), 0);
+  out = sox_open_mem_write(out_buff.data(), out_buff.size(), &out_signal, &out_encoding, "wav", NULL);
+  if (out == nullptr) {
+    LOG(ERROR) << "write audio buffer error";
+    return {};
+  }
+  chain = sox_create_effects_chain(&in->encoding, &out->encoding);
+  interm_signal = in->signal; /* NB: deep copy */
+
+  e = sox_create_effect(sox_find_effect("input"));
+  args[0] = (char *)in;
+  if (sox_effect_options(e, 1, args) != SOX_SUCCESS) {
+    LOG(ERROR) << "creat effect option error";
+    return {};
+  }
+  if (sox_add_effect(chain, e, &interm_signal, &in->signal) != SOX_SUCCESS) {
+    LOG(ERROR) << "add effect error";
+    return {};
+  }
+  free(e);
+
+  e = sox_create_effect(sox_find_effect("vol"));
+  args[0] = const_cast<char *>(vol.c_str());
+  if (sox_effect_options(e, 1, args) != SOX_SUCCESS) {
+    LOG(ERROR) << "creat effect option error";
+    return {};
+  }
+  /* Add the effect to the end of the effects processing chain: */
+  if (sox_add_effect(chain, e, &interm_signal, &in->signal) != SOX_SUCCESS) {
+    LOG(ERROR) << "add effect error";
+    return {};
+  }
+  free(e);
 
   e = sox_create_effect(sox_find_effect("output"));
   args[0] = (char *)out;

@@ -146,6 +146,7 @@ class WebSocketClient {
   explicit WebSocketClient(std::string url, WSListener &listener,std::shared_ptr<Poco::Net::WebSocket> tgt = nullptr) {
     try {
       URI uri(url);
+      // wss则使用HTTPSClientSession，并链接NetSSL库
       session = std::make_shared<HTTPClientSession>(uri.getHost(), uri.getPort());
 
       std::string path(uri.getPathAndQuery());

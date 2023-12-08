@@ -41,19 +41,29 @@ class ONNXEngine {
       auto env = ONNXENV::getInstance();
       Ort::SessionOptions session_options;
       session_options.DisablePerSessionThreads();
+      //OrtSessionOptionsAppendExecutionProvider_Tensorrt(session_options, 0); //tensorRT
+      // OrtSessionOptionsAppendExecutionProvider_CUDA(session_options, 0);
       session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
       // session_options.SetExecutionMode(ORT_SEQUENTIAL);
       session = std::make_unique<Ort::Session>(*env, modelBuff.data(), modelBuff.size(), session_options);
       Ort::AllocatorWithDefaultOptions allocator;
       size_t num_input_nodes = session->GetInputCount();
+      inputNames.reserve(num_input_nodes);
+      inputNamesPtr.reserve(num_input_nodes);
       for (int i = 0; i < num_input_nodes; i++) {
+        // GetInputNameAllocated(i, allocator).get()
         char *input_name = session->GetInputName(i, allocator);
         inputNames.push_back(input_name);
+        inputNamesPtr.push_back(inputNames[i].c_str());
       }
       size_t num_output_nodes = session->GetOutputCount();
+      outputNames.reserve(num_input_nodes);
+      outputNamesPtr.reserve(num_input_nodes);
       for (int i = 0; i < num_output_nodes; i++) {
+        // GetOutputNameAllocated(i, allocator).get()
         char *output_name = session->GetOutputName(i, allocator);
         outputNames.push_back(output_name);
+        outputNamesPtr.push_back(outputNames[i].c_str());
       }
       is_init_ = true;
       return 0;
@@ -64,8 +74,10 @@ class ONNXEngine {
     }
   }
   std::unique_ptr<Ort::Session> session;
-  std::vector<const char *> inputNames;
-  std::vector<const char *> outputNames;
+  std::vector<const char *> inputNamesPtr;
+  std::vector<std::string> inputNames;
+  std::vector<const char *> outputNamesPtr;
+  std::vector<std::string> outputNames;
   bool is_init_ = false;
 };
 

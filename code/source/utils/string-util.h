@@ -186,6 +186,12 @@ inline bool CheckEnglishWord(const std::string &word) {
   return true;
 }
 
+inline bool CheckNumChar(const std::string& ch) {
+  if (ch.size() != 1) return false;
+  return (ch[0]>='0') and (ch[0] <='9');
+}
+
+
 inline std::string Ltrim(const std::string &str) {
   size_t start = str.find_first_not_of(WHITESPACE);
   return (start == std::string::npos) ? "" : str.substr(start);
