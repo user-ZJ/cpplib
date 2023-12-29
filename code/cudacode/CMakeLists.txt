@@ -46,9 +46,9 @@ include_directories(
 )
 link_directories(/usr/local/cuda/lib64)
 
-set(CMAKE_VERBOSE_MAKEFILE on)
+# set(CMAKE_VERBOSE_MAKEFILE on)
 
-enable_language(CUDA)
+# enable_language(CUDA)
 
 # 设置 NVCC 编译选项
 # set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -m64 -lineinfo --resource-usage")
@@ -82,6 +82,10 @@ target_link_libraries(cublas_gemm ${CUDA_LIBRARIES} cublas)
 
 cuda_add_executable(cutest cutest.cu)
 target_link_libraries(cutest culayer)
+
+
+cuda_add_executable(libtorch_test libtorch_test.cpp)
+target_link_libraries(libtorch_test torch)
 
 
 add_subdirectory(base)

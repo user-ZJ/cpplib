@@ -69,10 +69,6 @@ int main(int argc, char *argv[]) {
   // readTextFile("filters.txt",filters);
   // LOG(INFO)<<"filters.size:"<<filters.size();
 
-  auto buff = file_to_buff(argv[1]);
-  auto processed = SoxUtil::instance().ProcessWav(buff,"-1dB");
-  writeBinaryFile("out.wav",processed);
-
 
   
   

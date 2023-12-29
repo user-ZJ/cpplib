@@ -302,10 +302,9 @@ std::vector<char> SoxUtil::ProcessWav(const WavInfo &info, const std::vector<sox
 
 std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const int sample_rate, const float volume,
                                       const float speed) {
-  auto buff = ProcessWav(buffer,"-1dB");
   sox_format_t *in, *out;
   WavInfo info;
-  int res = GetWavInfo(buff, info);
+  int res = GetWavInfo(buffer, info);
   if (res != 0) {
     LOG(ERROR) << "read audio error";
     return {};
@@ -321,12 +320,12 @@ std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const int
   sox_encodinginfo_t out_encoding{SOX_ENCODING_SIGN2, 16,       0, sox_option_default, sox_option_default,
                                   sox_option_default, sox_false};
   sox_signalinfo_t out_signal = {static_cast<sox_rate_t>(sample_rate), 1, 16, tgt_sample_num, NULL};
-  in = sox_open_mem_read(const_cast<char *>(buff.data()), buff.size(), NULL, NULL, NULL);
+  in = sox_open_mem_read(const_cast<char *>(buffer.data()), buffer.size(), NULL, NULL, NULL);
   if (in == nullptr) {
     LOG(ERROR) << "read audio error";
     return {};
   }
-  std::vector<char> out_buff(static_cast<size_t>(buff.size() / speed * sample_rate / info.sample_rate + 100), 0);
+  std::vector<char> out_buff(static_cast<size_t>(buffer.size() / speed * sample_rate / info.sample_rate + 100), 0);
   out = sox_open_mem_write(out_buff.data(), out_buff.size(), &out_signal, &out_encoding, "wav", NULL);
   if (out == nullptr) {
     LOG(ERROR) << "write audio buffer error";
@@ -434,14 +433,10 @@ std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const int
   return out_buff;
 }
 
-std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const std::string vol) {
+std::vector<float> SoxUtil::ProcessWav(const WavInfo &info, const std::vector<float> &data, const std::string vol) {
+  LOG(INFO)<<"process wav to "<<vol;
   sox_format_t *in, *out;
-  WavInfo info;
-  int res = GetWavInfo(buffer, info);
-  if (res != 0) {
-    LOG(ERROR) << "read audio error";
-    return {};
-  }
+  auto buffer = Write2Buff(info,data);
   // effect
   sox_effects_chain_t *chain;
   sox_effect_t *e;
@@ -476,7 +471,7 @@ std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const std
   }
   free(e);
 
-  e = sox_create_effect(sox_find_effect("vol"));
+  e = sox_create_effect(sox_find_effect("norm"));
   args[0] = const_cast<char *>(vol.c_str());
   if (sox_effect_options(e, 1, args) != SOX_SUCCESS) {
     LOG(ERROR) << "creat effect option error";
@@ -507,7 +502,10 @@ std::vector<char> SoxUtil::ProcessWav(const std::vector<char> &buffer, const std
   sox_close(out);
   sox_close(in);
 
-  return out_buff;
+  std::vector<float> out_data;
+  GetData(out_buff,out_data);
+
+  return out_data;
 }
 
 std::vector<char> SoxUtil::Wav2Mp3(const std::vector<char> &buffer) {

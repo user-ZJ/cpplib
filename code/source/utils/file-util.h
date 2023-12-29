@@ -167,6 +167,17 @@ int writeTextFile(const char *path, const std::vector<std::vector<T>> &data) {
   return 1;
 }
 
+inline int writeTextFile(const char *path,const std::string &str) {
+  std::ofstream out(path);
+  if (out.is_open()) {
+    out<<str;
+    out.close();
+    return 0;
+  }
+  return 1;
+}
+
+
 template <typename T>
 int readTextFile(std::string filepath, std::vector<T> &data) {
   std::ifstream in(filepath.c_str());

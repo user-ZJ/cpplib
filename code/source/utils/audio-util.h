@@ -61,7 +61,7 @@ class SoxUtil {
                                const float volume, const float speed);
   std::vector<char> ProcessWav(const std::vector<char> &buffer, const int sample_rate, const float volume,
                                const float speed);
-  std::vector<char> ProcessWav(const std::vector<char> &buffer, const std::string vol="-1dB");
+  std::vector<float> ProcessWav(const WavInfo &info, const std::vector<float> &data, const std::string gain="-4");
   // wav转为mp3
   std::vector<char> Wav2Mp3(const std::vector<char> &buffer);
   std::vector<char> Mp3ToWav(const std::vector<char> &buffer);

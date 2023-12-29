@@ -11,6 +11,7 @@
 #include "utils/string-util.h"
 #include <boost/xpressive/xpressive.hpp>
 #include <string>
+#include<mutex>
 
 
 namespace xpressive = boost::xpressive;
@@ -35,11 +36,21 @@ static const std::string ZHWord = R"([\u4e00-\u9fa5])";        // 中文汉字
 static const std::string ZHTWord = R"([\u3400-\u4dbf])";       // 中文繁体
 static const std::string ENWord = R"([a-zA-Z][A-Za-z_\-']*)";  // 英文单词
 
+static std::unordered_map<std::wstring,xpressive::wsregex> wregexs_map;
+static std::unordered_map<std::string,xpressive::sregex> regexs_map;
+static std::mutex regex_mutex;
+
 inline xpressive::wsregex to_wregex(const std::wstring &patt) {
   static xpressive::wsregex_compiler wcompiler;
   xpressive::wsregex my_regex;
   try {
-    my_regex = wcompiler.compile(patt);
+    if(wregexs_map.count(patt)){
+      return wregexs_map[patt];
+    }else{
+      std::unique_lock<std::mutex> lck(regex_mutex);
+      my_regex = wcompiler.compile(patt);
+      wregexs_map[patt] = my_regex;
+    }
   }
   catch (...) {
     LOG(ERROR) << "compile regex error:" << to_string(patt);
@@ -52,7 +63,13 @@ inline xpressive::sregex to_regex(const std::string &patt) {
   static xpressive::sregex_compiler compiler;
   xpressive::sregex my_regex;
   try {
-    my_regex = compiler.compile(patt);
+    if(regexs_map.count(patt)){
+      return regexs_map[patt];
+    }else{
+      std::unique_lock<std::mutex> lck(regex_mutex);
+      my_regex = compiler.compile(patt);
+      regexs_map[patt] = my_regex;
+    }
   }
   catch (...) {
     LOG(ERROR) << "compile regex error:" << patt;

@@ -9,7 +9,7 @@ FetchContent_Declare(opencc
   URL_HASH SHA256=169bff4071ffe814dc16df7d180ff6610db418f4816e9c0ce02cf874bdf058df
 )
 FetchContent_Populate(opencc)
-include(${opencc_SOURCE_DIR}/CMakeLists.txt)
+add_subdirectory(${opencc_SOURCE_DIR})
 endif()
 include_directories(${opencc_SOURCE_DIR}/src)
 # target_compile_options(opencc PRIVATE -DSTATIC_LIBRARY)

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(test)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20")
 
 
 include_directories(
@@ -85,3 +85,7 @@ target_link_libraries(just_test crypto ssl myutil)
 
 add_executable(flatbuffers_test flatbuffers_test.cpp)
 target_link_libraries(flatbuffers_test flatbuffers)
+
+
+add_executable(cereal_test cereal_test.cpp)
+target_link_libraries(cereal_test myutil)
