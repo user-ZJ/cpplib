@@ -27,7 +27,7 @@ using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPServerResponse;
 using Poco::Net::HTTPServerParams;
 using Poco::Timestamp;
-using Poco::ThreadPool;
+// using Poco::ThreadPool;
 using Poco::Util::ServerApplication;
 using Poco::Util::Application;
 using Poco::Util::Option;

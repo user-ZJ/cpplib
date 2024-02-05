@@ -20,6 +20,7 @@ MongoDBWrapper::MongoDBWrapper(const std::string &uri)
   if (!_connected) {
     try {
       //   std::string uri = "mongodb://admin:admin@10.12.50.209:27017/admin";
+      std::cout<<"uri:"<<uri<<std::endl;
       _connection.connect(uri, _sf);
       _connected = true;
       VLOG(2) << "Connected to [" << _uri << ']';

@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]); 
   LOG(INFO) << "mongdb test";
-  MongoDBWrapper mongo;
+  MongoDBWrapper mongo("mongodb://aije:Dmaiaije@10.12.51.118:27017/admin?authMechanism=MONGODB-CR");
   mongo.InsertRequest();
   mongo.QueryRequest();
   mongo.DeleteRequest();

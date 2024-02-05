@@ -1,8 +1,8 @@
 # apt install libmysqlclient-dev
 set(ENABLE_DATA_MYSQL ON)
 FetchContent_Declare(poco
-  URL      https://pocoproject.org/releases/poco-1.12.4/poco-1.12.4-all.tar.gz
-  URL_HASH SHA256=4c3584daa5b0e973f268654dbeb1171ec7621e358b2b64363cd1abd558a68777
+  URL      https://github.com/pocoproject/poco/archive/refs/tags/poco-1.13.0-release.tar.gz
+  URL_HASH SHA256=0135160663795901f317215272fadf71f3b526f38daacb2ae8d6b07ad11d319b
 )
 FetchContent_MakeAvailable(poco)
 include_directories(${poco_SOURCE_DIR}/Foundation/include 

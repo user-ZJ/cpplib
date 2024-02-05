@@ -4,10 +4,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 include_directories(
-	/data/code/TensorRT-8.5.3.1/include/
+	/home/zack/code/TensorRT-8.5.3.1/include/
 		 )
 link_directories(
-	/data/code/TensorRT-8.5.3.1/lib
+	/home/zack/code/TensorRT-8.5.3.1/lib
 		)
 
 

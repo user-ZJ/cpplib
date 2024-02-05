@@ -18,8 +18,8 @@ link_directories(
 add_executable(path_util_test path_test.cpp)
 target_link_libraries(path_util_test myutil)
 
-add_executable(ctensor_test ctensor_test.cpp)
-target_link_libraries(ctensor_test myutil cudart cudnn)
+# add_executable(ctensor_test ctensor_test.cpp)
+# target_link_libraries(ctensor_test myutil cudart cudnn)
 
 
 add_executable(audio_test audio_test.cpp)
