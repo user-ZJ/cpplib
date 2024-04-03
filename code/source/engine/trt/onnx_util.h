@@ -57,8 +57,6 @@ public:
                                              modelBuff.size(), session_options);
     Ort::AllocatorWithDefaultOptions allocator;
     size_t num_input_nodes = session->GetInputCount();
-    inputNames_str.reserve(num_input_nodes);
-    inputNames.reserve(num_input_nodes);
     for (int i = 0; i < num_input_nodes; i++) {
       auto input_name = session->GetInputNameAllocated(i, allocator);
       LOG(INFO)<<input_name.get();
@@ -66,8 +64,6 @@ public:
       inputNames.push_back(inputNames_str[i].c_str());
     }
     size_t num_output_nodes = session->GetOutputCount();
-    outputNames_str.reserve(num_output_nodes);
-    outputNames.reserve(num_output_nodes);
     for (int i = 0; i < num_output_nodes; i++) {
       auto output_name = session->GetOutputNameAllocated(i, allocator);
       LOG(INFO)<<output_name.get();

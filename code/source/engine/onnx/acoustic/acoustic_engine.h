@@ -9,7 +9,7 @@
 
 #define ONNX_
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 class AcousticEngine {
  public:
@@ -43,4 +43,4 @@ class AcousticEngine {
   bool is_init_;
 };
 
-};  // namespace DMAI
+};  // namespace BASE_NAMESPACE

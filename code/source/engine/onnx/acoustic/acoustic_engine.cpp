@@ -17,7 +17,7 @@
 #include <numeric>
 #include <unordered_set>
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 const static std::vector<float> dur_embedding_weight{
   0.0174,  -0.0164, -0.0167, -0.0165, -0.0165, -0.9983, -0.0163, 0.0171,  -0.0164, -0.0164, 0.0164,  -1.3409, -0.0163,
@@ -308,4 +308,4 @@ int AcousticEngine::infer(const CTensorll &seqs, const CTensorll &skips, const s
   return 0;
 }
 
-};  // namespace DMAI
+};  // namespace BASE_NAMESPACE

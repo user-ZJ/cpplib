@@ -9,6 +9,7 @@
 
 struct MyData {
   int x, y, z;
+  float t;
   std::string word = "你好";
 
   std::string serialize() {
@@ -45,6 +46,7 @@ struct MyData {
   void load(Archive &ar) {
     ar(cereal::make_optional_nvp("x", x));
     ar(cereal::make_optional_nvp("z", z));
+    ar(cereal::make_optional_nvp("t", t));
     ar(CEREAL_NVP(y));
   }
 

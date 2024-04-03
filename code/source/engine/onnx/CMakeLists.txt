@@ -9,14 +9,13 @@ include_directories(
 
 #  add_definitions(-DDEBUG)
 
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/acoustic ACOUS_ONNX_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/vocoder VOCODER_ONNX_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/g2p G2P_ONNX_SRC)
-aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/prosody PROSODY_ONNX_SRC)
+aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/wav2vec WAV2VEC_ONNX_SRC)
+aux_source_directory(${CMAKE_CURRENT_LIST_DIR}/acoustic ACOUSTIC_ONNX_SRC)
 
 
 
-add_library(tts_engine OBJECT ${ACOUS_ONNX_SRC} ${VOCODER_ONNX_SRC} ${G2P_ONNX_SRC} ${PROSODY_ONNX_SRC}) 
 
-target_link_libraries(tts_engine onnxruntime)
+add_library(bs_onnx_engine STATIC ${WAV2VEC_ONNX_SRC} ${ACOUSTIC_ONNX_SRC}) 
+
+target_link_libraries(bs_onnx_engine onnxruntime crypto_wrapper glog gflags_nothreads)
 

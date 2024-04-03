@@ -3,13 +3,15 @@
 #include "utils/logging.h"
 #include "utils/flags.h"
 
+
+
 using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]); 
   LOG(INFO) << "mongdb test";
-  MongoDBWrapper mongo("mongodb://aije:Dmaiaije@10.12.51.118:27017/admin?authMechanism=MONGODB-CR");
+  MongoDBWrapper mongo("mongodb://admin:admin@10.12.50.209:27017/admin");
   mongo.InsertRequest();
   mongo.QueryRequest();
   mongo.DeleteRequest();

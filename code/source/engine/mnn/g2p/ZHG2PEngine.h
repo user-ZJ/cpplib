@@ -5,7 +5,7 @@
 
 using namespace MNN;
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 class ZHG2PStartEngine {
  public:
@@ -35,4 +35,4 @@ class ZHG2PEndEngine {
   bool is_init_;
 };
 
-};  // namespace DMAI
+};  // namespace BASE_NAMESPACE

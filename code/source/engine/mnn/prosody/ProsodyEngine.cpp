@@ -5,7 +5,7 @@
 
 using namespace MNN;
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 ProsodyEngine::ProsodyEngine() : is_init_(false) {}
 ProsodyEngine::~ProsodyEngine() {
@@ -83,4 +83,4 @@ vector<vector<float>> ProsodyEngine::infer(const vector<int> &toks) {
   return outputs;
 }
 
-};  // namespace DMAI
+};  // namespace BASE_NAMESPACE

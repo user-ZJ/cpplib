@@ -6,7 +6,7 @@
 
 using namespace MNN;
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 class ProsodyEngine {
  public:
@@ -22,4 +22,4 @@ class ProsodyEngine {
   bool is_init_;
 };
 
-};  // namespace DMAI
+};  // namespace BASE_NAMESPACE

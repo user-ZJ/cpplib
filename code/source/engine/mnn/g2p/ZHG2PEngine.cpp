@@ -4,7 +4,7 @@
 
 using namespace MNN;
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 ZHG2PStartEngine::ZHG2PStartEngine() : is_init_(false) {}
 ZHG2PStartEngine::~ZHG2PStartEngine() {
@@ -166,4 +166,4 @@ vector<int> ZHG2PEndEngine::infer(const vector<float> &input, const vector<int> 
   return output;
 }
 
-};  // namespace DMAI
+};  // namespace BASE_NAMESPACE

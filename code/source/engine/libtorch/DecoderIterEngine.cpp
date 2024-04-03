@@ -9,7 +9,7 @@
 #include <map>
 #include <numeric>
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 int DecoderIterEngine::loadModel(const std::string &modelPath, bool is_crypto) {
   LOG(INFO) << "load model:" << modelPath;
@@ -60,4 +60,4 @@ int DecoderIterEngine::infer(const CTensorfl &frame, const CTensorfl &memory,
   }
 }
 
-}; // namespace DMAI
+}; // namespace BASE_NAMESPACE

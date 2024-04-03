@@ -12,7 +12,7 @@
 
 using namespace MNN;
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 class PunctEngine {
  public:
@@ -28,4 +28,4 @@ class PunctEngine {
   bool is_init_;
 };
 
-};  // namespace DMAI
+};  // namespace BASE_NAMESPACE

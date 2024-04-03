@@ -5,7 +5,7 @@
 
 using namespace MNN;
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 PunctEngine::PunctEngine() : is_init_(false) {}
 PunctEngine::~PunctEngine() {
@@ -77,4 +77,4 @@ std::vector<float> PunctEngine::infer(const std::vector<float> &input) {
   return output;
 }
 
-};  // namespace DMAI
+};  // namespace BASE_NAMESPACE
