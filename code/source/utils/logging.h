@@ -2,6 +2,9 @@
 #ifndef GLOG_CUSTOM_PREFIX_SUPPORT
 #define GLOG_CUSTOM_PREFIX_SUPPORT
 #endif
+#ifndef GLOG_USE_GLOG_EXPORT
+#define GLOG_USE_GLOG_EXPORT
+#endif
 #include "glog/logging.h"
 #include <cstring>
 #include <iomanip>

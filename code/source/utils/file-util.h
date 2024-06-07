@@ -102,6 +102,20 @@ inline std::vector<std::string> get_file_lines(const char *path) {
   return lines;
 }
 
+inline int write_lines_file(const char *path, const std::vector<std::string> &data) {
+  std::ofstream out(path);
+  if (out.is_open()) {
+    for (int i = 0; i < data.size(); i++) {
+      out << data[i];
+      if(data.size()-1!=i)
+        out<<"\n";
+    }
+    out.close();
+    return 0;
+  }
+  return 1;
+}
+
 template <typename T>
 inline int writeBinaryFile(const char *path, const std::vector<T> &buff) {
   LOG(INFO) << "write " << path;

@@ -54,8 +54,8 @@ set(FETCHCONTENT_QUIET off)
 # set(fc_base $ENV{HOME}/fc_base CACHE STRING "global variable")
 set(FETCHCONTENT_BASE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/fc_base)
 # set(FETCHCONTENT_BASE_DIR ${fc_base})
-# get_filename_component(fc_base "fc_base" REALPATH BASE_DIR "${CMAKE_SOURCE_DIR}")
-# set(FETCHCONTENT_BASE_DIR ${fc_base})
+get_filename_component(fc_base "fc_base" REALPATH BASE_DIR "${CMAKE_SOURCE_DIR}")
+set(FETCHCONTENT_BASE_DIR ${fc_base})
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -69,7 +69,7 @@ include(rapidjson)
 include(eigen)
 include(poco)
 include(onnx)
-include(flatbuffers)
+# include(flatbuffers)
 include(cereal)
 
 execute_process(COMMAND unzip -n ${CMAKE_SOURCE_DIR}/3rdparty/grpc_ubuntu20_install.zip -d ${CMAKE_BINARY_DIR}/grpc)
@@ -85,7 +85,7 @@ include_directories(
     3rdparty/opus/include  
 )
 link_directories(
-    /usr/local/lib
+    # /usr/local/lib
     /opt/intel/mkl/lib/intel64
     /opt/intel/lib/intel64/
     # 3rdparty/poco/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}

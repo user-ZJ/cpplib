@@ -206,15 +206,48 @@ inline std::string Trim(const std::string &str) {
   return Rtrim(Ltrim(str));
 }
 
-inline std::wstring strip(const std::wstring &str, const wchar_t *ch = L" ") {
-  size_t strBegin, strEnd, strRange;
-  strBegin = str.find_first_not_of(ch);
-  if (strBegin == std::wstring::npos) { return L""; }
-  strEnd = str.find_last_not_of(ch);
+inline std::string strip(const std::string &str) {
+  static char white=' ',enter='\n';
+  if(str.empty())
+    return str;
+  size_t strBegin=0, strEnd=str.size()-1, strRange;
+  while(strBegin<strEnd){
+    if(str[strBegin]==white || str[strBegin]==enter)
+      ++strBegin;
+    else
+      break;
+  }
+  while(strBegin<strEnd){
+    if(str[strEnd]==white || str[strEnd]==enter)
+      --strEnd;
+    else
+      break;
+  }
   strRange = strEnd - strBegin + 1;
-
   return str.substr(strBegin, strRange);
 }
+
+inline std::wstring strip(const std::wstring &str) {
+  static wchar_t white=L' ',enter=L'\n';
+  if(str.empty())
+    return str;
+  size_t strBegin=0, strEnd=str.size()-1, strRange;
+  while(strBegin<strEnd){
+    if(str[strBegin]==white || str[strBegin]==enter)
+      ++strBegin;
+    else
+      break;
+  }
+  while(strBegin<strEnd){
+    if(str[strEnd]==white || str[strEnd]==enter)
+      --strEnd;
+    else
+      break;
+  }
+  strRange = strEnd - strBegin + 1;
+  return str.substr(strBegin, strRange);
+}
+
 
 // 获取系统环境变量
 inline std::string getEnvVar(const std::string &key) {

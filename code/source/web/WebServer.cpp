@@ -58,7 +58,9 @@ HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const HTTPServer
     return new HTTPFormHandler;
   } else if (uri.getPath() == "/json") {
     return new HTTPJsonHandler;
-  } else if (uri.getPath() == "/octet_stream") {
+  } else if (uri.getPath() == "/async_json") {
+    return new AsyncHTTPJsonHandler;
+  }else if (uri.getPath() == "/octet_stream") {
     return new HttpStreamHandler;
   } else
     return new DefaultHandler;

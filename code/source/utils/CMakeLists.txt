@@ -13,7 +13,7 @@ include_directories(
 aux_source_directory(. CPP_LIST)
 
 add_library(${PROJECT_NAME} SHARED ${CPP_LIST})
-target_link_libraries(${PROJECT_NAME} PUBLIC glog gflags_nothreads sox sonic pthread)
+target_link_libraries(${PROJECT_NAME} PUBLIC glog gflags::gflags sox sonic pthread)
 
 
 

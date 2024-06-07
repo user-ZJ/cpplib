@@ -56,10 +56,12 @@ class MyPartHandler : public Poco::Net::PartHandler {
       _fileName = params.get("filename", "(unnamed)");
     }
 
-    CountingInputStream istr(stream);
-    NullOutputStream ostr;
-    StreamCopier::copyStream(istr, ostr);
-    _length = istr.chars();
+    // CountingInputStream istr(stream);
+    // NullOutputStream ostr;
+    // StreamCopier::copyStream(istr, ostr);
+    // _length = istr.chars();
+    StreamCopier::copyToString(stream, filebytes);
+    _length = filebytes.size();
   }
 
   int length() const {
@@ -78,11 +80,16 @@ class MyPartHandler : public Poco::Net::PartHandler {
     return _type;
   }
 
+  const std::string &bytes() const {
+    return filebytes;
+  }
+
  private:
   int _length;
   std::string _type;
   std::string _name;
   std::string _fileName;
+  std::string filebytes;
 };
 
 class HTTPFormHandler : public HTTPRequestHandler

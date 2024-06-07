@@ -50,4 +50,14 @@ private:
 
 };
 
+class AsyncHTTPJsonHandler: public HTTPRequestHandler
+	/// Handle a WebSocket connection.
+{
+public:
+	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);
+
+private:
+
+};
+
 };

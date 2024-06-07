@@ -1,5 +1,5 @@
 #docker build -f dockerfiles/Dockerfile.deploy -t deploy:base --no-cache .
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 MAINTAINER Docker zack <zackwilliam@docker.com>
 # 添加时区环境变量，亚洲，上海
 ENV TimeZone=Asia/Shanghai

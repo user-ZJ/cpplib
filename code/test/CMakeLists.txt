@@ -59,12 +59,12 @@ target_link_libraries(eigen_test)
 add_executable(filesystem_test filesystem_test.cpp)
 target_link_libraries(filesystem_test)
 
-FIND_PACKAGE(OpenMP REQUIRED)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-add_executable(omp_test omp_test.cpp)
-target_link_libraries(omp_test myutil)
+# FIND_PACKAGE(OpenMP REQUIRED)
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+# add_executable(omp_test omp_test.cpp)
+# target_link_libraries(omp_test myutil)
 
 
 
@@ -79,12 +79,15 @@ target_link_libraries(mysql_test dbwrapper glog gflags)
 
 
 
+add_executable(poco_test poco_test.cpp)
+target_link_libraries(poco_test crypto ssl myutil Poco::Foundation)
+
 add_executable(just_test just_test.cpp)
 target_link_libraries(just_test crypto ssl myutil)
 
 
-add_executable(flatbuffers_test flatbuffers_test.cpp)
-target_link_libraries(flatbuffers_test flatbuffers)
+# add_executable(flatbuffers_test flatbuffers_test.cpp)
+# target_link_libraries(flatbuffers_test flatbuffers)
 
 
 add_executable(cereal_test cereal_test.cpp)

@@ -8,6 +8,7 @@
 #define BASE_TIMER_UITL_H_
 
 #include <chrono>
+#include <sstream>
 
 namespace BASE_NAMESPACE
 {
@@ -28,6 +29,25 @@ class Timer {
   std::chrono::time_point<std::chrono::steady_clock> time_start_;
 };
 
-}; // namespace BASE_NAMESPACE
+inline long getTimeStamp() {
+  auto now = std::chrono::high_resolution_clock::now();
+  auto duration_since_epoch =  now.time_since_epoch();
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch);
+  return ms.count();
+}
+
+inline std::string getYear() {
+  auto now = std::chrono::high_resolution_clock::now();
+  // 转换为time_t类型
+  std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
+  // 转换为tm结构体
+  struct tm now_tm;
+  gmtime_r(&now_time_t, &now_tm);
+  std::stringstream ss;
+  ss<<(1900 + now_tm.tm_year);
+  return ss.str();
+}
+
+}; // namespace DMAI
 
 #endif
