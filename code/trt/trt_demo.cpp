@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
   static Logger gLogger;
 
-  std::string onnx_path = "resnet.onnx";
+  std::string onnx_path = "/home/zack/code/nlp-text-similarity/data/structbert/structbert.onnx";
 
   // 解析onnx文件
   auto builder = UniqPtr<nvinfer1::IBuilder>(nvinfer1::createInferBuilder(gLogger));
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
   if (!parsed) std::cout << "parser onnx error\n";
 
   int nb_inputs = network->getNbInputs();
-  int nb_outputs = network->getNbInputs();
+  int nb_outputs = network->getNbOutputs();
   std::cout << "input num:" << nb_inputs << " output num:" << nb_outputs << std::endl;
   std::cout << "input dims:\n";
   for (int i = 0; i < nb_inputs; i++) {
@@ -79,9 +79,15 @@ int main(int argc, char *argv[]) {
   }
   // 设置动态维度区间
   auto profile = builder->createOptimizationProfile();
-  profile->setDimensions("feats", nvinfer1::OptProfileSelector::kMIN, Dims3({1, 10, 80}));
-  profile->setDimensions("feats", nvinfer1::OptProfileSelector::kOPT, Dims3({1, 200, 80}));
-  profile->setDimensions("feats", nvinfer1::OptProfileSelector::kMAX, Dims3({1, 500, 80}));
+  profile->setDimensions("input_ids", nvinfer1::OptProfileSelector::kMIN, Dims2({1, 1}));
+  profile->setDimensions("input_ids", nvinfer1::OptProfileSelector::kOPT, Dims2({1, 80}));
+  profile->setDimensions("input_ids", nvinfer1::OptProfileSelector::kMAX, Dims2({1, 512}));
+  profile->setDimensions("token_type_ids", nvinfer1::OptProfileSelector::kMIN, Dims2({1, 1}));
+  profile->setDimensions("token_type_ids", nvinfer1::OptProfileSelector::kOPT, Dims2({1, 80}));
+  profile->setDimensions("token_type_ids", nvinfer1::OptProfileSelector::kMAX, Dims2({1, 512}));
+  profile->setDimensions("attention_mask", nvinfer1::OptProfileSelector::kMIN, Dims2({1, 1}));
+  profile->setDimensions("attention_mask", nvinfer1::OptProfileSelector::kOPT, Dims2({1, 80}));
+  profile->setDimensions("attention_mask", nvinfer1::OptProfileSelector::kMAX, Dims2({1, 512}));
   config->addOptimizationProfile(profile);
 
   // --fp16

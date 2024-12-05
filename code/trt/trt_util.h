@@ -11,11 +11,11 @@
 #include <memory>
 #include <algorithm>
 #include <cassert>
-#include "utils/logging.h"
+// #include "utils/logging.h"
 
 using namespace nvinfer1;
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 // Logger for TensorRT info/warning/errors
 class Logger : public nvinfer1::ILogger {
@@ -171,7 +171,7 @@ class TRTInstance {
       std::string str = "";
       for(int i=0;i<dims.nbDims;i++)
         str+=std::to_string(dims.d[i])+",";
-      LOG(INFO)<<inputname<<":"<<str;
+      std::cout<<inputname<<":"<<str<<std::endl;
       auto dataType = engine->getTensorDataType(inputname.c_str());
       int bindingSize = elemSize(dataType) * std::accumulate(dims.d, &dims.d[dims.nbDims], 1, std::multiplies<int>{});
       bindings.emplace_back(mallocCudaMem<char>(bindingSize));

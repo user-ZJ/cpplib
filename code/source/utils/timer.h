@@ -36,11 +36,19 @@ inline long getTimeStamp() {
   return ms.count();
 }
 
+inline std::string getSTimeStamp() {
+  auto now = std::chrono::high_resolution_clock::now();
+  std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
+  std::stringstream ss;
+  ss << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d %H:%M:%S");
+  return ss.str();
+}
+
 inline std::string getYear() {
   auto now = std::chrono::high_resolution_clock::now();
-  // ×ª»»Îªtime_tÀàÐÍ
+  // è½¬æ¢ä¸ºtime_tç±»åž‹
   std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
-  // ×ª»»Îªtm½á¹¹Ìå
+  // è½¬æ¢ä¸ºtmç»“æž„ä½“
   struct tm now_tm;
   gmtime_r(&now_time_t, &now_tm);
   std::stringstream ss;

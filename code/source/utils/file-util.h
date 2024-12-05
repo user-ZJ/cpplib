@@ -13,6 +13,7 @@
 #include <sstream>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 namespace BASE_NAMESPACE {
 

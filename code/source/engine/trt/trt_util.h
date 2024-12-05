@@ -130,7 +130,7 @@ inline int elemSize(DataType dataType) {
   }
 }
 
-static Logger gLogger;
+// static Logger gLogger;
 
 inline std::string GetDeviceName() {
   try {
@@ -199,6 +199,85 @@ class TRTInstance {
     case DataType::kINT32: return 4;
     default: throw std::runtime_error("invalid data type");
     }
+  }
+  static std::vector<char>
+  make_engine_from_onnx(const std::vector<char> &modelBuff) {
+    auto builder =
+        UniqPtr<nvinfer1::IBuilder>(nvinfer1::createInferBuilder(gLogger));
+    CHECK(builder != nullptr) << "create builder error\n";
+    LOG(INFO) << "create builder success";
+    // 动态维度输入需要使用--explicitBatch
+    const auto explicitBatch =
+        1U << static_cast<uint32_t>(
+            NetworkDefinitionCreationFlag::kEXPLICIT_BATCH);
+    auto network = UniqPtr<nvinfer1::INetworkDefinition>(
+        builder->createNetworkV2(explicitBatch));
+    CHECK(network != nullptr) << "create network error\n";
+    LOG(INFO) << "create network success";
+
+    auto config =
+        UniqPtr<nvinfer1::IBuilderConfig>(builder->createBuilderConfig());
+    CHECK(config != nullptr) << "create build config error\n";
+    LOG(INFO) << "create config success";
+    auto parser = UniqPtr<nvonnxparser::IParser>(
+        nvonnxparser::createParser(*network, gLogger));
+    CHECK(parser != nullptr) << "create parser error\n";
+    LOG(INFO) << "create parser success";
+
+    auto parsed = parser->parse(modelBuff.data(), modelBuff.size());
+    CHECK(parsed) << "parser onnx error\n";
+    LOG(INFO) << "parser onnx success";
+
+    int nb_inputs = network->getNbInputs();
+    int nb_outputs = network->getNbOutputs();
+    LOG(INFO) << "input num:" << nb_inputs << " output num:" << nb_outputs
+              << std::endl;
+
+    auto profile = builder->createOptimizationProfile();
+    profile->setDimensions(network->getInput(0)->getName(),
+                           nvinfer1::OptProfileSelector::kMIN, Dims2({1, 1}));
+    profile->setDimensions(network->getInput(0)->getName(),
+                           nvinfer1::OptProfileSelector::kOPT, Dims2({1, 80}));
+    profile->setDimensions(network->getInput(0)->getName(),
+                           nvinfer1::OptProfileSelector::kMAX, Dims2({1, 512}));
+    profile->setDimensions(network->getInput(1)->getName(),
+                           nvinfer1::OptProfileSelector::kMIN, Dims2({1, 1}));
+    profile->setDimensions(network->getInput(1)->getName(),
+                           nvinfer1::OptProfileSelector::kOPT, Dims2({1, 80}));
+    profile->setDimensions(network->getInput(1)->getName(),
+                           nvinfer1::OptProfileSelector::kMAX, Dims2({1, 512}));
+    profile->setDimensions(network->getInput(2)->getName(),
+                           nvinfer1::OptProfileSelector::kMIN, Dims2({1, 1}));
+    profile->setDimensions(network->getInput(2)->getName(),
+                           nvinfer1::OptProfileSelector::kOPT, Dims2({1, 80}));
+    profile->setDimensions(network->getInput(2)->getName(),
+                           nvinfer1::OptProfileSelector::kMAX, Dims2({1, 512}));
+    config->addOptimizationProfile(profile);
+
+    // --fp16
+    // config->setFlag(BuilderFlag::kFP16);
+
+    std::unique_ptr<cudaStream_t, StreamDeleter> profileStream =
+        makeCudaStream(cudaStreamDefault);
+    CHECK(profileStream != nullptr) << "create stream error\n";
+    LOG(INFO) << "create stream success";
+
+    config->setProfileStream(*profileStream);
+    UniqPtr<IHostMemory> plan{
+        builder->buildSerializedNetwork(*network, *config)};
+    CHECK(plan != nullptr) << "buildSerializedNetwork error\n";
+    LOG(INFO) << "create plan success";
+
+    // UniqPtr<IRuntime> runtime =
+    // UniqPtr<IRuntime>{createInferRuntime(gLogger)}; CHECK(runtime != nullptr)
+    // << "createInferRuntime error\n"; LOG(INFO) << "create runtime success";
+
+    // UniqPtr<ICudaEngine> engine{runtime->deserializeCudaEngine(plan->data(),
+    // plan->size())}; CHECK(engine != nullptr) << "create engine error\n";
+    // LOG(INFO) << "create engine success";
+    std::vector<char> result(plan->size());
+    memcpy(result.data(), plan->data(), result.size());
+    return result;
   }
   inline static Logger gLogger;
   std::unique_ptr<IRuntime> runtime = std::unique_ptr<IRuntime>{createInferRuntime(gLogger)};
