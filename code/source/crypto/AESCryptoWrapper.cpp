@@ -31,8 +31,8 @@ std::string AESCipherEncrypt(const std::string &msg, const std::string &hexkey, 
     std::vector<unsigned char> iv = HexBinaryDecoder(hexiv);
     size_t ciphertext_len = ((plaintext.size() + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
     std::vector<unsigned char> ciphertext(ciphertext_len);
-    int len;
-    int cipher_len;
+    size_t len;
+    size_t cipher_len;
     // Create and initialize the context
     EVP_CIPHER_CTX *ctx;
     if (!(ctx = EVP_CIPHER_CTX_new())) { LOG(ERROR) << "Error creating EVP context\n"; }
@@ -67,8 +67,8 @@ std::string AESCipherDecrypt(const std::string &msg, const std::string &hexkey, 
   try {
     LOG(INFO) << "AESCipherDecrypt start";
     EVP_CIPHER_CTX *ctx;
-    int len;
-    int decrypted_len=0;
+    size_t len;
+    size_t decrypted_len=0;
     std::vector<unsigned char> ciphertext{msg.begin(), msg.end()};
     std::vector<unsigned char> key = HexBinaryDecoder(hexkey);
     std::vector<unsigned char> iv = HexBinaryDecoder(hexiv);
