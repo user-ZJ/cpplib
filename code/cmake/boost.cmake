@@ -1,7 +1,7 @@
 if(NOT DEFINED boost_SOURCE_DIR)
 FetchContent_Declare(boost
-  URL      https://boostorg.jfrog.io/artifactory/main/release/1.75.0/source/boost_1_75_0.tar.gz
-  URL_HASH SHA256=aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a
+  URL      https://archives.boost.io/release/1.87.0/source/boost_1_87_0.tar.gz
+  URL_HASH SHA256=f55c340aa49763b1925ccf02b2e83f35fdcf634c9d5164a2acb87540173c741d
 )
 FetchContent_MakeAvailable(boost)
 endif()
