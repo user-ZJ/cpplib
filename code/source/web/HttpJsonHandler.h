@@ -41,20 +41,20 @@ namespace BASE_NAMESPACE{
 
 
 class HTTPJsonHandler: public HTTPRequestHandler
-	/// Handle a WebSocket connection.
+	/// Handle a JSON POST request.
 {
 public:
-	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);
+	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
 private:
 
 };
 
 class AsyncHTTPJsonHandler: public HTTPRequestHandler
-	/// Handle a WebSocket connection.
+	/// Accept a JSON POST request and reply 202 immediately.
 {
 public:
-	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);
+	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
 private:
 

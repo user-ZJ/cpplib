@@ -44,28 +44,11 @@ namespace BASE_NAMESPACE {
 
 class MyPartHandler : public Poco::Net::PartHandler {
  public:
-  MyPartHandler() : _length(0) {}
+  // 单个文件超过 kMaxBodySize 时抛出 HttpError(413)
+  void handlePart(const MessageHeader &header, std::istream &stream) override;
 
-  void handlePart(const MessageHeader &header, std::istream &stream) {
-    _type = header.get("Content-Type", "(unspecified)");
-    if (header.has("Content-Disposition")) {
-      std::string disp;
-      NameValueCollection params;
-      MessageHeader::splitParameters(header["Content-Disposition"], disp, params);
-      _name = params.get("name", "(unnamed)");
-      _fileName = params.get("filename", "(unnamed)");
-    }
-
-    // CountingInputStream istr(stream);
-    // NullOutputStream ostr;
-    // StreamCopier::copyStream(istr, ostr);
-    // _length = istr.chars();
-    StreamCopier::copyToString(stream, filebytes);
-    _length = filebytes.size();
-  }
-
-  int length() const {
-    return _length;
+  std::size_t length() const {
+    return filebytes.size();
   }
 
   const std::string &name() const {
@@ -85,7 +68,6 @@ class MyPartHandler : public Poco::Net::PartHandler {
   }
 
  private:
-  int _length;
   std::string _type;
   std::string _name;
   std::string _fileName;
@@ -93,10 +75,10 @@ class MyPartHandler : public Poco::Net::PartHandler {
 };
 
 class HTTPFormHandler : public HTTPRequestHandler
-/// Handle a WebSocket connection.
+/// Handle a multipart / url-encoded form POST.
 {
  public:
-  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response);
+  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) override;
 
  private:
 };

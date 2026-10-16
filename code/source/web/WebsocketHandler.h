@@ -41,11 +41,18 @@ class WebSocketHandler: public HTTPRequestHandler
 	/// Handle a WebSocket connection.
 {
 public:
-	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);
-	void OnText(const std::string &text);
-	void OnBinary(const Poco::Buffer<char> &buffer);
-	void OnClose();
+	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
+	virtual void OnText(const std::string &text);
+	virtual void OnBinary(const Poco::Buffer<char> &buffer);
+	virtual void OnClose();
+
+protected:
+	int SendFrame(const void *data, int length, int flags);
+
 private:
+	void Serve();
+	void Dispatch(int opcode, const Poco::Buffer<char> &payload);
+
     std::shared_ptr<WebSocket> ws;
 };
 

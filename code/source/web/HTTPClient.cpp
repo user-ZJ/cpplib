@@ -15,18 +15,16 @@
 #include "Poco/Net/FilePartSource.h"
 #include "Poco/Net/HTMLForm.h"
 #include "Poco/Net/HTTPClientSession.h"
-#include "Poco/Net/HTTPCredentials.h"
 #include "Poco/Net/HTTPRequest.h"
 #include "Poco/Net/HTTPResponse.h"
-#include "Poco/NullStream.h"
-#include "Poco/Path.h"
 #include "Poco/StreamCopier.h"
 #include "Poco/URI.h"
 #include "utils/file-util.h"
 #include "utils/logging.h"
-#include <iostream>
-#include <map>
+#include <functional>
 #include <sstream>
+#include <string>
+#include <vector>
 
 using Poco::Net::HTTPClientSession;
 using Poco::Net::HTTPRequest;
@@ -34,46 +32,73 @@ using Poco::Net::HTTPResponse;
 using Poco::Net::HTTPMessage;
 using Poco::Net::FilePartSource;
 using Poco::StreamCopier;
-using Poco::Path;
 using Poco::URI;
 using Poco::Exception;
 
 using namespace BASE_NAMESPACE;
 
+static const std::string kServer = "http://localhost:9900";
+
+// 发送请求并返回响应体；write_body 为空表示没有请求体
+static std::string Request(const std::string &url, HTTPRequest &request, HTTPResponse &response,
+                           const std::function<void(std::ostream &)> &write_body = nullptr) {
+  URI uri(url);
+  // https则使用HTTPSClientSession，并链接NetSSL库
+  HTTPClientSession session(uri.getHost(), uri.getPort());
+  std::string path(uri.getPathAndQuery());
+  if (path.empty()) path = "/";
+  request.setURI(path);
+  request.set("Test-Header", "Test-Header");
+
+  std::ostream &requestStream = session.sendRequest(request);
+  if (write_body) write_body(requestStream);
+  LOG(INFO) << request.getMethod() << " " << url;
+
+  std::istream &responseStream = session.receiveResponse(response);
+  std::string body;
+  StreamCopier::copyToString(responseStream, body);
+  LOG(INFO) << response.getStatus() << " " << response.getReason() << " " << body;
+  return body;
+}
+
+static void PrintResult(const HTTPResponse &response, const std::string &body) {
+  if (response.getStatus() / 100 != 2) {
+    LOG(ERROR) << "request failed: " << response.getStatus() << " " << body;
+    return;
+  }
+  if (body.empty()) return;
+  Poco::JSON::Parser parser;
+  auto obj = parser.parse(body).extract<Poco::JSON::Object::Ptr>();
+  LOG(INFO) << "code:" << obj->optValue<std::string>("code", "") << " message:"
+            << obj->optValue<std::string>("message", "");
+}
+
+static void PostBody(const std::string &url, const std::string &content_type, const std::string &body) {
+  HTTPRequest request(HTTPRequest::HTTP_POST, "/", HTTPMessage::HTTP_1_1);
+  request.setContentType(content_type);
+  request.setContentLength(body.size());
+  HTTPResponse response;
+  std::string result = Request(url, request, response, [&](std::ostream &os) { os << body; });
+  PrintResult(response, result);
+}
+
+static std::string LoginJson() {
+  Poco::JSON::Object obj;
+  obj.set("username", "user1@yourdomain.com");
+  obj.set("password", "mypword");
+  std::stringstream sbody;
+  obj.stringify(sbody);
+  return sbody.str();
+}
+
 void get() {
   try {
-    std::string url = "http://localhost:9900/get";
-    url = "http://nls-meta.cn-shanghai.aliyuncs.com";
-    std::string token = "xxxxx";
-    URI uri(url);
-    uri.addQueryParameter("token", token);
-    // https则使用HTTPSClientSession，并链接NetSSL库
-    HTTPClientSession session(uri.getHost(), uri.getPort());
-
-    std::string path(uri.getPathAndQuery());
-    if (path.empty()) path = "/";
-
-    HTTPRequest request(HTTPRequest::HTTP_GET, path, HTTPMessage::HTTP_1_1);
-    std::map<std::string, std::string> headers;
-    headers["Test-Header"] = "Test-Header";
-    // Set headers here
-    for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++) {
-      request.set(it->first, it->second);
-    }
-
-    std::ostream &requestStream = session.sendRequest(request);
-    //获取请求文本
-    std::stringstream iss;
-    request.write(iss);
-    LOG(INFO) << iss.str();
-
-    // get response
+    URI uri(kServer + "/get");
+    uri.addQueryParameter("token", "xxxxx");
+    HTTPRequest request(HTTPRequest::HTTP_GET, "/", HTTPMessage::HTTP_1_1);
     HTTPResponse response;
-    std::istream &responseStream = session.receiveResponse(response);
-    LOG(INFO) << response.getStatus() << " " << response.getReason();
-    std::stringstream oss;
-    StreamCopier::copyStream(responseStream, oss);
-    LOG(INFO) << oss.str();
+    std::string result = Request(uri.toString(), request, response);
+    PrintResult(response, result);
   }
   catch (Exception &ex) {
     LOG(ERROR) << ex.displayText();
@@ -82,18 +107,10 @@ void get() {
 
 void form() {
   try {
-    std::string url = "http://localhost:9900/form";
-    URI uri(url);
-    HTTPClientSession session(uri.getHost(), uri.getPort());
-
-    std::string path(uri.getPathAndQuery());
-    if (path.empty()) path = "/";
-
-    HTTPRequest request(HTTPRequest::HTTP_POST, path, HTTPMessage::HTTP_1_1);
-
+    const std::string filename = "test.txt";
     std::string teststr = "测试文件文本";
     std::vector<char> buf(teststr.begin(), teststr.end());
-    BASE_NAMESPACE::writeBinaryFile("text.txt", buf);
+    BASE_NAMESPACE::writeBinaryFile(filename.c_str(), buf);
 
     Poco::Net::HTMLForm form;
     form.setEncoding(Poco::Net::HTMLForm::ENCODING_MULTIPART);  //没有文件时设置为ENCODING_URL
@@ -102,27 +119,13 @@ void form() {
     form.add("client_secret", "client secret");
     form.set("username", "user@example.com");
     form.set("password", "secret");
-    form.addPart("test.txt", new FilePartSource("test.txt"));
+    form.addPart("file", new FilePartSource(filename));
+
+    HTTPRequest request(HTTPRequest::HTTP_POST, "/", HTTPMessage::HTTP_1_1);
     form.prepareSubmit(request);
-
-    std::ostream &requestStream = session.sendRequest(request);
-    form.write(requestStream);  //发送form表单
-    //获取请求文本
-    std::stringstream iss;
-    request.write(iss);
-    LOG(INFO) << iss.str();
-
-    // get response
     HTTPResponse response;
-    std::istream &responseStream = session.receiveResponse(response);
-    LOG(INFO) << response.getStatus() << " " << response.getReason();
-    std::string ostr;
-    StreamCopier::copyToString(responseStream, ostr);
-    LOG(INFO) << ostr;
-    if (!ostr.empty()) {
-      Poco::JSON::Parser parser;
-      Poco::JSON::Object::Ptr authObj = parser.parse(ostr).extract<Poco::JSON::Object::Ptr>();
-    }
+    std::string result = Request(kServer + "/form", request, response, [&](std::ostream &os) { form.write(os); });
+    PrintResult(response, result);
   }
   catch (Exception &ex) {
     LOG(ERROR) << ex.displayText();
@@ -131,53 +134,7 @@ void form() {
 
 void json() {
   try {
-    std::string url = "http://localhost:9900/json";
-    URI uri(url);
-    HTTPClientSession session(uri.getHost(), uri.getPort());
-
-    std::string path(uri.getPathAndQuery());
-    if (path.empty()) path = "/";
-
-    HTTPRequest request(HTTPRequest::HTTP_POST, path, HTTPMessage::HTTP_1_1);
-
-    std::map<std::string, std::string> headers;
-    headers["Test-Header"] = "Test-Header";
-    // req.setContentType("application/x-www-form-urlencoded");
-    request.setContentType("application/json");
-    request.set("Accept-Encoding", "gzip"); // 压缩
-    // Set headers here
-    for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++) {
-      request.set(it->first, it->second);
-    }
-    // set body
-    Poco::JSON::Object obj;
-    obj.set("username", "user1@yourdomain.com");
-    obj.set("password", "mypword");
-    std::stringstream sbody;
-    obj.stringify(sbody);
-    LOG(INFO) << "send body:" << sbody.str();
-
-    // Set the request body
-    request.setContentLength(sbody.str().size());
-    // sends request, returns open stream
-    std::ostream &requestStream = session.sendRequest(request);
-    // os << body; // sends the body
-    obj.stringify(requestStream);
-
-    //获取请求文本
-    std::stringstream iss;
-    request.write(iss);
-    LOG(INFO) << iss.str();
-
-    // get response
-    HTTPResponse response;
-    std::istream &responseStream = session.receiveResponse(response);
-    LOG(INFO) << response.getStatus() << " " << response.getReason();
-    std::string ostr;
-    StreamCopier::copyToString(responseStream, ostr);
-    LOG(INFO) << ostr;
-    Poco::JSON::Parser parser;
-    Poco::JSON::Object::Ptr authObj = parser.parse(ostr).extract<Poco::JSON::Object::Ptr>();
+    PostBody(kServer + "/json", "application/json", LoginJson());
   }
   catch (Exception &ex) {
     LOG(ERROR) << ex.displayText();
@@ -186,53 +143,7 @@ void json() {
 
 void async_json() {
   try {
-    std::string url = "http://localhost:9900/async_json";
-    URI uri(url);
-    HTTPClientSession session(uri.getHost(), uri.getPort());
-
-    std::string path(uri.getPathAndQuery());
-    if (path.empty()) path = "/";
-
-    HTTPRequest request(HTTPRequest::HTTP_POST, path, HTTPMessage::HTTP_1_1);
-
-    std::map<std::string, std::string> headers;
-    headers["Test-Header"] = "Test-Header";
-    // req.setContentType("application/x-www-form-urlencoded");
-    request.setContentType("application/json");
-    request.set("Accept-Encoding", "gzip"); // 压缩
-    // Set headers here
-    for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++) {
-      request.set(it->first, it->second);
-    }
-    // set body
-    Poco::JSON::Object obj;
-    obj.set("username", "user1@yourdomain.com");
-    obj.set("password", "mypword");
-    std::stringstream sbody;
-    obj.stringify(sbody);
-    LOG(INFO) << "send body:" << sbody.str();
-
-    // Set the request body
-    request.setContentLength(sbody.str().size());
-    // sends request, returns open stream
-    std::ostream &requestStream = session.sendRequest(request);
-    // os << body; // sends the body
-    obj.stringify(requestStream);
-
-    //获取请求文本
-    std::stringstream iss;
-    request.write(iss);
-    LOG(INFO) << iss.str();
-
-    // get response
-    HTTPResponse response;
-    std::istream &responseStream = session.receiveResponse(response);
-    LOG(INFO) << response.getStatus() << " " << response.getReason();
-    std::string ostr;
-    StreamCopier::copyToString(responseStream, ostr);
-    LOG(INFO) << ostr;
-    Poco::JSON::Parser parser;
-    Poco::JSON::Object::Ptr authObj = parser.parse(ostr).extract<Poco::JSON::Object::Ptr>();
+    PostBody(kServer + "/async_json", "application/json", LoginJson());
   }
   catch (Exception &ex) {
     LOG(ERROR) << ex.displayText();
@@ -241,57 +152,17 @@ void async_json() {
 
 void octet_stream() {
   try {
-    std::string url = "http://localhost:9900/octet_stream";
-    URI uri(url);
-    HTTPClientSession session(uri.getHost(), uri.getPort());
-
-    std::string path(uri.getPathAndQuery());
-    if (path.empty()) path = "/";
-
-    HTTPRequest request(HTTPRequest::HTTP_POST, path, HTTPMessage::HTTP_1_1);
-
-    std::map<std::string, std::string> headers;
-    headers["Test-Header"] = "Test-Header";
-    request.setContentType("application/octet-stream");
-    // Set headers here
-    for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++) {
-      request.set(it->first, it->second);
-    }
-
-    std::string filestr = file_to_str("test.txt");
-  
-    request.setContentLength(filestr.size());
-
-
-    // sends request, returns open stream
-    std::ostream &requestStream = session.sendRequest(request);
-    requestStream << filestr; // sends the body
-
-
-    //获取请求文本
-    std::stringstream iss;
-    request.write(iss);
-    LOG(INFO) << iss.str();
-
-    // get response
-    HTTPResponse response;
-    std::istream &responseStream = session.receiveResponse(response);
-    LOG(INFO) << response.getStatus() << " " << response.getReason();
-    std::string ostr;
-    StreamCopier::copyToString(responseStream, ostr);
-    LOG(INFO) << ostr;
-    Poco::JSON::Parser parser;
-    Poco::JSON::Object::Ptr authObj = parser.parse(ostr).extract<Poco::JSON::Object::Ptr>();
+    PostBody(kServer + "/octet_stream", "application/octet-stream", file_to_str("test.txt"));
   }
   catch (Exception &ex) {
     LOG(ERROR) << ex.displayText();
   }
 }
 
-int main(int argc, char **argv) {
+int main() {
   get();
   form();
   json();
   async_json();
-  // octet_stream();
+  octet_stream();
 }

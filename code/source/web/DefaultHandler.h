@@ -25,11 +25,10 @@ namespace BASE_NAMESPACE{
 
 
 class DefaultHandler: public HTTPRequestHandler
-	/// Return a HTML document with some JavaScript creating
-	/// a WebSocket connection.
+	/// Reply 404 for unknown routes.
 {
 public:
-	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);
+	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 };
 
 };

@@ -39,10 +39,10 @@ namespace BASE_NAMESPACE{
 
 
 class HTTPGetHandler: public HTTPRequestHandler
-	/// Handle a WebSocket connection.
+	/// Handle a GET request.
 {
 public:
-	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);
+	void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) override;
 
 private:
 };

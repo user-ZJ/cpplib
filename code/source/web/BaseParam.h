@@ -9,7 +9,7 @@ class BaseForm{
     BaseForm(const BaseForm&)=default;
     BaseForm &operator=(const BaseForm&)=default;
     BaseForm(BaseForm&&)=default;
-    BaseForm &operator=(BaseForm&&)=default
+    BaseForm &operator=(BaseForm&&)=default;
     virtual ~BaseForm()=default;
     std::string task_id;
     BaseForm():task_id(""){}
@@ -20,7 +20,7 @@ public:
     BaseResponse(const BaseResponse&)=default;
     BaseResponse &operator=(const BaseResponse&)=default;
     BaseResponse(BaseResponse&&)=default;
-    BaseResponse &operator=(BaseResponse&&)=default
+    BaseResponse &operator=(BaseResponse&&)=default;
     virtual ~BaseResponse()=default;
     int code;
     std::string message;

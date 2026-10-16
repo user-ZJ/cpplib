@@ -25,11 +25,16 @@ target_link_libraries(path_util_test myutil)
 add_executable(audio_test audio_test.cpp)
 target_link_libraries(audio_test PUBLIC myutil)
 
-add_executable(redis_test redis_test.cpp)
-target_link_libraries(redis_test dbwrapper)
+if(TARGET dbwrapper)
+    add_executable(redis_test redis_test.cpp)
+    target_link_libraries(redis_test dbwrapper)
 
-add_executable(mongodb_test mongodb_test.cpp)
-target_link_libraries(mongodb_test dbwrapper)
+    add_executable(mongodb_test mongodb_test.cpp)
+    target_link_libraries(mongodb_test dbwrapper)
+
+    add_executable(mysql_test mysql_test.cpp)
+    target_link_libraries(mysql_test dbwrapper glog gflags)
+endif()
 
 add_executable(rapidjson_test rapidjson_test.cpp)
 
@@ -73,10 +78,6 @@ target_link_libraries(vad_test vadwrapper sox myutil)
 
 add_executable(rnnoise_test rnnoise_test.cpp)
 target_link_libraries(rnnoise_test  remove_noise sox myutil)
-
-add_executable(mysql_test mysql_test.cpp)
-target_link_libraries(mysql_test dbwrapper glog gflags)
-
 
 
 add_executable(poco_test poco_test.cpp)

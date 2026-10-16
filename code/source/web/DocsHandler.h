@@ -60,7 +60,7 @@ class DocsHandler : public HTTPRequestHandler
  public:
   DocsHandler() {}
 
-  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response);
+  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) override;
 };
 
 };  // namespace BASE_NAMESPACE

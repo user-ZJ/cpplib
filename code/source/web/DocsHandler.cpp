@@ -30,11 +30,12 @@
 #include "Poco/Util/Option.h"
 #include "Poco/Util/OptionSet.h"
 #include "Poco/Util/ServerApplication.h"
-#include "status.h"
+#include "HttpUtil.h"
+#include "Poco/Path.h"
 #include "utils/file-util.h"
 #include "utils/logging.h"
 #include <iostream>
-#include <thread>
+#include <vector>
 
 using Poco::CountingInputStream;
 using Poco::NullOutputStream;
@@ -58,25 +59,36 @@ using Poco::Util::ServerApplication;
 namespace BASE_NAMESPACE {
 
 void DocsHandler::handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
-  LOG(INFO) << "docs handler";
-  Poco::URI uri(request.getURI());
-  response.setChunkedTransferEncoding(true);
+  HandleSafely(request, response, [&] {
+    static const std::string kDocRoot = "../docs/_build/html";
+    Poco::URI uri(request.getURI());
 
-  std::string path = "../docs/_build/html" + uri.getPath();
-  if (not is_exist(path.c_str()) or uri.getPath() == "/") path = "../docs/_build/html/index.html";
-  LOG(INFO) << path;
-  if (path.find(".css") != std::string::npos) {
-    response.setContentType("text/css");
-  } else if (path.find(".js") != std::string::npos) {
-    response.setContentType("application/javascript");
-  } else if (path.find(".html") != std::string::npos) {
-    response.setContentType("text/html");
-  } else {
-    response.setContentType("application/octet-stream");
-  }
-  auto buff = file_to_buff(path.c_str());
-  response.sendBuffer(buff.data(), buff.size());
-  LOG(INFO) << "docs handler end";
+    // getPath() 已做百分号解码，任何 ".." 段都可能逃出文档目录
+    std::vector<std::string> segments;
+    uri.getPathSegments(segments);
+    for (const auto &seg : segments) {
+      if (seg == ".." || seg.find('\\') != std::string::npos) {
+        throw HttpError(Poco::Net::HTTPResponse::HTTP_NOT_FOUND, "not found");
+      }
+    }
+
+    std::string path = kDocRoot + uri.getPath();
+    if (uri.getPath() == "/" || !is_exist(path.c_str())) path = kDocRoot + "/index.html";
+    VLOG(1) << "docs: " << path;
+
+    const std::string ext = Poco::Path(path).getExtension();
+    if (ext == "css") {
+      response.setContentType("text/css");
+    } else if (ext == "js") {
+      response.setContentType("application/javascript");
+    } else if (ext == "html") {
+      response.setContentType("text/html");
+    } else {
+      response.setContentType("application/octet-stream");
+    }
+    auto buff = file_to_buff(path.c_str());
+    response.sendBuffer(buff.data(), buff.size());
+  });
 }
 
 };  // namespace BASE_NAMESPACE

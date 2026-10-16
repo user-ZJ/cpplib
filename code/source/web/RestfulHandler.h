@@ -20,14 +20,14 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Net::ServerSocket;
 
-namespace DMAI {
+namespace BASE_NAMESPACE {
 
 class RestfulHandler : public HTTPRequestHandler
-/// Return a HTML document with some JavaScript creating
-/// a WebSocket connection.
+/// Dispatch by HTTP method; subclasses override the methods they support,
+/// others reply 405.
 {
 public:
-  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response);
+  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) override;
   virtual void GET(HTTPServerRequest &request,HTTPServerResponse &response);
   virtual void POST(HTTPServerRequest &request,HTTPServerResponse &response);
   virtual void PUT(HTTPServerRequest &request,HTTPServerResponse &response);
@@ -35,6 +35,9 @@ public:
   virtual void DELETE(HTTPServerRequest &request,HTTPServerResponse &response);
   virtual void HEAD(HTTPServerRequest &request,HTTPServerResponse &response);
   virtual void OPTIONS(HTTPServerRequest &request,HTTPServerResponse &response);
+
+protected:
+  [[noreturn]] void NotSupported(const HTTPServerRequest &request);
 };
 
-}; // namespace DMAI
+}; // namespace BASE_NAMESPACE

@@ -45,10 +45,10 @@ namespace BASE_NAMESPACE {
 
 
 class HttpStreamHandler : public HTTPRequestHandler
-/// Handle a WebSocket connection.
+/// Handle an application/octet-stream POST request.
 {
  public:
-  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response);
+  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) override;
 
  private:
 };

@@ -1,21 +1,15 @@
 
 #include "DefaultHandler.h"
-#include "utils/logging.h"
-#include "utils/string-util.h"
-
-
-
+#include "HttpUtil.h"
 
 namespace BASE_NAMESPACE {
 
-
 void DefaultHandler::handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
-  response.setChunkedTransferEncoding(true);
-  response.setContentType("application/json");
-  std::ostream &ostr = response.send();
-  ostr << R"({"code":9999,"msg":"default response,please check url"})";
+  HandleSafely(request, response, [&] {
+    // 请求体未读取，不能复用连接
+    response.setKeepAlive(false);
+    SendResult(response, "9999", "default response,please check url", HTTPResponse::HTTP_NOT_FOUND);
+  });
 }
 
-
-
-} 
+}  // namespace BASE_NAMESPACE
