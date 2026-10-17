@@ -44,7 +44,7 @@ target_link_libraries(threadpool_test myutil pthread)
 
 
 add_executable(crypto_test crypto_test.cpp)
-target_link_libraries(crypto_test crypto_wrapper)
+target_link_libraries(crypto_test crypto_wrapper gflags::gflags)
 
 add_executable(string_util_test string_util_test.cpp)
 target_link_libraries(string_util_test myutil)

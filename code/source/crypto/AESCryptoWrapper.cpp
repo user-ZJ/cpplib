@@ -1,128 +1,145 @@
+#include "AESCryptoWrapper.h"
 #include "utils/hex-util.h"
 #include "utils/logging.h"
-#include <openssl/aes.h>
+#include <openssl/crypto.h>
+#include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
-#include <sstream>
-
-#define AES_KEY_SIZE 256
-#define AES_IV_SIZE 128
+#include <algorithm>
+#include <memory>
 
 namespace BASE_NAMESPACE {
 
+namespace {
+
+constexpr std::size_t kKeySize = 32;  // AES-256
+constexpr std::size_t kIvSize = 16;
+constexpr std::size_t kBlockSize = 16;
+// EVP 接口长度参数为 int，大输入需分段
+constexpr std::size_t kMaxChunk = 1 << 30;
+
+// 内置密钥，用于模型文件加解密；修改会导致已加密的模型无法解密
+const char *const kDefaultHexKey = "e0080defd1d1612545c7adf21f6842a3d7589c98deb127c4100b2b83e2b9ffa5";
+const char *const kDefaultHexIv = "d9c9e68bfceb6ceff7c6636624a9c2ee";
+
+struct CipherCtxDeleter {
+  void operator()(EVP_CIPHER_CTX *ctx) const { EVP_CIPHER_CTX_free(ctx); }
+};
+using CipherCtxPtr = std::unique_ptr<EVP_CIPHER_CTX, CipherCtxDeleter>;
+
+// 用完即擦除，避免密钥残留在已释放的堆内存中
+struct SecretBytes {
+  std::vector<unsigned char> data;
+  ~SecretBytes() {
+    if (!data.empty()) OPENSSL_cleanse(data.data(), data.size());
+  }
+};
+
+void LogOpenSSLError(const char *what) {
+  char buf[256] = "unknown error";
+  unsigned long err = ERR_get_error();
+  if (err != 0) ERR_error_string_n(err, buf, sizeof(buf));
+  ERR_clear_error();
+  LOG(ERROR) << what << ": " << buf;
+}
+
+bool DecodeHexExact(const std::string &hex, std::size_t size, const char *name, SecretBytes &out) {
+  out.data = HexBinaryDecoder(hex);
+  if (out.data.size() != size) {
+    LOG(ERROR) << "invalid AES " << name << ": expect " << size * 2 << " hex chars";
+    return false;
+  }
+  return true;
+}
+
+// AES-256-CBC + PKCS7；失败时清空 out 并返回 false
+template <typename Out>
+bool AesCbc(bool encrypt, const void *input, std::size_t input_len, const std::string &hexkey,
+            const std::string &hexiv, Out &out) {
+  out.clear();
+  SecretBytes key, iv;
+  if (!DecodeHexExact(hexkey, kKeySize, "key", key) || !DecodeHexExact(hexiv, kIvSize, "iv", iv)) return false;
+  if (!encrypt && input_len % kBlockSize != 0) {
+    LOG(ERROR) << "AES decrypt: ciphertext length " << input_len << " is not a multiple of " << kBlockSize;
+    return false;
+  }
+
+  CipherCtxPtr ctx(EVP_CIPHER_CTX_new());
+  if (!ctx) {
+    LogOpenSSLError("EVP_CIPHER_CTX_new");
+    return false;
+  }
+  if (EVP_CipherInit_ex(ctx.get(), EVP_aes_256_cbc(), nullptr, key.data.data(), iv.data.data(), encrypt ? 1 : 0)
+      != 1) {
+    LogOpenSSLError("EVP_CipherInit_ex");
+    return false;
+  }
+
+  // PKCS7 填充最多增加一整块
+  out.resize(input_len + kBlockSize);
+  auto *dst = reinterpret_cast<unsigned char *>(&out[0]);
+  const auto *src = static_cast<const unsigned char *>(input);
+  std::size_t total = 0;
+  for (std::size_t offset = 0; offset < input_len; offset += kMaxChunk) {
+    int chunk = static_cast<int>(std::min(kMaxChunk, input_len - offset));
+    int written = 0;
+    if (EVP_CipherUpdate(ctx.get(), dst + total, &written, src + offset, chunk) != 1) {
+      LogOpenSSLError(encrypt ? "AES encrypt" : "AES decrypt");
+      out.clear();
+      return false;
+    }
+    total += static_cast<std::size_t>(written);
+  }
+  int written = 0;
+  if (EVP_CipherFinal_ex(ctx.get(), dst + total, &written) != 1) {
+    // 解密时多为密钥错误或数据损坏导致填充校验失败
+    LogOpenSSLError(encrypt ? "AES encrypt final" : "AES decrypt final (wrong key or corrupted data)");
+    out.clear();
+    return false;
+  }
+  total += static_cast<std::size_t>(written);
+  out.resize(total);
+  return true;
+}
+
+}  // namespace
+
 std::pair<std::string, std::string> GenAESKey() {
-  std::vector<unsigned char> key(AES_KEY_SIZE / 8);
-  std::vector<unsigned char> iv(AES_IV_SIZE / 8);
-
-  // Generate random key and initialization vector
-  if (RAND_bytes(key.data(), AES_KEY_SIZE / 8) != 1) { LOG(ERROR) << "Error generating random key"; }
-  if (RAND_bytes(iv.data(), AES_IV_SIZE / 8) != 1) { LOG(ERROR) << "Error generating random initialization vector"; }
-
-  LOG(INFO) << "key:" << HexBinaryEncoder(key);
-  LOG(INFO) << "IV:" << HexBinaryEncoder(iv);
-  return std::make_pair(HexBinaryEncoder(key), HexBinaryEncoder(iv));
+  SecretBytes key, iv;
+  key.data.resize(kKeySize);
+  iv.data.resize(kIvSize);
+  if (RAND_bytes(key.data.data(), static_cast<int>(kKeySize)) != 1
+      || RAND_bytes(iv.data.data(), static_cast<int>(kIvSize)) != 1) {
+    LogOpenSSLError("RAND_bytes");
+    return {};
+  }
+  return std::make_pair(HexBinaryEncoder(key.data), HexBinaryEncoder(iv.data));
 }
 
 std::string AESCipherEncrypt(const std::string &msg, const std::string &hexkey, const std::string &hexiv) {
-  try {
-    LOG(INFO) << "AESCipherEncrypt start";
-    std::vector<unsigned char> plaintext{msg.begin(), msg.end()};
-    std::vector<unsigned char> key = HexBinaryDecoder(hexkey);
-    std::vector<unsigned char> iv = HexBinaryDecoder(hexiv);
-    size_t ciphertext_len = ((plaintext.size() + AES_BLOCK_SIZE - 1) / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;
-    std::vector<unsigned char> ciphertext(ciphertext_len);
-    int len;
-    size_t cipher_len;
-    // Create and initialize the context
-    EVP_CIPHER_CTX *ctx;
-    if (!(ctx = EVP_CIPHER_CTX_new())) { LOG(ERROR) << "Error creating EVP context\n"; }
-    if (EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key.data(), iv.data()) != 1) {
-      LOG(ERROR) << "Error initializing EVP context\n";
-    }
+  std::string out;
+  AesCbc(true, msg.data(), msg.size(), hexkey, hexiv, out);
+  return out;
+}
 
-    // Encrypt plaintext
-    if (EVP_EncryptUpdate(ctx, ciphertext.data(), &len, plaintext.data(), plaintext.size()) != 1) {
-      LOG(ERROR) << "Error encrypting plaintext\n";
-    }
-    cipher_len = len;
-
-    // Finalize encryption
-    if (EVP_EncryptFinal_ex(ctx, ciphertext.data() + len, &len) != 1) { LOG(ERROR) << "Error finalizing encryption\n"; }
-    cipher_len += len;
-
-    // Clean up the context
-    EVP_CIPHER_CTX_free(ctx);
-    LOG(INFO) << "ciphertext_len:" << ciphertext_len << " cipher_len:" << cipher_len;
-
-    LOG(INFO) << "AESCipherEncrypt end";
-    return std::string(ciphertext.begin(), ciphertext.begin() + cipher_len);
-  }
-  catch (...) {
-    LOG(ERROR) << "AES Encrypt error";
-    return "";
-  }
+std::string AESCipherEncrypt(const std::string &msg) {
+  return AESCipherEncrypt(msg, kDefaultHexKey, kDefaultHexIv);
 }
 
 std::string AESCipherDecrypt(const std::string &msg, const std::string &hexkey, const std::string &hexiv) {
-  try {
-    LOG(INFO) << "AESCipherDecrypt start";
-    EVP_CIPHER_CTX *ctx;
-    int len;
-    size_t decrypted_len=0;
-    std::vector<unsigned char> ciphertext{msg.begin(), msg.end()};
-    std::vector<unsigned char> key = HexBinaryDecoder(hexkey);
-    std::vector<unsigned char> iv = HexBinaryDecoder(hexiv);
-    std::vector<unsigned char> decrypted(msg.size());
-    // Create and initialize the context
-    if (!(ctx = EVP_CIPHER_CTX_new())) {
-      LOG(ERROR)<<"Error creating EVP context\n";
-    }
-    if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key.data(), iv.data()) != 1) {
-      LOG(ERROR)<<"Error initializing EVP context\n";
-    }
-
-    // Decrypt ciphertext
-    if (EVP_DecryptUpdate(ctx, decrypted.data(), &len, ciphertext.data(), ciphertext.size()) != 1) {
-      LOG(ERROR)<<"Error decrypting ciphertext\n";
-    }
-    decrypted_len = len;
-
-    // Finalize decryption
-    if (EVP_DecryptFinal_ex(ctx, decrypted.data() + len, &len) != 1) {
-      LOG(ERROR)<<"Error finalizing decryption\n";
-    }
-    decrypted_len += len;
-
-    // Clean up the context
-    EVP_CIPHER_CTX_free(ctx);
-    LOG(INFO) << "AESCipherDecrypt end";
-    return std::string(decrypted.begin(), decrypted.begin()+decrypted_len);
-  }
-  catch (...) {
-    LOG(ERROR) << "AES Decrypt error";
-    return "";
-  }
+  std::string out;
+  AesCbc(false, msg.data(), msg.size(), hexkey, hexiv, out);
+  return out;
 }
 
 std::string AESCipherDecrypt(const std::string &msg) {
-  try {
-    std::string hexkey = "e0080defd1d1612545c7adf21f6842a3d7589c98deb127c4100b2b83e2b9ffa5";
-    std::string hexiv = "d9c9e68bfceb6ceff7c6636624a9c2ee";
-    // CipherKey cipher_key("aes256", HexBinaryDecoder(hexkey), HexBinaryDecoder(hexiv));
-    // Cipher::Ptr pCipher = CipherFactory::defaultFactory().createCipher(cipher_key);
-    // return pCipher->decryptString(msg);
-    return AESCipherDecrypt(msg, hexkey, hexiv);
-  }
-  catch (...) {
-    LOG(ERROR) << "AES Decrypt error";
-    return "";
-  }
+  return AESCipherDecrypt(msg, kDefaultHexKey, kDefaultHexIv);
 }
 
 std::vector<char> AESCipherDecrypt(const std::vector<char> &buff) {
-  std::string str(buff.begin(), buff.end());
-  std::string out_str = AESCipherDecrypt(str);
-  return std::vector<char>(out_str.begin(), out_str.end());
+  std::vector<char> out;
+  AesCbc(false, buff.data(), buff.size(), kDefaultHexKey, kDefaultHexIv, out);
+  return out;
 }
 
 }  // namespace BASE_NAMESPACE

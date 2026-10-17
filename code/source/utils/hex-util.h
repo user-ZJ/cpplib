@@ -24,26 +24,23 @@ inline std::string HexBinaryEncoder(const std::vector<unsigned char> &binary, bo
   return res;
 }
 
+inline int HexDigitValue(char n) {
+  if (n >= '0' && n <= '9') return n - '0';
+  if (n >= 'A' && n <= 'F') return n - 'A' + 10;
+  if (n >= 'a' && n <= 'f') return n - 'a' + 10;
+  return -1;
+}
+
+// 长度为奇数或含非十六进制字符时返回空
 inline std::vector<unsigned char> HexBinaryDecoder(const std::string &str) {
   std::vector<unsigned char> res;
-  unsigned char c, n;
-  for (int i = 0; i < str.length() / 2; i++) {
-    n = str[2 * i];
-    if (n >= '0' && n <= '9')
-      c = n - '0';
-    else if (n >= 'A' && n <= 'F')
-      c = n - 'A' + 10;
-    else if (n >= 'a' && n <= 'f')
-      c = n - 'a' + 10;
-    c <<= 4;
-    n = str[2 * i + 1];
-    if (n >= '0' && n <= '9')
-      c |= n - '0';
-    else if (n >= 'A' && n <= 'F')
-      c |= n - 'A' + 10;
-    else if (n >= 'a' && n <= 'f')
-      c |= n - 'a' + 10;
-    res.push_back(c);
+  if (str.size() % 2 != 0) return res;
+  res.reserve(str.size() / 2);
+  for (std::size_t i = 0; i < str.size(); i += 2) {
+    int hi = HexDigitValue(str[i]);
+    int lo = HexDigitValue(str[i + 1]);
+    if (hi < 0 || lo < 0) return {};
+    res.push_back(static_cast<unsigned char>((hi << 4) | lo));
   }
   return res;
 }
