@@ -3,9 +3,8 @@
 #   Ubuntu: apt install libmysqlclient-dev
 #   macOS:  brew install mysql-client，并传 -DMYSQL_ROOT_DIR=$(brew --prefix mysql-client)
 FetchContent_Declare(poco
-  URL      https://github.com/pocoproject/poco/archive/refs/tags/poco-1.13.0-release.tar.gz
-  URL_HASH SHA256=0135160663795901f317215272fadf71f3b526f38daacb2ae8d6b07ad11d319b
-  PATCH_COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/patch/poco/fix_zutil_macos.cmake
+  URL      https://github.com/pocoproject/poco/archive/refs/tags/poco-1.14.2-release.tar.gz
+  URL_HASH SHA256=47394ea7ddb7b0a40e1a5be896f8f5dc77cfdc4f561d2e7131ecf582df5a0c3a
 )
 FetchContent_MakeAvailable(poco)
 include_directories(${poco_SOURCE_DIR}/Foundation/include 

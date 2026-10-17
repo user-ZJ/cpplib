@@ -62,7 +62,13 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(glog)
 include(gflags)
-include(openfst)
+# kaldi 依赖 /opt/intel/mkl（见 source/kaldi），找不到时跳过 openfst、kaldi 及依赖 kaldi 的 vad
+find_path(MKL_INCLUDE_DIR mkl.h PATHS /opt/intel/mkl/include NO_DEFAULT_PATH)
+if(MKL_INCLUDE_DIR)
+    include(openfst)
+else()
+    message(STATUS "MKL not found in /opt/intel/mkl, skip openfst, source/kaldi and source/vad")
+endif()
 include(boost)
 # include(opencc)
 include(rapidjson)
@@ -71,9 +77,8 @@ include(poco)
 include(onnx)
 # include(flatbuffers)
 include(cereal)
-
-execute_process(COMMAND unzip -n ${CMAKE_SOURCE_DIR}/3rdparty/grpc_ubuntu20_install.zip -d ${CMAKE_BINARY_DIR}/grpc)
-
+include(sox)
+include(rnnoise)
 
 include_directories(
     /opt/intel/mkl/include
@@ -81,7 +86,6 @@ include_directories(
     source/kaldi
     3rdparty/poco/include 
     3rdparty/fvad/include
-    3rdparty/rnnoise/include
     3rdparty/opus/include  
 )
 link_directories(
@@ -90,7 +94,6 @@ link_directories(
     /opt/intel/lib/intel64/
     # 3rdparty/poco/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/fvad/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
-    3rdparty/rnnoise/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
     3rdparty/opus/lib/${CMAKE_SYSTEM_NAME}/${TARGET_ARCH}
 )
 
@@ -104,7 +107,9 @@ link_directories(
 #         pthread
 # 		)
 add_subdirectory(source/utils)
-add_subdirectory(source/kaldi)
+if(MKL_INCLUDE_DIR)
+    add_subdirectory(source/kaldi)
+endif()
 add_subdirectory(source/web)
 add_subdirectory(source/grpc)
 if(TARGET Poco::DataMySQL)
@@ -112,7 +117,9 @@ if(TARGET Poco::DataMySQL)
 else()
     message(STATUS "MySQL client not found, skip source/db and its tests")
 endif()
-add_subdirectory(source/vad)
+if(MKL_INCLUDE_DIR)
+    add_subdirectory(source/vad)
+endif()
 add_subdirectory(source/remove_noise)
 add_subdirectory(source/opus)
 add_subdirectory(source/crypto)

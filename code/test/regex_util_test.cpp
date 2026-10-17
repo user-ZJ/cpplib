@@ -12,7 +12,7 @@ using namespace BASE_NAMESPACE;
 int main(int argc, char *argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);
-  google::EnableLogCleaner(3);
+  google::EnableLogCleaner(std::chrono::hours(24 * 3));
 
   std::string text = "This is his face";
   std::string reg_text = R"(\w+)";

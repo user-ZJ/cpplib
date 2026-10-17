@@ -1,10 +1,10 @@
 if(NOT ANDROID)
-  set(gflags_SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/gflags/include)
-  set(glog_SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/glog/include)
-
-  set(gflags_BINARY_DIR ${CMAKE_SOURCE_DIR}/3rdparty/gflags/lib/Linux/x64)
-  set(glog_BINARY_DIR ${CMAKE_SOURCE_DIR}/3rdparty/glog/lib/Linux/x64)
-
+  # 使用本工程 glog.cmake / gflags.cmake 构建的 glog 和 gflags，保证与主工程是同一份且平台一致
+  set(OPENFST_DEP_CPPFLAGS "-I${gflags_BINARY_DIR}/include -I${glog_SOURCE_DIR}/src -I${glog_BINARY_DIR} -DGLOG_USE_GLOG_EXPORT")
+  set(OPENFST_GFLAGS_LIB_DIR $<TARGET_FILE_DIR:gflags_nothreads_static>)
+  set(OPENFST_GLOG_LIB_DIR $<TARGET_LINKER_FILE_DIR:glog>)
+  # configure 会运行测试程序，需能找到共享库 glog
+  set(OPENFST_DEP_LDFLAGS "-L${OPENFST_GFLAGS_LIB_DIR} -L${OPENFST_GLOG_LIB_DIR} -Wl,-rpath,${OPENFST_GLOG_LIB_DIR}")
 
   set(CONFIG_FLAGS "")
   if(NOT FST_HAVE_BIN)
@@ -29,14 +29,18 @@ if(NOT ANDROID)
       PREFIX            ${openfst_PREFIX_DIR}
       SOURCE_DIR        ${openfst_SOURCE_DIR}
       BINARY_DIR        ${openfst_BINARY_DIR}
+      PATCH_COMMAND     ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/patch/fix_openfst.cmake
       CONFIGURE_COMMAND ${openfst_SOURCE_DIR}/configure ${CONFIG_FLAGS} --prefix=${openfst_PREFIX_DIR} --enable-static=yes --enable-shared=no
-                          "CPPFLAGS=-I${gflags_SOURCE_DIR} -I${glog_SOURCE_DIR} ${TORCH_CXX_FLAGS}"
-                          "LDFLAGS=-L${gflags_BINARY_DIR} -L${glog_BINARY_DIR}"
+                          # configure 在检测编译器前就给 CXXFLAGS 赋了值，autoconf 因此不会默认加 -O2
+                          "CXXFLAGS=-O2"
+                          "CPPFLAGS=${OPENFST_DEP_CPPFLAGS} ${TORCH_CXX_FLAGS}"
+                          "LDFLAGS=${OPENFST_DEP_LDFLAGS}"
                           "LIBS=-lgflags_nothreads -lglog -lpthread"
       COMMAND           ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/patch/openfst ${openfst_SOURCE_DIR}
-      BUILD_COMMAND     make -j$(nproc)
+      # $(MAKE) 继承外层 make 的 -j 与 jobserver
+      BUILD_COMMAND     $(MAKE)
     )
-    # add_dependencies(openfst gflags glog)
+    add_dependencies(openfst gflags_nothreads_static glog)
     link_directories(${openfst_PREFIX_DIR}/lib)
   else()
     add_compile_options(/W0 /wd4244 /wd4267)

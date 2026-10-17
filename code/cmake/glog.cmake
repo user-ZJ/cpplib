@@ -1,7 +1,7 @@
 # if(NOT DEFINED glog_SOURCE_DIR)
 FetchContent_Declare(glog
-  URL      https://github.com/google/glog/archive/refs/tags/v0.6.0.zip
-  URL_HASH SHA256=122fb6b712808ef43fbf80f75c52a21c9760683dae470154f02bddfc61135022
+  URL      https://github.com/google/glog/archive/refs/tags/v0.7.1.zip
+  URL_HASH SHA256=c17d85c03ad9630006ef32c7be7c65656aba2e7e2fbfc82226b7e680c771fc88
 )
 FetchContent_MakeAvailable(glog)
 # endif()

@@ -73,18 +73,22 @@ target_link_libraries(filesystem_test)
 
 
 
-add_executable(vad_test vad_test.cpp)
-target_link_libraries(vad_test vadwrapper sox myutil)
+if(TARGET vadwrapper)
+    add_executable(vad_test vad_test.cpp)
+    target_link_libraries(vad_test vadwrapper sox myutil)
+endif()
 
 add_executable(rnnoise_test rnnoise_test.cpp)
 target_link_libraries(rnnoise_test  remove_noise sox myutil)
 
 
+find_package(OpenSSL REQUIRED)
+
 add_executable(poco_test poco_test.cpp)
-target_link_libraries(poco_test crypto ssl myutil Poco::Foundation)
+target_link_libraries(poco_test OpenSSL::SSL OpenSSL::Crypto myutil Poco::Foundation)
 
 add_executable(just_test just_test.cpp)
-target_link_libraries(just_test crypto ssl myutil)
+target_link_libraries(just_test OpenSSL::SSL OpenSSL::Crypto myutil)
 
 
 # add_executable(flatbuffers_test flatbuffers_test.cpp)

@@ -12,6 +12,7 @@
 #include "Poco/Base64Decoder.h"
 #include "Poco/CountingStream.h"
 #include "Poco/Exception.h"
+#include "Poco/JSON/Object.h"
 #include "Poco/JSON/Parser.h"
 #include "Poco/Net/HTMLForm.h"
 #include "Poco/Net/HTTPRequestHandler.h"

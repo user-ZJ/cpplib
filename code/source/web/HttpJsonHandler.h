@@ -14,6 +14,7 @@
 #include "Poco/Util/HelpFormatter.h"
 #include "Poco/Format.h"
 #include "Poco/StreamCopier.h"
+#include "Poco/JSON/Object.h"
 #include "Poco/JSON/Parser.h"
 
 using Poco::Net::ServerSocket;

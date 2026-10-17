@@ -35,7 +35,7 @@ void test2() {
     auto my_path = fs::path("/home/usr");
 
     // 遍历路径, "/", "home", "usr"
-    for(auto& item : my_path) {
+    for(const auto& item : my_path) {
         cout << "item:"<<item.string() << endl;
     }
 

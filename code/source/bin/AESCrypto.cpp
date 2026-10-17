@@ -11,7 +11,7 @@ using namespace BASE_NAMESPACE;
 
 int main(int argc, char *argv[]) {
   FLAGS_log_dir = ".";
-  google::EnableLogCleaner(30);  // keep your logs for 30 days
+  google::EnableLogCleaner(std::chrono::hours(24 * 30));  // keep your logs for 30 days
   google::InitGoogleLogging(argv[0]);  //初始化 glog
   google::SetStderrLogging(google::GLOG_ERROR);
   if (argc < 4) {
