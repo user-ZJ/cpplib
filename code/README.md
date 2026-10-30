@@ -1,3 +1,17 @@
+# mbase / cpplib
+
+C++17 基础库与示例（CMake）。产品范围见 [PRODUCT.md](./PRODUCT.md)；给 AI agent 的操作约定见 [AGENTS.md](./AGENTS.md)。
+
+| 文档 | 说明 |
+| --- | --- |
+| [PRODUCT.md](./PRODUCT.md) | 问题、范围、验收 |
+| [AGENTS.md](./AGENTS.md) | Agent 入口与变更约定 |
+| [docs/architecture.md](./docs/architecture.md) | 模块与依赖 |
+| [docs/quality.md](./docs/quality.md) | 构建 / 测试门禁 |
+| [docs/setup.md](./docs/setup.md) | 环境搭建 |
+| [docs/onboarding.md](./docs/onboarding.md) | 上手路径 |
+| [docs/design.md](./docs/design.md) | UI（本库几乎无产品界面） |
+
 # 编译
 
 ## linux
