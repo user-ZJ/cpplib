@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 project(mbase)
 
-option(BUILD_UNITTEST "build test with googletest" OFF)
+option(BUILD_UNITTEST "build test with googletest" ON)
 option(BUILD_TEST "build test with googletest" ON)
 
 set(BASE_NAMESPACE zack)
@@ -60,6 +60,8 @@ set(FETCHCONTENT_BASE_DIR ${fc_base})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 
+# glog/gflags 默认会把自己的测试注册进 ctest，本仓库只保留 unittest/
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
 include(glog)
 include(gflags)
 # kaldi 依赖 /opt/intel/mkl（见 source/kaldi），找不到时跳过 openfst、kaldi 及依赖 kaldi 的 vad
@@ -138,8 +140,12 @@ if(BUILD_UNITTEST)
 	    # SOURCE_DIR ../thirdpart/googletest
     )
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+    set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
     set(GTEST_HAS_PTHREAD 1)
-    FetchContent_MakeAvailable(googletest) #后续链接gtest_main即可
+    # release-1.11.0 的 cmake_minimum_required 低于 3.5，CMake 4 需要这个下限才能配置
+    set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+    FetchContent_MakeAvailable(googletest) #后续链接gtest即可，入口在 unittest/main.cpp
     enable_testing()
     add_subdirectory(unittest)
 endif()

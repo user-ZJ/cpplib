@@ -8,7 +8,7 @@
 | --- | --- |
 | 语言 | C++17 |
 | 构建 | CMake ≥ 3.14 + Make/Ninja |
-| 测试 | 各模块下可执行测试 / 示例（非统一 Node/Vitest） |
+| 测试 | `unittest/` GoogleTest（`ctest -R unit_test`）；`test/` 为模块示例 |
 | 包管理 | 不用 npm/pnpm；第三方由 `cmake/*.cmake` + `fc_base/` |
 | 前端 | 无 Next.js / ESLint；勿引入 Node 质量门禁 |
 
@@ -59,6 +59,7 @@ make -j"$(sysctl -n hw.ncpu 2>/dev/null || nproc)"
 make web_server_bin
 make crypto_wrapper
 make remove_noise
+make unit_test && ctest --output-on-failure -R unit_test
 ```
 
 选项（根 `CMakeLists.txt` / `cmake/`）：关注 `SKIP_*`、MKL、MySQL、gRPC 等条件编译；macOS 常跳过 MKL 相关与部分 DB。

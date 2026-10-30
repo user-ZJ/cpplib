@@ -1,6 +1,9 @@
-#include<iostream>
-#include<string>
-#include "path-util.h"
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <unistd.h>
+#include "utils/path-util.h"
 #include "gtest/gtest.h"
 
 using namespace BASE_NAMESPACE;
@@ -32,7 +35,8 @@ TEST(PathTest, path_remove_extension){
 }
 
 TEST(PathTest, path_combine){
-  EXPECT_EQ(R"(C:\Users\Administrator\..\..\Desktop\text\data.22.txt/a.txt)",path_combine(path,"a.txt"));
+  EXPECT_EQ(std::string(R"(C:\Users\Administrator\..\..\Desktop\text\data.22.txt)") + PATH_SLASH_PLATFORM + "a.txt",
+            path_combine(path, "a.txt"));
 }
 
 TEST(PathTest, extension_name){
@@ -47,6 +51,23 @@ TEST(PathTest, path_get_filename){
 
 TEST(PathTest, path_resolve){
   EXPECT_EQ(R"(C:\Desktop\text\data.22.txt)",path_resolve(path));
+}
+
+TEST(PathTest, dirMakeAndIsDir) {
+  auto root = std::filesystem::temp_directory_path() / ("mbase_ut_path_" + std::to_string(getpid()));
+  std::filesystem::remove_all(root);
+  auto nested = root / "a" / "b";
+  EXPECT_EQ(0, dir_make(nested.string().c_str()));
+  EXPECT_TRUE(is_dir(root.string().c_str()));
+  EXPECT_TRUE(is_dir(nested.string().c_str()));
+  EXPECT_EQ(0, dir_make(nested.string().c_str()));
+  EXPECT_FALSE(is_dir((root / "missing").string().c_str()));
+
+  auto file = root / "f.txt";
+  std::ofstream(file.string()) << "x";
+  EXPECT_FALSE(is_dir(file.string().c_str()));
+  EXPECT_FALSE(is_symlink(nested.string().c_str()));
+  std::filesystem::remove_all(root);
 }
 
 

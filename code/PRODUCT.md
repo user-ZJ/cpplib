@@ -30,7 +30,7 @@
 ## MVP / 验收（库级）
 
 1. 在支持平台上 `cmake .. && make` 能编出已启用的目标。
-2. 与变更相关的 `test/` 可执行程序能跑通（按模块，非统一 gtest 套件）。
+2. 与变更相关的 `unittest/`（GoogleTest，`ctest -R unit_test`）或 `test/` 示例程序能跑通。
 3. Agent 与开发者能通过 `AGENTS.md`、`docs/` 找到构建命令、模块边界与已知限制。
 
 ## 假设与未决

@@ -8,6 +8,8 @@
 #define BASE_TIMER_UITL_H_
 
 #include <chrono>
+#include <ctime>
+#include <iomanip>
 #include <sstream>
 
 namespace BASE_NAMESPACE
@@ -37,7 +39,7 @@ inline long getTimeStamp() {
 }
 
 inline std::string getSTimeStamp() {
-  auto now = std::chrono::high_resolution_clock::now();
+  auto now = std::chrono::system_clock::now();
   std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
   std::stringstream ss;
   ss << std::put_time(std::localtime(&now_time_t), "%Y-%m-%d %H:%M:%S");
@@ -45,7 +47,7 @@ inline std::string getSTimeStamp() {
 }
 
 inline std::string getYear() {
-  auto now = std::chrono::high_resolution_clock::now();
+  auto now = std::chrono::system_clock::now();
   // 转换为time_t类型
   std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
   // 转换为tm结构体

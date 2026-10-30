@@ -1,0 +1,13 @@
+Log file created at: 2026/10/30 21:51:18
+Running on machine: zackdeMacBook-Pro.local
+Running duration (h:mm:ss): 0:00:00
+Log line format: [IWEF]yyyymmdd hh:mm:ss.uuuuuu threadid file:line] msg
+E20261030 21:51:18.129266 0x208d6df00 AESCryptoWrapper.cpp:43] AES decrypt final (wrong key or corrupted data): error:1C800064:Provider routines::bad decrypt
+E20261030 21:51:18.130412 0x208d6df00 AESCryptoWrapper.cpp:63] AES decrypt: ciphertext length 31 is not a multiple of 16
+E20261030 21:51:18.130477 0x208d6df00 AESCryptoWrapper.cpp:49] invalid AES key: expect 64 hex chars
+E20261030 21:51:18.130539 0x208d6df00 AESCryptoWrapper.cpp:49] invalid AES key: expect 64 hex chars
+E20261030 21:51:18.131631 0x208d6df00 file-util.h:48] file not exist:/var/folders/zk/1jdl0p_x1yq8sdw2qt7wynpm0000gn/T/mbase_ut_file_9876/no-such-file
+E20261030 21:51:18.131728 0x208d6df00 file-util.h:48] file not exist:/var/folders/zk/1jdl0p_x1yq8sdw2qt7wynpm0000gn/T/mbase_ut_file_9876/no-such-file
+I20261030 21:51:18.132817 0x208d6df00 file-util.h:130] write /var/folders/zk/1jdl0p_x1yq8sdw2qt7wynpm0000gn/T/mbase_ut_file_9876/bin.dat
+I20261030 21:51:18.133065 0x208d6df00 file-util.h:122] write /var/folders/zk/1jdl0p_x1yq8sdw2qt7wynpm0000gn/T/mbase_ut_file_9876/chars.bin
+I20261030 21:51:18.133234 0x208d6df00 file-util.h:139] read /var/folders/zk/1jdl0p_x1yq8sdw2qt7wynpm0000gn/T/mbase_ut_file_9876/chars.bin

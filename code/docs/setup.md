@@ -23,7 +23,11 @@ make -j"$(sysctl -n hw.ncpu 2>/dev/null || nproc)"
 make web_server_bin
 make crypto_wrapper
 make remove_noise
+make unit_test
+ctest --output-on-failure -R unit_test
 ```
+
+`unit_test` 覆盖 utils（含文件、计时、UUID、线程池、FFT、NDTensor）、路径目录、不依赖服务的 HTTP 工具函数，以及 AES。关闭单元测试：`cmake -DBUILD_UNITTEST=OFF ..`。
 
 ## 可选依赖
 
