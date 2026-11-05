@@ -1,0 +1,12 @@
+include_guard(GLOBAL)
+function(mbase_local_library target header)
+    string(TOUPPER "${target}" key)
+    find_path(${key}_INCLUDE_DIR "${header}" PATH_SUFFIXES "${target}" onnxruntime onnxruntime/core/session)
+    find_library(${key}_LIBRARY NAMES "${target}")
+    if(NOT ${key}_INCLUDE_DIR OR NOT ${key}_LIBRARY)
+        message(FATAL_ERROR "Missing local ${target}. Run scripts/install_deps.sh or set CMAKE_PREFIX_PATH; see README.md.")
+    endif()
+    add_library(${target} UNKNOWN IMPORTED GLOBAL)
+    set_target_properties(${target} PROPERTIES IMPORTED_LOCATION "${${key}_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${${key}_INCLUDE_DIR}")
+endfunction()

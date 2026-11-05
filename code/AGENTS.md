@@ -8,8 +8,8 @@
 | --- | --- |
 | 语言 | C++17 |
 | 构建 | CMake ≥ 3.14 + Make/Ninja |
-| 测试 | `unittest/` GoogleTest（`ctest -R unit_test`）；`test/` 为模块示例 |
-| 包管理 | 不用 npm/pnpm；第三方由 `cmake/*.cmake` + `fc_base/` |
+| 测试 | `tests/` GoogleTest（`ctest -R unit_test`）；`examples/` 为模块示例 |
+| 包管理 | 不用 npm/pnpm；第三方由 `cmake/*.cmake` 本地查找 + `scripts/install_deps.sh` 显式安装 |
 | 前端 | 无 Next.js / ESLint；勿引入 Node 质量门禁 |
 
 **禁止**为「对齐 vibe 模板」改成 TypeScript/Next.js/Drizzle，或改动现有 CMake 依赖图，除非用户明确要求。
@@ -21,15 +21,17 @@ code/
 ├── CMakeLists.txt          # 根工程 mbase
 ├── cmake/                  # 依赖与选项（*.cmake）
 ├── source/                 # 业务与基础库模块
-├── test/                   # 测试 / 示例源码（部分随模块目标生成）
-├── 3rdparty/               # 说明与本地补丁；大依赖多在 fc_base
+├── apps/                   # 命令行工具与服务入口
+├── examples/               # 模块与网络演示
+├── tests/                  # GoogleTest 单元测试
+├── 3rdparty/               # 依赖说明与历史预编译包
 ├── docs/                   # 架构 / 质量 / 搭建文档
 ├── PRODUCT.md
 ├── AGENTS.md               # 本文件
 └── CLAUDE.md               # Claude Code：@AGENTS.md
 ```
 
-主要模块（`source/<name>`）与目标名大致对应，例如：`web` → `web` / `web_server_bin`；`crypto` → `crypto` / `crypto_wrapper`；`remove_noise` → `remove_noise`。
+主要模块（`source/<name>`）与目标名大致对应，例如：`source/web` 由 `apps/web` 编入 `web_server_bin`；`crypto` → `crypto_wrapper`；`remove_noise` → `remove_noise`。
 
 ## 文档地图
 
@@ -77,7 +79,7 @@ make unit_test && ctest --output-on-failure -R unit_test
 
 ## 已知坑（摘要）
 
-- 根目录曾有名为 `docs` 的 HTML 文件；现为 `docs-legacy-fastapi-swagger.html`。正式文档在 `docs/`。
+- 根目录曾有名为 `docs` 的 HTML 文件；现为 `docs/archive/fastapi-swagger.html`。正式文档在 `docs/`。
 - `filesystem` / OpenSSL / OpenFST / rnnoise 等在 macOS 上需与系统 SDK、Homebrew 对齐；细节见 README 与 architecture。
 - `3rdparty/readme.md` 版本列表可能过时，以 `cmake/*.cmake` 为准。
 

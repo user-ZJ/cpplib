@@ -1,9 +1,4 @@
-# if(NOT DEFINED glog_SOURCE_DIR)
-FetchContent_Declare(glog
-  URL      https://github.com/google/glog/archive/refs/tags/v0.7.1.zip
-  URL_HASH SHA256=c17d85c03ad9630006ef32c7be7c65656aba2e7e2fbfc82226b7e680c771fc88
-)
-FetchContent_MakeAvailable(glog)
-# endif()
-include_directories(${glog_SOURCE_DIR}/src ${glog_BINARY_DIR})
-link_directories(${glog_BINARY_DIR})
+find_package(glog CONFIG REQUIRED)
+if(NOT TARGET glog AND TARGET glog::glog)
+    add_library(glog ALIAS glog::glog)
+endif()

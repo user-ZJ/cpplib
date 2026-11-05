@@ -1,8 +1,5 @@
-if(NOT DEFINED eigen_SOURCE_DIR)
-FetchContent_Declare(eigen
-  URL    https://gitlab.com/libeigen/eigen/-/archive/3.4.1/eigen-3.4.1.tar.gz
-  URL_HASH SHA256=b93c667d1b69265cdb4d9f30ec21f8facbbe8b307cf34c0b9942834c6d4fdbe2
-)
-FetchContent_Populate(eigen)
+find_path(EIGEN_INCLUDE_DIR Eigen/Core PATH_SUFFIXES eigen3)
+if(NOT EIGEN_INCLUDE_DIR)
+    message(FATAL_ERROR "Missing Eigen/Core. Run scripts/install_deps.sh or set CMAKE_PREFIX_PATH; see README.md.")
 endif()
-include_directories(${eigen_SOURCE_DIR})
+include_directories(${EIGEN_INCLUDE_DIR})

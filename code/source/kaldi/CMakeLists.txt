@@ -1,7 +1,10 @@
+# Legacy Kaldi sources use includes relative to this directory.
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}" "${MKL_INCLUDE_DIR}")
+link_directories(/opt/intel/mkl/lib/intel64 /opt/intel/lib/intel64)
+
 cmake_minimum_required(VERSION 3.14)
 project(kaldiasr)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 
 add_definitions(-DHAVE_MKL)

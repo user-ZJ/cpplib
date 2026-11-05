@@ -23,18 +23,18 @@
 ## 当前边界
 
 - 构建系统：CMake ≥ 3.14，C++17，命名空间宏 `BASE_NAMESPACE`（默认 `zack`）
-- 依赖通过 `cmake/*.cmake` + `FetchContent` / `ExternalProject` 拉取，缓存目录为 `fc_base/`
+- 依赖通过 `cmake/*.cmake` 查找本地安装；安装命令和脚本见 README，CMake 不下载依赖
 - macOS 上无 MKL 时跳过 `openfst` / `kaldi` / `vad`；无 MySQL 客户端时跳过 `source/db`
-- UI / 前端：无产品级界面；`source/web` 为库与演示服务端
+- UI / 前端：无产品级界面；`source/web` 为网络模块，服务入口位于 `apps/web`
 
 ## MVP / 验收（库级）
 
 1. 在支持平台上 `cmake .. && make` 能编出已启用的目标。
-2. 与变更相关的 `unittest/`（GoogleTest，`ctest -R unit_test`）或 `test/` 示例程序能跑通。
+2. 与变更相关的 `tests/`（GoogleTest，`ctest -R unit_test`）或 `examples/` 示例程序能跑通。
 3. Agent 与开发者能通过 `AGENTS.md`、`docs/` 找到构建命令、模块边界与已知限制。
 
 ## 假设与未决
 
 - 生产部署、发布流水线、统一版本号策略未在本仓库固化。
 - `3rdparty/readme.md` 中部分版本号可能落后于 `cmake/*.cmake` 实际拉取版本，以 CMake 脚本为准。
-- 原根目录文件 `docs`（FastAPI Swagger 快照）已改名为 `docs-legacy-fastapi-swagger.html`，与正式文档目录 `docs/` 无关。
+- 原根目录文件 `docs`（FastAPI Swagger 快照）已改名为 `docs/archive/fastapi-swagger.html`，与正式文档目录 `docs/` 无关。

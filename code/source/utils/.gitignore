@@ -1,6 +1,3 @@
-build
-gtest
-.cache
-.vscode
-fethchs
-
+# Legacy module-local dependency directories.
+gtest/
+fethchs/

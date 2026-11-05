@@ -6,7 +6,7 @@
 
 1. **配置**：在 out-of-source 构建目录执行 `cmake ..`（或项目惯用生成器），确认无新增 FATAL。
 2. **编译**：至少 `make <affected_target>`；跨模块改动优先全量 `make`。
-3. **测试 / 示例**：`unittest/` 是 GoogleTest 套件（`BUILD_UNITTEST`，默认开启），编完后在构建目录执行 `ctest --output-on-failure -R unit_test`，或直接运行 `bin/unit_test`。`test/` 仍是各模块示例程序。
+3. **测试 / 示例**：`tests/` 是 GoogleTest 套件（`BUILD_UNITTEST`，默认开启），编完后在构建目录执行 `ctest --output-on-failure -R unit_test`，或直接运行 `bin/unit_test`。`examples/` 仍是各模块示例程序。
 4. **回归范围**：改公共头文件 / CMake 选项时，编译所有依赖该目标的下游。
 
 ## 建议

@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(myutil)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 
 include_directories(
@@ -17,3 +16,5 @@ target_link_libraries(${PROJECT_NAME} PUBLIC glog gflags::gflags sox sonic pthre
 
 
 
+
+target_include_directories(myutil PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")

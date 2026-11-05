@@ -1,5 +1,38 @@
-build*
-.cache
-.vscode
-depends
-code/trt/build
+# Local build directories (do not ignore build_*.sh or building.md).
+build*/
+cmake-build*/
+
+# CMake-generated files; keep hand-written Makefiles and shared presets.
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+CMakeUserPresets.json
+compile_commands.json
+
+# Compiler outputs.
+*.o
+*.obj
+*.pch
+*.gch
+*.pdb
+*.ilk
+
+# Local dependency installation, work area and legacy cache.
+/.local-deps/
+/.deps-work/
+/fc_base/
+/depends/
+
+# Editor, operating-system and tool caches.
+.cache/
+.vscode/
+.DS_Store
+
+# Runtime logs, including glog's severity symlinks.
+*.log
+*.log.*
+unit_test.INFO
+unit_test.WARNING
+unit_test.ERROR
