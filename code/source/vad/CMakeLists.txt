@@ -10,7 +10,7 @@ link_directories(
 
 
 add_library(vadwrapper FVadWrapper.cpp SileroVadWrapper.cpp aliVadWrapper.cpp)
-target_link_libraries(vadwrapper fvad onnxruntime kaldi-feat myutil)
+target_link_libraries(vadwrapper PUBLIC fvad onnxruntime kaldi-feat myutil)
 
 
 include(fvad)

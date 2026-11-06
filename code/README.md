@@ -53,7 +53,7 @@ MBASE_SOURCE_CACHE="$PWD/fc_base" INSTALL_ONNX=1 bash scripts/install_deps.sh
 
 也可自行安装，通过 `CMAKE_PREFIX_PATH` 或各包的 `<Package>_DIR` 指定位置。cereal 必须提供 `cereal/archives/optional_json.hpp`，普通上游发行版不能替代该定制分支。安装脚本不会被 CMake 自动调用。
 
-Kaldi 可使用 MKL 或 OpenBLAS；显式安装脚本默认安装 OpenFST 1.6.5（`INSTALL_KALDI=0` 可跳过）（含已有兼容补丁）。VAD 额外需要 fvad 和 ONNX Runtime，脚本不安装 fvad。MySQL 可选：macOS `brew install mysql-client`，Ubuntu `sudo apt-get install libmysqlclient-dev`，同时需本地 Poco 构建提供 DataMySQL 组件（脚本默认关闭）。Android 必须预先安装面向目标 ABI 的依赖，不能使用宿主机库。
+Kaldi 可使用 MKL 或 OpenBLAS；显式安装脚本默认安装 OpenFST 1.6.5（`INSTALL_KALDI=0` 可跳过）（含已有兼容补丁）。安装脚本默认安装固定提交的 libfvad（`INSTALL_FVAD=0` 可跳过）；VAD 还需通过 `INSTALL_ONNX=1` 安装 ONNX Runtime。MySQL 可选：macOS `brew install mysql-client`，Ubuntu `sudo apt-get install libmysqlclient-dev`，同时需本地 Poco 构建提供 DataMySQL 组件（脚本默认关闭）。Android 必须预先安装面向目标 ABI 的依赖，不能使用宿主机库。
 
 ## 编译
 
@@ -122,3 +122,13 @@ cmake --build build-local --target kaldi-matrix kaldi-feat -j 4
 ```
 
 可选值为 `AUTO`、`OPENBLAS`、`MKL`。显式指定后端时缺依赖会报错，AUTO 未找到后端时跳过 Kaldi。可用 `-DBUILD_KALDI=OFF` 关闭整个 Kaldi/VAD 子树。自定义位置用 `CMAKE_PREFIX_PATH` 或 `OPENBLAS_INCLUDE_DIR`、`OPENBLAS_LAPACKE_INCLUDE_DIR`、`OPENBLAS_LIBRARY` 指定。使用 LP64（32 位 BLAS 整数）版本，不能替换为 ILP64 库。
+
+VAD 完整依赖安装及验证：
+
+```bash
+INSTALL_ONNX=1 INSTALL_KALDI=1 INSTALL_FVAD=1 bash scripts/install_deps.sh
+cmake -S . -B build-local -DKALDI_BLAS_BACKEND=OPENBLAS -DUSE_ONNXRUNTIME=ON
+cmake --build build-local --target vadwrapper vad_test -j 4
+```
+
+`vad_test` 仍包含示例机器的音频路径，运行前需配置实际输入；编译通过不代表示例模型已完成推理验证。

@@ -8,7 +8,7 @@ jobs="${JOBS:-4}"
 cache="${MBASE_SOURCE_CACHE:-}"
 if [[ "${1:-}" == --help ]]; then
     echo 'Usage: scripts/install_deps.sh [--help]'
-    echo 'INSTALL_ONNX=1: also install ONNX Runtime; INSTALL_KALDI=0: skip compatible OpenFST.'
+    echo 'INSTALL_ONNX=1: also install ONNX Runtime; INSTALL_KALDI=0 / INSTALL_FVAD=0: skip OpenFST / libfvad.'
     echo 'MBASE_DEPS_PREFIX: install prefix; JOBS: build jobs; MBASE_SOURCE_CACHE: optional existing source cache (fc_base).'
     echo 'Requires: CMake, C/C++ compiler, make, curl, tar, unzip, OpenSSL, sox and sonic development files.'
     exit 0
@@ -91,6 +91,10 @@ if [[ "${INSTALL_KALDI:-1}" == 1 ]]; then
         LDFLAGS="-L$prefix/lib -Wl,-rpath,$prefix/lib" LIBS="-lgflags -lglog -lpthread"
      make -j "$jobs"
      make install)
+fi
+if [[ "${INSTALL_FVAD:-1}" == 1 ]]; then
+    fetch fvad https://codeload.github.com/dpirch/libfvad/tar.gz/847a37297a8ca3fe80c4d878a2003f2c5106b0bf 9e40baffa2d55790c965565d8e10bfca766171aa4ecd9293fd2fec129be2a5ff
+    build fvad
 fi
 echo "Dependencies installed in $prefix"
 echo "Configure: cmake -S . -B build-local -DMBASE_DEPS_PREFIX=$prefix -DUSE_ONNXRUNTIME=OFF"
