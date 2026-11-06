@@ -19,7 +19,7 @@ CMake 仅查找本地安装，不下载、解压或编译第三方依赖。缺�
 macOS：
 
 ```bash
-brew install cmake pkg-config openssl@3 sox opus grpc protobuf
+brew install cmake pkg-config openssl@3 sox opus grpc protobuf openblas
 # 同时安装缺少的 sonic（源码构建）：
 bash scripts/install_system_deps.sh
 ```
@@ -28,7 +28,7 @@ Ubuntu / Debian：
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y build-essential cmake pkg-config curl unzip git libssl-dev libsox-dev libsonic-dev libopus-dev libgrpc++-dev libprotobuf-dev protobuf-compiler protobuf-compiler-grpc
+sudo apt-get install -y build-essential cmake pkg-config curl unzip git libssl-dev libsox-dev libsonic-dev libopenblas-dev liblapacke-dev libopus-dev libgrpc++-dev libprotobuf-dev protobuf-compiler protobuf-compiler-grpc
 # 或运行：bash scripts/install_system_deps.sh
 ```
 
@@ -53,7 +53,7 @@ MBASE_SOURCE_CACHE="$PWD/fc_base" INSTALL_ONNX=1 bash scripts/install_deps.sh
 
 也可自行安装，通过 `CMAKE_PREFIX_PATH` 或各包的 `<Package>_DIR` 指定位置。cereal 必须提供 `cereal/archives/optional_json.hpp`，普通上游发行版不能替代该定制分支。安装脚本不会被 CMake 自动调用。
 
-MKL/Kaldi/VAD 仍是可选路径，需要本地 MKL、与旧版 Kaldi 兼容的 OpenFST、fvad 等 SDK；通用安装脚本不安装这些专用依赖。MySQL 可选：macOS `brew install mysql-client`，Ubuntu `sudo apt-get install libmysqlclient-dev`，同时需本地 Poco 构建提供 DataMySQL 组件（脚本默认关闭）。Android 必须预先安装面向目标 ABI 的依赖，不能使用宿主机库。
+Kaldi 可使用 MKL 或 OpenBLAS；显式安装脚本默认安装 OpenFST 1.6.5（`INSTALL_KALDI=0` 可跳过）（含已有兼容补丁）。VAD 额外需要 fvad 和 ONNX Runtime，脚本不安装 fvad。MySQL 可选：macOS `brew install mysql-client`，Ubuntu `sudo apt-get install libmysqlclient-dev`，同时需本地 Poco 构建提供 DataMySQL 组件（脚本默认关闭）。Android 必须预先安装面向目标 ABI 的依赖，不能使用宿主机库。
 
 ## 编译
 
@@ -109,3 +109,16 @@ cmake -S . -B build-local
 cmake --build build-local -j 8
 ctest --test-dir build-local --output-on-failure -R unit_test
 ```
+
+## macOS 使用 OpenBLAS
+
+Kaldi 在 macOS 的 AUTO 模式使用 OpenBLAS，其他平台默认 MKL。依赖均须预先本地安装；Kaldi 还需兼容本仓库旧代码的 OpenFST，VAD 额外需要 fvad 和 ONNX Runtime。
+
+```bash
+brew install openblas
+INSTALL_KALDI=1 bash scripts/install_deps.sh
+cmake -S . -B build-local -DKALDI_BLAS_BACKEND=OPENBLAS
+cmake --build build-local --target kaldi-matrix kaldi-feat -j 4
+```
+
+可选值为 `AUTO`、`OPENBLAS`、`MKL`。显式指定后端时缺依赖会报错，AUTO 未找到后端时跳过 Kaldi。可用 `-DBUILD_KALDI=OFF` 关闭整个 Kaldi/VAD 子树。自定义位置用 `CMAKE_PREFIX_PATH` 或 `OPENBLAS_INCLUDE_DIR`、`OPENBLAS_LAPACKE_INCLUDE_DIR`、`OPENBLAS_LIBRARY` 指定。使用 LP64（32 位 BLAS 整数）版本，不能替换为 ILP64 库。

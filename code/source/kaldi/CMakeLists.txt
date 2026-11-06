@@ -1,31 +1,9 @@
-# Legacy Kaldi sources use includes relative to this directory.
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}" "${MKL_INCLUDE_DIR}")
-link_directories(/opt/intel/mkl/lib/intel64 /opt/intel/lib/intel64)
-
 cmake_minimum_required(VERSION 3.14)
 project(kaldiasr)
-
-
-
-add_definitions(-DHAVE_MKL)
-add_definitions(-DKALDI_DOUBLEPRECISION=0)
-add_definitions(-DHAVE_CUDA=0)
-
-include_directories(
-		${CMAKE_SOURCE_DIR}/kaldi
-        ${CMAKE_SOURCE_DIR}/tools/include/openfst
-		/opt/intel/mkl/include
-        ${CMAKE_SOURCE_DIR}/tools/include/cub
-        # /usr/local/cuda/include
-		 )
-
-link_directories(
-	/usr/local/lib
-    /opt/intel/mkl/lib/intel64
-	/opt/intel/lib/intel64/
-    # /usr/local/cuda/lib64
-    )
-
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+add_definitions(-DKALDI_DOUBLEPRECISION=0 -DHAVE_CUDA=0)
+# Directory scope is confined to the legacy Kaldi subtree.
+link_libraries(kaldi_blas)
 
 add_subdirectory(base)
 add_subdirectory(matrix)

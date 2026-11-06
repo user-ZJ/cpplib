@@ -8,7 +8,7 @@ jobs="${JOBS:-4}"
 cache="${MBASE_SOURCE_CACHE:-}"
 if [[ "${1:-}" == --help ]]; then
     echo 'Usage: scripts/install_deps.sh [--help]'
-    echo 'INSTALL_ONNX=1: also install ONNX Runtime.'
+    echo 'INSTALL_ONNX=1: also install ONNX Runtime; INSTALL_KALDI=0: skip compatible OpenFST.'
     echo 'MBASE_DEPS_PREFIX: install prefix; JOBS: build jobs; MBASE_SOURCE_CACHE: optional existing source cache (fc_base).'
     echo 'Requires: CMake, C/C++ compiler, make, curl, tar, unzip, OpenSSL, sox and sonic development files.'
     exit 0
@@ -80,6 +80,17 @@ if [[ "${INSTALL_ONNX:-0}" == 1 ]]; then
     cp -R "$src/include/." "$prefix/include/"
     mkdir -p "$prefix/lib"
     cp -R "$src/lib/." "$prefix/lib/"
+fi
+if [[ "${INSTALL_KALDI:-1}" == 1 ]]; then
+    fetch openfst https://www.openfst.org/twiki/pub/FST/FstDownload/openfst-1.6.5.tar.gz 70d9e795b9bb3eb157908a2fdde17d5d1c1be35ab21e208187a4f230291606b1
+    (cd "$src" && cmake -P "$repo_dir/3rdparty/patches/fix_openfst.cmake")
+    mkdir -p "$work/openfst-build"
+    (cd "$work/openfst-build"
+     "$src/configure" --prefix="$prefix" --disable-bin --enable-static --disable-shared \
+        CXXFLAGS="-O2 -fPIC" CPPFLAGS="-I$prefix/include -DGLOG_USE_GLOG_EXPORT" \
+        LDFLAGS="-L$prefix/lib -Wl,-rpath,$prefix/lib" LIBS="-lgflags -lglog -lpthread"
+     make -j "$jobs"
+     make install)
 fi
 echo "Dependencies installed in $prefix"
 echo "Configure: cmake -S . -B build-local -DMBASE_DEPS_PREFIX=$prefix -DUSE_ONNXRUNTIME=OFF"

@@ -1,2 +1,5 @@
 include(local_library)
 mbase_local_library(fst fst/fstlib.h)
+if(NOT EXISTS "${FST_INCLUDE_DIR}/fst/types.h")
+    message(FATAL_ERROR "This Kaldi tree requires OpenFST 1.6.5 headers (fst/types.h). Run INSTALL_KALDI=1 scripts/install_deps.sh, then clear FST_INCLUDE_DIR/FST_LIBRARY cache entries.")
+endif()

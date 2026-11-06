@@ -5,7 +5,7 @@ case "${1:-}" in --help) echo 'Install system build tools, OpenSSL, sox, sonic a
 case "$(uname -s)" in
  Darwin)
     command -v brew >/dev/null || { echo 'Install Homebrew first: https://brew.sh' >&2; exit 1; }
-    brew install cmake pkg-config openssl@3 sox opus grpc protobuf
+    brew install cmake pkg-config openssl@3 sox opus grpc protobuf openblas
     if [[ ! -f "$(brew --prefix)/include/sonic.h" ]]; then
         work_dir="$(mktemp -d)"
         git clone --depth 1 https://github.com/waywardgeek/sonic.git "$work_dir/sonic"
@@ -17,7 +17,7 @@ case "$(uname -s)" in
  Linux)
     command -v apt-get >/dev/null || { echo 'Install equivalent development packages with your package manager; see README.md.' >&2; exit 1; }
     sudo apt-get update
-    sudo apt-get install -y build-essential cmake pkg-config curl unzip git libssl-dev libsox-dev libsonic-dev libopus-dev libgrpc++-dev libprotobuf-dev protobuf-compiler protobuf-compiler-grpc
+    sudo apt-get install -y build-essential cmake pkg-config curl unzip git libssl-dev libsox-dev libsonic-dev libopenblas-dev liblapacke-dev libopus-dev libgrpc++-dev libprotobuf-dev protobuf-compiler protobuf-compiler-grpc
     ;;
  *) echo 'Unsupported platform; install dependencies manually.' >&2; exit 1 ;;
 esac

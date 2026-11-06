@@ -8,7 +8,7 @@
 - 加解密（OpenSSL AES；Poco RSA 实现未编入默认库）
 - 音频工具、降噪（sox / sonic / rnnoise）
 - 推理相关目录（ONNX Runtime、可选 TensorRT / libtorch / MNN 等）
-- 可选 Kaldi / OpenFST（依赖 MKL）
+- 可选 Kaldi / OpenFST（MKL 或 OpenBLAS 后端）
 - 可选 MySQL / Redis / MongoDB 封装（依赖对应客户端）
 - gRPC 示例（Linux 预编译包或本机安装）
 
@@ -24,7 +24,7 @@
 
 - 构建系统：CMake ≥ 3.14，C++17，命名空间宏 `BASE_NAMESPACE`（默认 `zack`）
 - 依赖通过 `cmake/*.cmake` 查找本地安装；安装命令和脚本见 README，CMake 不下载依赖
-- macOS 上无 MKL 时跳过 `openfst` / `kaldi` / `vad`；无 MySQL 客户端时跳过 `source/db`
+- macOS 使用 OpenBLAS 替代 MKL；未安装 BLAS 时跳过 Kaldi，VAD 还需 fvad/ONNX Runtime；无 MySQL 客户端时跳过 `source/db`
 - UI / 前端：无产品级界面；`source/web` 为网络模块，服务入口位于 `apps/web`
 
 ## MVP / 验收（库级）

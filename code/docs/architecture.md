@@ -21,7 +21,7 @@
 | `utils` | 文件、字符串、线程、计时、音频与 Tensor 等工具 | `myutil` |
 | `audio` / `remove_noise` | 音频与降噪 | `remove_noise` 等 |
 | `engine` / `onnx` / … | 推理相关 | 条件开启 |
-| `kaldi` / `openfst` / `vad` | 语音相关 | 常需 MKL；macOS 可跳过 |
+| `kaldi` / `openfst` / `vad` | 语音相关 | 需要 MKL 或 OpenBLAS |
 | `db` | MySQL 等 | 无客户端则跳过 |
 
 具体 `target_link_libraries` 以各模块 `CMakeLists.txt` 为准。
@@ -34,10 +34,10 @@
 
 ## 条件编译要点
 
-- **MKL**：影响 OpenFST / Kaldi / 部分 VAD 路径。
+- **BLAS 后端**：`KALDI_BLAS_BACKEND=AUTO` 在 macOS 使用 OpenBLAS，其他平台使用 MKL；Kaldi 还需本地 OpenFST。
 - **MySQL**：影响 `source/db`。
 - **gRPC**：所有平台使用本地安装，示例位于 `examples/grpc/`。
-- **macOS**：开发友好路径上常关闭 MKL 相关子树；文件系统与 OpenSSL 路径需与 SDK 一致。
+- **macOS**：通过 OpenBLAS 启用 Kaldi，VAD 还需 fvad 和 ONNX Runtime；文件系统与 OpenSSL 路径需与 SDK 一致。
 
 ## 非目标
 
@@ -61,7 +61,7 @@
 
 ## 构建路径作用范围
 
-自有目标通过 target 级 PRIVATE include 保留现有 `source/` 头文件兼容入口；`myutil` 和 `crypto_wrapper` 同时通过 PUBLIC include 声明导出该路径。MKL/Kaldi 路径仅作用于 Kaldi 子目录；本地 opus/fvad imported target 向包装目标传递 SDK 路径。示例不再全局引入 CUDA 路径。后续新增依赖应优先使用 imported target 和 target 级设置。
+自有目标通过 target 级 PRIVATE include 保留现有 `source/` 头文件兼容入口；`myutil` 和 `crypto_wrapper` 同时通过 PUBLIC include 声明导出该路径。BLAS 的包含路径、宏和链接库经 `kaldi_blas` 传递给 Kaldi 及其调用方；本地 opus/fvad imported target 向包装目标传递 SDK 路径。示例不再全局引入 CUDA 路径。后续新增依赖应优先使用 imported target 和 target 级设置。
 
 显式安装阶段的 Poco 补丁接受原始源码及已应用状态；不匹配时配置明确失败，升级依赖时必须审核补丁。
 

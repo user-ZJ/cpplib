@@ -14,4 +14,5 @@ target_link_libraries(vadwrapper fvad onnxruntime kaldi-feat myutil)
 
 
 include(fvad)
-target_include_directories(vadwrapper PUBLIC "${CMAKE_SOURCE_DIR}/source/kaldi" "${MKL_INCLUDE_DIR}")
+target_include_directories(vadwrapper PUBLIC "${CMAKE_SOURCE_DIR}/source/kaldi")
+target_link_libraries(vadwrapper PUBLIC kaldi_blas)

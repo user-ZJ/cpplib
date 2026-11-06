@@ -64,7 +64,7 @@ make remove_noise
 make unit_test && ctest --output-on-failure -R unit_test
 ```
 
-选项（根 `CMakeLists.txt` / `cmake/`）：关注 `SKIP_*`、MKL、MySQL、gRPC 等条件编译；macOS 常跳过 MKL 相关与部分 DB。
+选项（根 `CMakeLists.txt` / `cmake/`）：关注 `SKIP_*`、MKL、MySQL、gRPC 等条件编译；macOS 默认使用 OpenBLAS，部分 DB 按本地依赖启用。
 
 **不要**假设存在 `npm test` / `eslint`。质量门禁见 [docs/quality.md](./docs/quality.md)。
 
